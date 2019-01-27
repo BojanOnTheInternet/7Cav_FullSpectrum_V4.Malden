@@ -1,0 +1,73 @@
+HEMTT_Fuel_HandleDamage =
+{
+	params ["_hemtt", "_selection", "_damage", "_source", "_projectile", "_partIndex", "_instigator", "_partName"];
+
+	if (_partName == "hitfuel" && _damage > 0.5) then { _hemtt setDamage 1 };
+
+	_damage
+};
+
+HEMTT_Fuel_Killed =
+{
+	params ["_hemtt"];
+
+	private _remainingFuel = _hemtt getVariable ["JBF_FuelRemaining", 0]; //TODO: Create JB_fnc_fuelRemaining function to get this value
+
+	if (_remainingFuel > 0) then
+	{
+		private _damageEquivalent = _remainingFuel * 10;
+		private _explosives = [_damageEquivalent] call JB_fnc_detonateGetExplosivesEquivalent;
+
+		private _positions = (boundingBoxReal _hemtt + (boundingBoxReal _hemtt apply { _x set [0, -(_x select 0)]; _x }) + [[0,0,0]]) apply { _hemtt modelToWorld _x };
+
+		{
+			[_explosives deleteAt 0, _x] call JB_fnc_detonateExplosive; // Put the largest explosives on each bounding corner plus the origin
+		} forEach _positions;
+	};
+};
+
+HEMTT_Fuel_AddHandlers =
+{
+	(_this select 0) addEventHandler ["HandleDamage", { _this call HEMTT_Fuel_HandleDamage }];
+	(_this select 0) addEventHandler ["Killed", { _this call HEMTT_Fuel_Killed }];
+};
+
+[
+	_this select 0,
+	{
+		(_this select 0) setFuelCargo 0;
+
+		private _capacity = 9464;
+		[(_this select 0), [[0.449,-5.052,-0.317], [-0.449,-5.052,-0.317]], _capacity, 60] call JB_fnc_fuelInitSupply;
+
+		// Owning clients detecting damage or destruction will handle the fuel-related explosions themselves
+		[_this select 0] remoteExec ["HEMTT_Fuel_AddHandlers", 0, true]; //JIP
+
+		[_this select 0, _capacity] spawn
+		{
+			params ["_truck", "_capacity"];
+
+			scriptName "spawnBASE_HEMTT_Fuel_Level";
+
+			private _full = 0.59;
+			private _empty = 0.075;
+
+			private _marker = "Land_Notepad_F" createVehicle [0,0,0];
+			_marker attachto [_this select 0, [-1.09,2.45,_empty]];
+			_marker setdir 270;
+
+			while { sleep 1; alive _truck } do
+			{
+				private _fuelRemaining = _truck getVariable ["JBF_FuelRemaining", 0];
+				private _z = linearConversion [_capacity, 0, _fuelRemaining, _full, _empty];
+				_marker attachTo [_truck, [-1.09,2.45,_z]];
+			};
+
+			deleteVehicle _marker;
+		};
+
+		[_this select 0, SERVER_Magazines_TitanToMAAWS, SERVER_Weapons_LauncherDowngrade] call JB_fnc_containerSubstitute;
+	}
+] call JB_fnc_respawnVehicleInitialize;
+[_this select 0, 60] call JB_fnc_respawnVehicleWhenKilled;
+[_this select 0, 1500] call JB_fnc_respawnVehicleWhenAbandoned;
