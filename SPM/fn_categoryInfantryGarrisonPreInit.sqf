@@ -117,7 +117,7 @@ SPM_InfantryGarrison_CallupsSyndikat =
 
 SPM_InfantryGarrison_InitialCallupsSyndikat =
 [
-	
+
 	[(configfile >> "CfgGroups" >> "Indep" >> "LOP_PMC" >> "Infantry" >> "LOP_PMC_Rifle_squad"), [1, 8, 1.0]],
 	[(configfile >> "CfgGroups" >> "Indep" >> "LOP_PMC" >> "Infantry" >> "LOP_PMC_Support_section"), [1, 4, 1.0]]
 ];
@@ -213,7 +213,7 @@ OO_TRACE_DECL(SPM_InfantryGarrison_AllocateMissionBuilding) =
 		private _index = floor random [0, (count _buildings) * _housingPreference, count _buildings];
 		_building = _missionBuildings deleteAt (_buildings select _index select 1);
 	};
-	
+
 	_building
 };
 
@@ -689,7 +689,7 @@ OO_TRACE_DECL(SPM_InfantryGarrison_TransportOnUpdate) =
 	{
 		private _eastSide = OO_GET(_category,ForceCategory,SideEast);
 		private _eastCount = { lifeState _x in ["HEALTHY", "INJURED"] && vehicle _x == _x && side _x == _eastSide } count (_transportCommander nearEntities ["Man", NEAR_ENGAGEMENT_RANGE]);
-		
+
 		// If the resistance is greater than friendly forces
 		if (_westCount > _eastCount) then
 		{
@@ -894,7 +894,7 @@ OO_TRACE_DECL(SPM_InfantryGarrison_FindOperationDropPosition) =
 		[_positions, ["#GdtWater"]] call SPM_Util_ExcludeSamplesBySurfaceType;
 
 		if (count _positions == 0) exitWith { _dropPosition = _center };
-		
+
 		_positions = _positions apply { [_x distance _center, _x] };
 		_positions sort true;
 		_dropPosition = _positions select 0 select 1;
@@ -1209,7 +1209,7 @@ OO_TRACE_DECL(SPM_InfantryGarrison_BeginTemporaryDuty) =
 	// Make sure we send units not in buildings off to temporary duty first
 	private _dutyUnits = (_outdoorUnits + _occupyingUnits) select [0, _number];
 
-	_housedUnits = _housedUnits - _dutyUnits;	
+	_housedUnits = _housedUnits - _dutyUnits;
 	OO_SET(_category,InfantryGarrisonCategory,HousedUnits,_housedUnits);
 
 #ifdef OO_TRACE
@@ -1296,7 +1296,7 @@ OO_TRACE_DECL(SPM_InfantryGarrison_Relocate) =
 				{
 					_movingUnits pushBack (selectRandom _groupUnits);
 				};
-			
+
 				private _group = [_category, _movingUnits] call SPM_InfantryGarrison_LeaveBuilding;
 				if (not isNull _group) then { [_category, _group, false, 0.1] call SPM_InfantryGarrison_GarrisonGroup }; // Stay local, but still allow long range moves
 			};
@@ -1455,7 +1455,7 @@ OO_TRACE_DECL(SPM_InfantryGarrison_Delete) =
 
 
 private _transportOperationsNull = [OO_NULL,OO_NULL,OO_NULL];
-private _defaultOccupationLimits = [1,1e3];
+private _defaultOccupationLimits = [1,4];
 
 OO_BEGIN_SUBCLASS(InfantryGarrisonCategory,ForceCategory);
 	OO_OVERRIDE_METHOD(InfantryGarrisonCategory,Root,Create,SPM_InfantryGarrison_Create);
