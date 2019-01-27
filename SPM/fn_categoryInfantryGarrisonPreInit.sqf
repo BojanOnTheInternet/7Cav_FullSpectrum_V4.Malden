@@ -52,17 +52,25 @@ SPM_InfantryGarrison_RatingsWest =
 
 SPM_InfantryGarrison_RatingsEast =
 [
-	["LOP_US_Infantry_Rifleman", [1, 1]],
-	["LOP_US_Infantry_Corpsman", [1, 1]],
-	["LOP_US_Infantry_Engineer", [1, 1]],
-	["LOP_US_Infantry_MG", [1, 1]],
-	["LOP_US_Infantry_AA", [1, 1]],
-	["LOP_US_Infantry_Marksman", [1, 1]],
-	["LOP_US_Infantry_Rifleman_4", [1, 1]],
-	["LOP_US_Infantry_AT", [1, 1]],
-	["LOP_US_Infantry_GL", [1, 1]],
-	["LOP_US_Infantry_TL", [1, 1]],
-	["LOP_US_Infantry_Officer", [1, 1]]
+    ["LOP_US_Infantry_Rifleman", [1, 1]],
+    ["LOP_US_Infantry_Corpsman", [1, 1]],
+    ["LOP_US_Infantry_Engineer", [1, 1]],
+    ["LOP_US_Infantry_MG", [1, 1]],
+    ["LOP_US_Infantry_MG_Asst", [1, 1]],
+    ["LOP_US_Infantry_MG_2", [1, 1]],
+    ["LOP_US_Infantry_AA", [1, 1]],
+    ["LOP_US_Infantry_Marksman", [1, 1]],
+    ["LOP_US_Infantry_Rifleman_1", [1, 1]],
+    ["LOP_US_Infantry_Rifleman_2", [1, 1]],
+    ["LOP_US_Infantry_Rifleman_3", [1, 1]],
+    ["LOP_US_Infantry_Rifleman_4", [1, 1]],
+    ["LOP_US_Infantry_AT", [1, 1]],
+    ["LOP_US_Infantry_AT_Asst", [1, 1]],
+    ["LOP_US_Infantry_GL", [1, 1]],
+    ["LOP_US_Infantry_GL_2", [1, 1]],
+    ["LOP_US_Infantry_TL", [1, 1]],
+    ["LOP_US_Infantry_SL", [1, 1]],
+    ["LOP_US_Infantry_Officer", [1, 1]]
 ];
 
 SPM_InfantryGarrison_CallupsEast =
