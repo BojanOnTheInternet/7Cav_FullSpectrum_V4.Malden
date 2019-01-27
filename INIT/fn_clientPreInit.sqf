@@ -302,6 +302,8 @@ TypeFilter_LogisticsVehicles =
 	["rhsusf_M977A4_AMMO_usarmy_d", true],
 	["rhsusf_M977A4_REPAIR_BKIT_usarmy_d", true],
 	["rhsusf_M978A4_usarmy_d", true],
+	["rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy", true],
+	["rhsusf_M1078A1P2_B_D_CP_fmtv_usarmy", true],
 	["All", false]
 ];
 

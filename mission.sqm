@@ -8,7 +8,7 @@ class EditorData
 	toggles=521;
 	class ItemIDProvider
 	{
-		nextID=6560;
+		nextID=6561;
 	};
 	class MarkerIDProvider
 	{
@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={6172.0664,234.66295,8511.8818};
-		dir[]={-0.54511613,-0.66040456,0.51645172};
-		up[]={-0.47941226,0.75090867,0.45420349};
-		aside[]={0.68776619,-1.3195677e-007,0.72593689};
+		pos[]={8122.9106,75.791229,9753.3555};
+		dir[]={-0.70361608,-0.70589924,0.081458911};
+		up[]={-0.70121896,0.70830834,0.081181608};
+		aside[]={0.11500423,-5.7294528e-008,0.99336761};
 	};
 };
 binarizationWanted=0;
@@ -11872,7 +11872,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=832;
+		items=833;
 		class Item0
 		{
 			dataType="Object";
@@ -39805,7 +39805,7 @@ class Mission
 			type="ellipse";
 			a=275;
 			b=125;
-			angle=199.20496;
+			angle=199.20493;
 			id=5414;
 			atlOffset=0.00037384033;
 		};
@@ -39830,7 +39830,7 @@ class Mission
 			type="ellipse";
 			a=700;
 			b=700;
-			angle=226.40863;
+			angle=226.4086;
 			id=5417;
 			atlOffset=-2.9321289;
 		};
@@ -53633,6 +53633,46 @@ class Mission
 			};
 			id=6523;
 			atlOffset=1.9073486e-006;
+		};
+		class Item832
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8090.2485,31.775284,9758.2275};
+				angles[]={0.0039968039,0,6.2591867};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				init="call{_null = [this] execVM ""scripts\vehicle\init\Base_HEMTT_Ammo.sqf"";}";
+			};
+			id=6560;
+			type="rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""rhs_weap_m4_carryhandle"",""FirstAidKit""],[2,4]],[[""rhs_mag_30Rnd_556x45_M855A1_Stanag"",""rhs_mag_m67"",""rhs_mag_m18_green"",""rhs_mag_m18_red"",""rhs_mag_an_m8hc""],[10,2,2,2,4]],[[""ToolKit""],[1]],[[""rhsusf_falconii""],[1]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
 		};
 	};
 };

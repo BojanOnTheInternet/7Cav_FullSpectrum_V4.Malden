@@ -71,6 +71,8 @@ _null = [] execVM "AUR_AdvancedUrbanRappelling\functions\fn_advancedUrbanRappell
 
 _null = [] execVM "scripts\decals.sqf";
 
+_null = [] execVM "scripts\fortifyInit.sqf";
+
 enableEnvironment [false, true];
 
 diag_log "initServer end";
