@@ -23,16 +23,30 @@ if (not isServer && hasInterface) exitWith {};
 // Don't spawn armor at a given location if any player is within this distance
 #define SPAWN_PROXIMITY_DISTANCE 200
 
+_abrams_rating = 50;
 SPM_Armor_RatingsWestTanks =
 [
+	//Abrams
+	["rhsusf_m1a1aimd_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a1aim_tuski_d", [_abrams_rating, 3]],
+	["rhsusf_m1a2sep1d_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a2sep1tuskid_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a2sep1tuskiid_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a1aimwd_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a1aim_tuski_wd", [_abrams_rating, 3]],
+	["rhsusf_m1a2sep1wd_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a2sep1tuskiwd_usarmy", [_abrams_rating, 3]],
+	["rhsusf_m1a2sep1tuskiiwd_usarmy", [_abrams_rating, 3]],
+
+	//Slammer / Merkava
 	["B_MBT_01_cannon_F", [45, 3]],
 	["B_MBT_01_TUSK_F", [50, 3]],
 	["B_T_MBT_01_cannon_F", [45, 3]],
 	["B_T_MBT_01_TUSK_F", [50, 3]],
-	["rhsusf_m1a2sep1tuskiiwd_usarmy", [50, 3]],
-	["rhsusf_m1a2sep1tuskiid_usarmy", [50, 3]],
 
+	// Tank DLC tank destroyer
 	["B_AFV_Wheeled_01_cannon_F", [40, 3]],
+	["B_AFV_Wheeled_01_up_cannon_F", [40, 3]],
 
 	["O_MBT_04_cannon_F", [50, 3]],
 	["O_MBT_02_cannon_F", [50, 3]],
@@ -40,11 +54,23 @@ SPM_Armor_RatingsWestTanks =
 	["I_MBT_03_cannon_F", [50, 3]]
 ];
 
+_bradley_rating = 25;
 SPM_Armor_RatingsWestAPCs =
 [
 //	["B_APC_Wheeled_01_cannon_F", [25, 3]],
-
-	["RHS_M2A3_BUSKIII_wd", [25, 3]],
+	// Bradleys
+	["RHS_M2A3", [_bradley_rating, 3]],
+	["RHS_M2A3_BUSKI", [_bradley_rating, 3]],
+	["RHS_M2A3_BUSKIII", [_bradley_rating, 3]],
+	["RHS_M6", [_bradley_rating, 3]],
+	["RHS_M2A2_wd", [_bradley_rating, 3]],
+	["RHS_M2A2_BUSKI_WD", [_bradley_rating, 3]],
+	["RHS_M2A3_wd", [_bradley_rating, 3]],
+	["RHS_M2A3_BUSKI_wd", [_bradley_rating, 3]],
+	["RHS_M2A3_BUSKIII_wd", [_bradley_rating, 3]],
+	["RHS_M6_wd", [_bradley_rating, 3]],
+	["RHS_M2A2", [_bradley_rating, 3]],
+	["RHS_M2A2_BUSKI", [_bradley_rating, 3]],
 
 	["O_APC_Tracked_02_cannon_F", [30, 3]],
 	["O_APC_Wheeled_02_rcws_F", [20, 3]],
@@ -53,17 +79,57 @@ SPM_Armor_RatingsWestAPCs =
 	["I_APC_Wheeled_03_cannon_F", [25, 3]]
 ];
 
+_apache_rating = 75;
+_ah1z_rating = 75;
+_littlebird_rating = 20;
+_f15_rating = 150;
 SPM_Armor_RatingsWestAir =
 [
-	["B_Heli_Light_01_F", [30, 2]],
+	["RHS_AH64D", [_apache_rating, 2]],
+	["RHS_AH64D_AA", [_apache_rating, 2]],
+	["RHS_AH64D_noradar_AA", [_apache_rating, 2]],
+	["RHS_AH64D_CS", [_apache_rating, 2]],
+	["RHS_AH64D_noradar_CS", [_apache_rating, 2]],
+	["RHS_AH64D_GS", [_apache_rating, 2]],
+	["RHS_AH64D_noradar_GS", [_apache_rating, 2]],
+	["RHS_AH64DGrey", [_apache_rating, 2]],
+	["RHS_AH64D_wd", [_apache_rating, 2]],
+
+	["LOP_AH1Z_CS_Base", [_ah1z_rating, 2]],
+	["LOP_AH1Z_GS_Base", [_ah1z_rating, 2]],
+
+	["RHS_MELB_AH6M", [_littlebird_rating, 2]],
+	["RHS_MELB_AH6M_H", [_littlebird_rating, 2]],
+	["RHS_MELB_AH6M_L", [_littlebird_rating, 2]],
+	["RHS_MELB_AH6M_M", [_littlebird_rating, 2]],
+	["RHS_MELB_MH6M", [_littlebird_rating, 2]],
+
+	["FIR_F15C_Blank", [_f15_rating, 1]],
+	["FIR_F15D_Blank", [_f15_rating, 1]],
+	["FIR_F15E_Blank", [_f15_rating, 1]],
+	["FIR_F15J_204TFS_TACMEET", [_f15_rating, 1]],
+	["FIR_F15J_303TFS_TACMEET", [_f15_rating, 1]],
+	["FIR_F15J_306TFS", [_f15_rating, 1]],
+	["FIR_F15J_IRST", [_f15_rating, 1]],
+	["FIR_F15K_1st", [_f15_rating, 1]],
+
+	["FIR_A10C", [150, 1]],
+	["FIR_F16C", [150, 1]],
+	// There are like 20+ version of the F16, we only use the blank one
+
+	//Vanilla hummingbird
+	["B_Heli_Light_01_armed_F", [30, 2]],
 	["B_Heli_Light_01_dynamicLoadout_F", [30, 2]],
+	//Commanche
 	["B_Heli_Attack_01_F", [75, 2]],
 	["B_Heli_Attack_01_dynamicLoadout_F", [75, 2]],
+
+	//A10D
 	["B_Plane_CAS_01_F", [100, 1]],
 	["B_Plane_CAS_01_dynamicLoadout_F", [100, 1]],
+
+	// Armed blackfish
 	["B_T_VTOL_01_armed_F", [60, 3]],
-	["RHS_MELB_AH6M", [30, 2]],
-	["RHS_AH64D", [75, 2]],
 
 	["O_Plane_CAS_02_F", [150, 1]],
 	["O_Plane_CAS_02_dynamicLoadout_F", [150, 1]],
@@ -73,8 +139,7 @@ SPM_Armor_RatingsWestAir =
 	["O_Heli_Light_02_dynamicLoadout_F", [50, 2]],
 	["O_T_VTOL_02_infantry_F", [100, 2]],
 	["O_T_VTOL_02_infantry_dynamicLoadout_F", [100, 2]],
-	["FIR_A10C", [150, 1]],
-	["FIR_F16C", [150, 1]],
+
 
 	["I_Plane_Fighter_03_CAS_F", [75, 1]]
 ];
@@ -177,7 +242,7 @@ OO_TRACE_DECL(SPM_Armor_Task_Patrol) =
 			_task = [_patrolGroup, OO_GET(_area,StrongpointArea,Position), _minRadius, _maxRadius, random 1 < 0.5, _circumference * 0.05, _circumference * 0.1, 0, 0, 0] call SPM_fnc_patrolPerimeter;
 			[_task, SPM_Armor_TC_Patrol, _category] call SPM_TaskOnComplete;
 		};
-		
+
 		case "target":
 		{
 			private _westForce = [OO_GET(_category,ForceCategory,RangeWest)] call OO_METHOD(_category,ForceCategory,GetForceLevelsWest);
