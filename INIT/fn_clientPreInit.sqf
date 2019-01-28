@@ -129,59 +129,44 @@ TypeFilter_Raven =
 	["All", false]
 ];
 
-// Transport aircraft
+// Co-pilotable Aircraft that we want co-pilots to be able to get into
 TypeFilter_TransportAircraft =
 [
+	//Format
 	["ParachuteBase", false],
-	["B_CTRG_Heli_Transport_01_tropic_F", false],
-	["I_Heli_light_03_unarmed_F", true],
-	["ParachuteBase", false],
-	["RHS_MELB_MH6M", true],
-	["B_Heli_Light_01_F", true],
-	["rhs_uh1h_hidf", true],
-	["Heli_light_03_base_F", false],
-	["Heli_Transport_01_base_F", true],
-	["Heli_Transport_03_base_F", true],
-	["Heli_Light_01_unarmed_base_F", true],
-	["Heli_Transport_04_base_F", true],
-	["VTOL_01_unarmed_base_F", true],
-	["RHS_UH60M", true],
-	["B_Heli_Transport_01_F", true],
-	["B_Heli_Transport_03_unarmed_F", true],
+	//Vanilla Helis
 	["B_Heli_Transport_03_F", true],
+	["B_Heli_Transport_03_unarmed_F", true],
+	["B_Heli_Light_01_dynamicLoadout_F", true],
+	["B_CTRG_Heli_Transport_01_sand_F", true],
+	["B_CTRG_Heli_Transport_01_tropic_F", true],
+	["B_Heli_Transport_01_F", true],
+	["B_Heli_Light_01_F", true],
+	//Socom Helis
+	["RHS_MELB_H6M", true],
+	["RHS_MELB_MH6M", true],
+	["RHS_MELB_AH6M", true],
+	//RHS US Army Helis
 	["RHS_CH_47F_10", true],
 	["RHS_CH_47F_light", true],
+	["RHS_UH60M_d", true],
 	["RHS_UH60M_ESSS_d", true],
 	["RHS_UH60M_ESSS2_d", true],
 	["RHS_UH60M2_d", true],
-	["RHS_UH60M_MEV2_dsd", true],
+	["RHS_UH60M_MEV2_d", true],
 	["RHS_UH60M_MEV_d", true],
-	["rhsusf_CH53E_USMC_D", true],
+	//RHS USMC helis
 	["RHS_UH1Y_UNARMED_d", true],
-	["RHS_UH1Y_FFAR_d", true],
 	["RHS_UH1Y_d", true],
-	["B_CTRG_Heli_Transport_01_sand_F", true],
-	["B_CTRG_Heli_Transport_01_tropic_F", true],
+	["RHS_UH1Y_FFAR_d", true],
+	["rhsusf_CH53E_USMC_D", true],
+	//Horizon Islands Defence Force Helis
+	["rhs_uh1h_hidf", true],
 	["rhs_uh1h_hidf_unarmed", true],
 	["rhs_uh1h_hidf_gunship", true],
-	["rhs_uh1h_hidf", true],
-	["I_Heli_light_03_unarmed_F", true],
-	["I_Heli_light_03_dynamicLoadout_F", true],
-	["I_Heli_Transport_02_F", true],
-	["I_Heli_light_03_dynamicLoadout_F", true],
-	["LOP_IRAN_CH47F", true],
-	["LOP_IRAN_UH1Y_UN", true],
-	["LOP_IRAN_CH47F", true],
-	["LOP_IRAN_CH47F", true],
-	["RHS_AH64D", true],
-	["B_Heli_Attack_01_dynamicLoadout_F", true],
-	["RHS_AH1Z", true],
-	["RHS_AH64D", true],
-	["RHS_AH64D", true],
-	["ParachuteBase", false],
-	["RHS_MELB_MH6M", true],
-	["B_Heli_Light_01_F", true],
-	["rhs_uh1h_hidf", true],
+	// Iraqi Armed Forces Helis
+	["LOP_IA_UH1Y_UN", true],
+	//Format
 	["All", false]
 ];
 
@@ -302,8 +287,6 @@ TypeFilter_LogisticsVehicles =
 	["rhsusf_M977A4_AMMO_usarmy_d", true],
 	["rhsusf_M977A4_REPAIR_BKIT_usarmy_d", true],
 	["rhsusf_M978A4_usarmy_d", true],
-	["rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy", true],
-	["rhsusf_M1078A1P2_B_D_CP_fmtv_usarmy", true],
 	["All", false]
 ];
 
