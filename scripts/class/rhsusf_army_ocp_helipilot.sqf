@@ -20,7 +20,7 @@ if (_state == "init") then
 	_permissions = [];
 	_permissions pushBack [TypeFilter_InfantryVehicles, [], {}];
     _permissions pushBack [TypeFilter_TransportAircraft, [], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot true } }];
-	_permissions pushBack [TypeFilter_All, [VPC_UnlessLogisticsDriving], {}];
+	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed, VPC_UnlessLogisticsDriving], {}];
 	player setVariable ["VP_Turret", _permissions];
 };
 
