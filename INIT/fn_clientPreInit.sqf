@@ -256,7 +256,9 @@ TypeFilter_ReconnaissanceVehicles =
 // Base service vehicles
 TypeFilter_BaseServiceVehicles =
 [
-	["B_APC_Tracked_01_CRV_F", true],
+	["rhsusf_M977A4_AMMO_usarmy_wd", true],
+	["rhsusf_M977A4_REPAIR_BKIT_usarmy_wd", true],
+	["rhsusf_M978A4_usarmy_wd", true],
 	["All", false]
 ];
 
