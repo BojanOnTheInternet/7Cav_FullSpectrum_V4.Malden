@@ -2,8 +2,6 @@ private _state = param [0, "", [""]];
 
 if (_state == "init") then
 {
-	
-	[player, Repair_DefaultProfile] call JB_fnc_repairInit;
 
 	[] call MAP_InitializeGeneral;
 	[] call HUD_Pilot_Initialize;
@@ -26,10 +24,6 @@ if (_state == "init") then
 
 if (_state == "respawn") then
 {
-	player setUnitRecoilCoefficient 1.0;
-	[1.0] call JB_fnc_weaponSwayInit;
-	player enableFatigue true;
-
 	private _restrictions = [];
     _restrictions pushBack { [GR_All + GR_FinalPermissions] call GR_All};
     [_restrictions] call CLIENT_fnc_monitorGear;
