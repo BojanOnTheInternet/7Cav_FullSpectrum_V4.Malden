@@ -281,14 +281,18 @@ TypeFilter_MedicalVehicles =
 
 TypeFilter_LogisticsVehicles =
 [
-	["B_Truck_01_box_F", false],
+	["B_Truck_01_box_F", true],
 	["B_Truck_01_mover_F", true],
 	["rhsusf_M977A4_AMMO_usarmy_wd", true],
 	["rhsusf_M977A4_REPAIR_BKIT_usarmy_wd", true],
+	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_wd", true],
 	["rhsusf_M978A4_usarmy_wd", true],
 	["rhsusf_M977A4_AMMO_usarmy_d", true],
 	["rhsusf_M977A4_REPAIR_BKIT_usarmy_d", true],
+	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_d", true],
 	["rhsusf_M978A4_usarmy_d", true],
+	["rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy", true],
+	["rhsusf_M1078A1P2_B_D_CP_fmtv_usarmy", true],
 	["All", false]
 ];
 
@@ -306,6 +310,26 @@ TypeFilter_InfantryVehicles =
 	["B_Truck_01_medical_F", false], // Medical HEMTTs
 	["C_IDAP_Van_02_medevac_F", false], // Ambulance
 	["B_Truck_01_mover_F", false], // Non-transport HEMTTs
+	// logistics vics
+	["B_Truck_01_box_F", false],
+	["B_Truck_01_mover_F", false],
+	["rhsusf_M977A4_AMMO_usarmy_wd", false],
+	["rhsusf_M977A4_REPAIR_BKIT_usarmy_wd", false],
+	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_wd", false],
+	["rhsusf_M978A4_usarmy_wd", false],
+	["rhsusf_M977A4_AMMO_usarmy_d", false],
+	["rhsusf_M977A4_REPAIR_BKIT_usarmy_d", false],
+	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_d", false],
+	["rhsusf_M978A4_usarmy_d", false],
+	["rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy", false],
+	["rhsusf_M1078A1P2_B_D_CP_fmtv_usarmy", false],
+	// End logi
+	// Medical vics
+	["rhsusf_M1230a1_usarmy_wd", false],
+	["rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy", false],
+	["rhsusf_M1230a1_usarmy_d", false],
+	["rhsusf_M1085A1P2_B_D_Medical_fmtv_usarmy", false],
+	// End medical
 	["Car", true],
 	["B_HMG_01_*", true],
 	["O_HMG_01_*", true],
@@ -498,7 +522,7 @@ GR_Fixed =
 	"NVGogglesB*"
 ];
 
-GR_All = 
+GR_All =
 [
 	["All", true, ""]
 ];
@@ -508,7 +532,7 @@ GR_All =
 VPC_UnlessLogisticsDriving =
 {
 	params ["_vehicle", "_player", "_type"];
-		
+
 	if (not ((driver _vehicle) getVariable ["JBA_LogisticsSpecialist", false])) exitWith { "" };
 
 	private _vehicleName = [typeOf _vehicle, "CfgVehicles"] call JB_fnc_displayName;
@@ -520,7 +544,7 @@ VPC_UnlessLogisticsDriving =
 VPC_UnlessOccupied =
 {
 	params ["_vehicle", "_player", "_type"];
-		
+
 	if (count crew _vehicle == 0) exitWith { "" };
 
 	private _vehicleName = [typeOf _vehicle, "CfgVehicles"] call JB_fnc_displayName;
@@ -531,7 +555,7 @@ VPC_UnlessOccupied =
 VPC_UnlessArmed =
 {
 	params ["_vehicle", "_player", "_type"];
-		
+
 	if ((weapons _vehicle) findIf { [_x] call JB_fnc_isOffensiveWeapon } == -1) exitWith { "" };
 
 	private _vehicleName = [typeOf _vehicle, "CfgVehicles"] call JB_fnc_displayName;
@@ -546,7 +570,7 @@ VPC_UnlessArmed =
 VPC_UnlessTurretArmed =
 {
 	params ["_vehicle", "_player", "_type"];
-		
+
 	private _turretWeapons = [];
 	{ _turretWeapons append (_vehicle weaponsTurret _x) } forEach allTurrets _vehicle;
 
@@ -1395,7 +1419,7 @@ Bobcat_PlowAction =
 Bobcat_AddActions =
 {
 	params ["_vehicle"];
-	
+
 	if (not hasInterface) exitWith {};
 
 	private _action = _vehicle addAction ["", { [_this select 0] call Bobcat_PlowAction }, nil, 0, false, true, "", '[_target] call Bobcat_PlowActionCondition'];
@@ -1471,6 +1495,6 @@ CLIENT_EOD_RevealSpottedMine =
 	if (player distance cursorObject > 3.0) exitWith {};
 
 	if (not (cursorObject in allMines)) exitWith {};
-	
+
 	playerSide revealMine cursorObject;
 };
