@@ -48,8 +48,6 @@ TypeFilter_Buffalo =
 [
 	["ParachuteBase", false],
 	["RHS_UH60M", true],
-	["RHS_UH60M", true],
-	["RHS_UH60M", true],
 	["B_Heli_Transport_01_F", true],
 	["B_Heli_Transport_03_unarmed_F", true],
 	["B_Heli_Transport_03_F", true],
@@ -130,6 +128,7 @@ TypeFilter_Raven =
 ];
 
 // Co-pilotable Aircraft that we want co-pilots to be able to get into
+// or we want infantry to ride in as "gunners"
 TypeFilter_TransportAircraft =
 [
 	//Format
@@ -143,18 +142,11 @@ TypeFilter_TransportAircraft =
 	["B_Heli_Transport_01_F", true],
 	["B_Heli_Light_01_F", true],
 	//Socom Helis
-	["RHS_MELB_H6M", true],
-	["RHS_MELB_MH6M", true],
-	["RHS_MELB_AH6M", true],
+	["RHS_MELB_*", true],
 	//RHS US Army Helis
 	["RHS_CH_47F_10", true],
 	["RHS_CH_47F_light", true],
-	["RHS_UH60M_d", true],
-	["RHS_UH60M_ESSS_d", true],
-	["RHS_UH60M_ESSS2_d", true],
-	["RHS_UH60M2_d", true],
-	["RHS_UH60M_MEV2_d", true],
-	["RHS_UH60M_MEV_d", true],
+	["RHS_UH60*", true],
 	//RHS USMC helis
 	["RHS_UH1Y_UNARMED_d", true],
 	["RHS_UH1Y_d", true],
