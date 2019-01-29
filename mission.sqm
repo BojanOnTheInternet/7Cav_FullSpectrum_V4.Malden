@@ -39805,7 +39805,7 @@ class Mission
 			type="ellipse";
 			a=275;
 			b=125;
-			angle=199.20491;
+			angle=199.2049;
 			id=5414;
 			atlOffset=0.00037384033;
 		};
@@ -39830,7 +39830,7 @@ class Mission
 			type="ellipse";
 			a=700;
 			b=700;
-			angle=226.40858;
+			angle=226.40857;
 			id=5417;
 			atlOffset=-2.9321289;
 		};
@@ -43997,8 +43997,8 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="A10C_ReplacePilotID";
-					expression="_this setVariable [""A10C_ReplacePilot"", _value]; [_this, _value] execVM 'FIR_A10C\sqs\init\replace_pilot.sqf';";
+					property="A10C_SelectAmmoID";
+					expression="_this setVariable [""A10_SelectAmmo"",_value];";
 					class Value
 					{
 						class data
@@ -44016,8 +44016,8 @@ class Mission
 				};
 				class Attribute1
 				{
-					property="A10C_SelectAmmoID";
-					expression="_this setVariable [""A10_SelectAmmo"",_value];";
+					property="A10C_ReplacePilotID";
+					expression="_this setVariable [""A10C_ReplacePilot"", _value]; [_this, _value] execVM 'FIR_A10C\sqs\init\replace_pilot.sqf';";
 					class Value
 					{
 						class data
@@ -44626,7 +44626,7 @@ class Mission
 			side="West";
 			class Entities
 			{
-				items=10;
+				items=9;
 				class Item0
 				{
 					dataType="Object";
@@ -45581,63 +45581,6 @@ class Mission
 							};
 						};
 						nAttributes=4;
-					};
-				};
-				class Item9
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={8052.2549,30.196434,9774.542};
-					};
-					side="West";
-					flags=5;
-					class Attributes
-					{
-					};
-					id=6672;
-					type="B_Soldier_A_F";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male08ENG";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1;
-								};
-							};
-						};
-						nAttributes=2;
 					};
 				};
 			};
