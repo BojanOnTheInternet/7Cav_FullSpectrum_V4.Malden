@@ -11,5 +11,6 @@ if(!isMultiplayer) exitWith {};
 	waitUntil{!isNil "BIS_fnc_init"};
 	waitUntil {!(isNull (findDisplay 46))};
 
-	[player] call simple_splint_fnc_addSplintOption
+	["simple_splint_init_evh", { _this call simple_splint_fnc_addSplintOptionLocal }] call CBA_fnc_addEventHandler;
+	["simple_splint_init_evh", [player]] call CBA_fnc_globalEventJIP;
 };

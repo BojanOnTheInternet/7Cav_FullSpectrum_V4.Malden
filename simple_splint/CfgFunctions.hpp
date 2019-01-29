@@ -6,6 +6,6 @@ class simple_splint {
 		class initSettings {};
 		class splintLimb {};
 		class fixLimb {};
-		class addSplintOption {};
+		class addSplintOptionLocal {};
 	};
 };
