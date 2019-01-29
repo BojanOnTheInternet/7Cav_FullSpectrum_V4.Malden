@@ -271,10 +271,8 @@ TypeFilter_Mortars =
 TypeFilter_MedicalVehicles =
 [
 	["B_Truck_01_medical_F", true],
-	["rhsusf_M1230a1_usarmy_wd", true],
-	["rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy", true],
-	["rhsusf_M1230a1_usarmy_d", true],
-	["rhsusf_M1085A1P2_B_D_Medical_fmtv_usarmy", true],
+	["rhsusf_M1230a1_*", true],
+	["rhsusf_M1085A1P2_*", true],
 	["C_IDAP_Van_02_medevac_F", true],
 	["All", false]
 ];
@@ -283,16 +281,9 @@ TypeFilter_LogisticsVehicles =
 [
 	["B_Truck_01_box_F", true],
 	["B_Truck_01_mover_F", true],
-	["rhsusf_M977A4_AMMO_usarmy_wd", true],
-	["rhsusf_M977A4_REPAIR_BKIT_usarmy_wd", true],
-	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_wd", true],
-	["rhsusf_M978A4_usarmy_wd", true],
-	["rhsusf_M977A4_AMMO_usarmy_d", true],
-	["rhsusf_M977A4_REPAIR_BKIT_usarmy_d", true],
-	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_d", true],
-	["rhsusf_M978A4_usarmy_d", true],
-	["rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy", true],
-	["rhsusf_M1078A1P2_B_D_CP_fmtv_usarmy", true],
+	["rhsusf_M977A4_*", true],
+	["rhsusf_M978A4_*", true],
+	["rhsusf_M1078A1P2_*", true],
 	["All", false]
 ];
 
@@ -309,27 +300,18 @@ TypeFilter_InfantryVehicles =
 	["B_AFV_Wheeled_01_*", false], // Rhino
 	["B_Truck_01_medical_F", false], // Medical HEMTTs
 	["C_IDAP_Van_02_medevac_F", false], // Ambulance
-	["B_Truck_01_mover_F", false], // Non-transport HEMTTs
+
 	// logistics vics
 	["B_Truck_01_box_F", false],
 	["B_Truck_01_mover_F", false],
-	["rhsusf_M977A4_AMMO_usarmy_wd", false],
-	["rhsusf_M977A4_REPAIR_BKIT_usarmy_wd", false],
-	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_wd", false],
-	["rhsusf_M978A4_usarmy_wd", false],
-	["rhsusf_M977A4_AMMO_usarmy_d", false],
-	["rhsusf_M977A4_REPAIR_BKIT_usarmy_d", false],
-	["rhsusf_M977A4_AMMO_BKIT_M2_usarmy_d", false],
-	["rhsusf_M978A4_usarmy_d", false],
-	["rhsusf_M1078A1P2_B_WD_CP_fmtv_usarmy", false],
-	["rhsusf_M1078A1P2_B_D_CP_fmtv_usarmy", false],
-	// End logi
+	["rhsusf_M977A4_*", false],
+	["rhsusf_M978A4_*", false],
+	["rhsusf_M1078A1P2_*", false],
+
 	// Medical vics
-	["rhsusf_M1230a1_usarmy_wd", false],
-	["rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy", false],
-	["rhsusf_M1230a1_usarmy_d", false],
-	["rhsusf_M1085A1P2_B_D_Medical_fmtv_usarmy", false],
-	// End medical
+	["rhsusf_M1230a1*", false],
+	["rhsusf_M1085A1P2_*", false],
+
 	["Car", true],
 	["B_HMG_01_*", true],
 	["O_HMG_01_*", true],
