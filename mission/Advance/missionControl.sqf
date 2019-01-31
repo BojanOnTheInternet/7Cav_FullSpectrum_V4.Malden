@@ -143,7 +143,7 @@ Advance_GetSiteImportance =
 	private _width = 0;
 	private _height = 0;
 	private _importance = 0;
-		
+
 	{
 		_importance = [Advance_StructureImportance, getText (configFile >> "CfgVehicles" >> typeOf _x >> "vehicleClass")] call BIS_fnc_getFromPairs;
 		if (not isNil "_importance") then
@@ -193,6 +193,10 @@ OO_TRACE_DECL(Advance_AnimateEnemyControl) =
 		_marker setMarkerBrush "solid";
 		_marker setMarkerSize [1, 1];
 
+		private _arty_mark = createMarker ["ARTY_ZONE", _areaPosition];
+		_arty_mark setMarkerType "hd_warning";
+		_arty_mark setMarkerText "Active Artillary Zone";
+
 		private _border = createMarker [_marker + "_BORDER", _areaPosition]; // The limit of expansion
 		_border setMarkerShape "ellipse";
 		_border setMarkerColor "colorred";
@@ -204,18 +208,18 @@ OO_TRACE_DECL(Advance_AnimateEnemyControl) =
 		{
 			[_message, 2] remoteExec ["JB_fnc_showBlackScreenMessage", _x];
 		} forEach (allPlayers select { _x distance _areaPosition < _areaRadius });
-	
+
 		sleep _delay;
 
-		private _steps = [call _getExpansionInterval]; 
-		_waveDuration = _waveDuration + (_steps select 0); // We're going to expand the first interval at time zero. 
- 
-		while { _steps select (count _steps - 1) < _waveDuration } do 
-		{ 
-			_steps pushBack (((call _getExpansionInterval) + (_steps select (count _steps - 1))) min _waveDuration); 
-		}; 
- 
-		_steps = _steps apply { [_x, _areaRadius * _x / _waveDuration] }; 
+		private _steps = [call _getExpansionInterval];
+		_waveDuration = _waveDuration + (_steps select 0); // We're going to expand the first interval at time zero.
+
+		while { _steps select (count _steps - 1) < _waveDuration } do
+		{
+			_steps pushBack (((call _getExpansionInterval) + (_steps select (count _steps - 1))) min _waveDuration);
+		};
+
+		_steps = _steps apply { [_x, _areaRadius * _x / _waveDuration] };
 
 		private _step = [];
 		private _expansionTime = 0;
@@ -438,7 +442,7 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 	private _minRange = 0.0;
 	private _maxRange = 0.0;
 	private _deviationAngle = ["AdvanceDeviationAngle"] call Params_GetParamValue;
-	
+
 	private _garrisonRadius = 0.0;
 	private _blacklist = [];
 
@@ -608,7 +612,7 @@ OO_TRACE_DECL(Advance_PlayerConnected) =
 	_this spawn
 	{
 		params ["_id", "_uid", "_name", "_jip", "_owner"];
-	
+
 		if (_name == "__SERVER__") exitWith {}; // Server declaring its creation
 
 		private _player = objNull;
@@ -668,7 +672,7 @@ while { true } do
 	private _advance = [] spawn
 	{
 		scriptName "spawnExecuteOperationalAdvance";
-		
+
 		[Advance_AvailableSites, Advance_CompletedSites] call Advance_ExecuteOperationalAdvance;
 	};
 
