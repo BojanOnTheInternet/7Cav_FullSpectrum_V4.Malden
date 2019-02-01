@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={8064.7837,43.175758,9785.251};
-		dir[]={0.026911922,-0.55661798,-0.83046746};
-		up[]={0.018030744,0.83071417,-0.55640554};
-		aside[]={-0.99957091,-3.3121705e-007,-0.032388218};
+		pos[]={8071.3862,35.805893,9762.9971};
+		dir[]={0.63710386,-0.55524755,-0.53481013};
+		up[]={0.42533594,0.83163041,-0.35704356};
+		aside[]={-0.643004,-6.0838647e-007,-0.7659865};
 	};
 };
 binarizationWanted=0;
@@ -39830,7 +39830,7 @@ class Mission
 			type="ellipse";
 			a=700;
 			b=700;
-			angle=226.40846;
+			angle=226.40845;
 			id=5417;
 			atlOffset=-2.9321289;
 		};
@@ -43997,8 +43997,8 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="A10C_ReplacePilotID";
-					expression="_this setVariable [""A10C_ReplacePilot"", _value]; [_this, _value] execVM 'FIR_A10C\sqs\init\replace_pilot.sqf';";
+					property="A10C_SelectAmmoID";
+					expression="_this setVariable [""A10_SelectAmmo"",_value];";
 					class Value
 					{
 						class data
@@ -44016,8 +44016,8 @@ class Mission
 				};
 				class Attribute1
 				{
-					property="A10C_SelectAmmoID";
-					expression="_this setVariable [""A10_SelectAmmo"",_value];";
+					property="A10C_ReplacePilotID";
+					expression="_this setVariable [""A10C_ReplacePilot"", _value]; [_this, _value] execVM 'FIR_A10C\sqs\init\replace_pilot.sqf';";
 					class Value
 					{
 						class data
@@ -52436,7 +52436,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={8078.9966,29.918327,9759.7588};
+						position[]={8078.9971,29.918303,9759.7588};
 						angles[]={0,4.6153312,0};
 					};
 					side="West";
@@ -52446,7 +52446,7 @@ class Mission
 						rank="MAJOR";
 						init="call{this setGroupid [""BUFFALO-2""];" \n "this setUnitRank ""MAJOR"";}";
 						name="BUF_2";
-						description="Pilot (UH-60M)@Buffalo-2";
+						description="Pilot (UH-60M)@BUFFALO-2";
 						isPlayable=1;
 					};
 					id=6647;
