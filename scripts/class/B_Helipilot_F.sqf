@@ -9,20 +9,20 @@ if (_state == "init") then
 	player setVariable ["SPM_BranchOfService", "air"];
 
 	[player] call CLIENT_SetInfantryVehiclePermissions;
-		
+
 	switch (roleDescription player) do
 	{
 		case "Pilot (UH-60M)@BUFFALO-1":
 		{
 			{
 				player setVariable [_x, [[TypeFilter_Buffalo, [], {}]] + (player getVariable _x)];
-			} forEach ["VP_Pilot"];
+			} forEach ["VP_Pilot", "VP_Turret"];
 		};
 		case "Pilot (UH-60M)@BUFFALO-2":
 		{
 			{
 				player setVariable [_x, [[TypeFilter_Buffalo, [], {}]] + (player getVariable _x)];
-			} forEach ["VP_Pilot"];
+			} forEach ["VP_Pilot", "VP_Turret"];
 		};
 		case "Pilot (MH-6)@RAVEN-1":
 		{
@@ -37,17 +37,10 @@ if (_state == "init") then
 			} forEach ["VP_Pilot"];
 		};
 	};
-	
+
 	{
 		player setVariable [_x, [[TypeFilter_BaseServiceVehicles, [], {}]] + (player getVariable _x)];
 	} forEach ["VP_Driver"];
-
-	// Override the infantry turret permissions so we can enable the copilot as appropriate
-	_permissions = [];
-	_permissions pushBack [TypeFilter_InfantryVehicles, [], {}];
-    _permissions pushBack [TypeFilter_TransportAircraft, [], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot true } }];
-	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed, VPC_UnlessLogisticsDriving], {}];
-	player setVariable ["VP_Turret", _permissions];
 };
 
 if (_state == "respawn") then

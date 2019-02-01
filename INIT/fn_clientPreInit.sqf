@@ -75,6 +75,10 @@ TypeFilter_Buffalo =
 	["LOP_IRAN_UH1Y_UN", true],
 	["LOP_IRAN_CH47F", true],
 	["LOP_IRAN_CH47F", true],
+
+	//Allowing Buffalo crew to run the armed blackfish as an AC130
+	["B_T_VTOL_01_armed_F", true],
+
 	["All", false]
 ];
 
