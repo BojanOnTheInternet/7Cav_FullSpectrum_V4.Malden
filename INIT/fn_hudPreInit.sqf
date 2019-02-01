@@ -3,7 +3,7 @@
 // Distance technicians will be able to see damaged vehicles and other technicians in the 3D view
 #define REPAIR_VISION_RANGE 500
 
-HUD_Enabled = true;
+HUD_Enabled = false;
 
 HUD_Medic_DrawIcon =
 {
@@ -367,7 +367,7 @@ HUD_VehicleEntry_Initialize =
 					_vehicle = _newVehicles select _i;
 
 					if (count (HUD_VehicleEntry_Icons select { _x select 0 == _vehicle }) == 0) then
-					{	
+					{
 						_icons = [];
 
 						{
