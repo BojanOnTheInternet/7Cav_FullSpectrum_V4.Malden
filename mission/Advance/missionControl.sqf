@@ -194,7 +194,8 @@ OO_TRACE_DECL(Advance_AnimateEnemyControl) =
 		_marker setMarkerSize [1, 1];
 
 		private _arty_mark = createMarker ["ARTY_ZONE", _areaPosition];
-		_arty_mark setMarkerType "hd_warning";
+		_arty_mark setMarkerType "Minefield";
+		_arty_mark setMarkerColor "colorOPFOR";
 		_arty_mark setMarkerText "Active Artillary Zone";
 
 		private _border = createMarker [_marker + "_BORDER", _areaPosition]; // The limit of expansion
