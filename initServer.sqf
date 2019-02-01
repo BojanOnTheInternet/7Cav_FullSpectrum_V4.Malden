@@ -33,18 +33,6 @@ _date set [4, _startMinute];
 
 setDate _date;
 
-// Disable rain
-[] spawn {
-     while ({ true }) do
-    {
-				if(rain > 0) then {
-	        0 setRain 0;
-	        forceWeatherChange;
-				};
-				sleep 60;
-     };
-};
-
 // Markers of format LOCATION_<type>_<id> are turned into locations of the specified type and marker text.  The id is optional and is used to make the marker names unique.  The markers will be hidden.
 private _location = 0;
 {
