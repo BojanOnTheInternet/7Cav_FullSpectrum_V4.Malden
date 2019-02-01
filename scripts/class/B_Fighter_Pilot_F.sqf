@@ -9,6 +9,33 @@ if (_state == "init") then
 
 	[player] call CLIENT_SetInfantryVehiclePermissions;
 
+
+	switch (roleDescription player) do
+	{
+		case "Eagle-1 Pilot@EAGLE-1":
+		{
+			{
+				player setVariable [_x, [[TypeFilter_GroundAttackAircraft, [], {}]] + (player getVariable _x)];
+			} forEach ["VP_Pilot"];
+		};
+		case "Eagle-2 Pilot@EAGLE-2":
+		{
+			{
+				player setVariable [_x, [[TypeFilter_GroundAttackAircraft, [], {}]] + (player getVariable _x)];
+			} forEach ["VP_Pilot"];
+		};
+		case "Pilot (C-130J)@TITAN-1":
+		{
+			{
+				player setVariable [_x, [[TypeFilter_TransportFixedWing, [], {}]] + (player getVariable _x)];
+			} forEach ["VP_Pilot"];
+		};
+	};
+
+	{
+		player setVariable [_x, [[TypeFilter_BaseServiceVehicles, [], {}]] + (player getVariable _x)];
+	} forEach ["VP_Driver"];
+
 };
 
 if (_state == "respawn") then

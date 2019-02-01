@@ -192,9 +192,13 @@ TypeFilter_GroundAttackAircraft =
 	["B_Plane_CAS_01_dynamicLoadout_F", true],
 	["FIR_A10A_1%", true],
 	["RHS_A10", true],
-	["RHS_C130J", true],
 	["B_T_VTOL%1", true],
 	["All", false]
+];
+
+TypeFilter_TransportFixedWing =
+[
+	["RHS_C130J", true]
 ];
 
 // Crewed ground attack aircraft
