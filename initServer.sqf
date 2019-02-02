@@ -6,7 +6,8 @@ diag_log "initServer start";
 addMissionEventHandler ["PlayerConnected", SERVER_PlayerConnected];
 addMissionEventHandler ["PlayerDisconnected", SERVER_PlayerDisconnected];
 
-_null = [] execVM "scripts\sessionTimeMessagesInit.sqf";
+// Disable server restart messages
+//_null = [] execVM "scripts\sessionTimeMessagesInit.sqf";
 
 // Make sure armed civilians won't attack NATO
 civilian setFriend [west, 1];
