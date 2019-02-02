@@ -37,6 +37,7 @@ if (not isServer && hasInterface) exitWith {};
 SPM_InfantryGarrison_RatingsWest =
 [
 	["rhsusf_army_ocp_officer", [1, 1]],
+	["rhsusf_army_ocp_jfo", [1, 1]],
 	["rhsusf_army_ocp_squadleader", [1, 1]],
 	["rhsusf_army_ocp_teamleader", [1, 1]],
 	["rhsusf_army_ocp_marksman", [1, 1]],
@@ -47,7 +48,25 @@ SPM_InfantryGarrison_RatingsWest =
 	["rhsusf_army_ocp_maaws", [1, 1]],
 	["rhsusf_army_ocp_rifleman_m4", [1, 1]],
 	["rhsusf_army_ocp_rifleman_m4", [1, 1]],
-	["rhsusf_army_ocp_sniper_m24sws", [1, 1]]
+	["rhsusf_army_ocp_sniper_m24sws", [1, 1]],
+	["B_T_Soldier_SL_F", [1,1]],
+	["B_T_Soldier_TL_F", [1,1]],
+	["B_T_Soldier_Repair_F", [1,1]],
+	["B_T_soldier_mine_F", [1,1]],
+	["B_T_Soldier_Exp_F", [1,1]],
+	["B_T_Soldier_Engineer_F", [1,1]],
+	["rhsusf_army_ocp_combatcrewman", [1,1]],
+	["rhsusf_army_ocp_crewman", [1,1]],
+	["rhsusf_army_ocp_officer", [1,1]],
+	["rhsusf_army_ocp_driver", [1,1]],
+	["rhsusf_army_ocp_arb_riflemanl", [1,1]],
+	["rhsusf_army_ocp_arb_squadleader", [1,1]],
+	["rhsusf_army_ocp_arb_teamleader", [1,1]],
+	["rhsusf_army_ocp_arb_autorifleman", [1,1]],
+	["rhsusf_army_ocp_arb_grenadier", [1,1]],
+	["rhsusf_army_ocp_arb_rifleman", [1,1]],
+	["rhsusf_army_ocp_arb_medic", [1,1]],
+	["rhsusf_navy_marpat_wd_medic", [1,1]]
 ];
 
 SPM_InfantryGarrison_RatingsEast =
