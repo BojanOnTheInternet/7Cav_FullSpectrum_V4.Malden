@@ -429,7 +429,7 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 		} forEach _sites;
 	};
 
-	private _site = _sites select _siteIndex;
+	private _site = _sites deleteAt _siteIndex;
 	private _direction = (_site select 1) getDir [worldSize / 2, worldSize / 2, 0]; // Start out moving towards the center of the map
 
 	private _siteDistance = 0.0;
