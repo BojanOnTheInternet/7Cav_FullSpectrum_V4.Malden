@@ -34,7 +34,7 @@ if (not isServer && hasInterface) exitWith {};
 // The size of the area beyond the garrison area that is controlled by the enemy if the mission fails
 #define CONTROL_BORDERWIDTH 100
 
-//#define PLAYERS_USE_AAA
+#define PLAYERS_USE_AAA
 
 SPM_MissionAdvance_Patrol_CallupsEast =
 [
@@ -114,7 +114,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_SendNotification) =
 	private _filter = OO_GET(_mission,Mission,ParticipantFilter);
 	private _notificationType = "NotificationGeneric";
 	private _messageTypes = ["notification"];
-	
+
 	switch (_type) do
 	{
 		case "mission-description":
@@ -149,7 +149,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_SendNotification) =
 			_notificationType = "NotificationEvent";
 		};
 	};
-	
+
 	if (_notificationType != "") then { [[_notificationType] + [_message select 0], ["notification"], _filter] call SPM_Mission_Message };
 
 	// Replay any notifications that we held up at the start of the mission

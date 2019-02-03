@@ -11,12 +11,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 if (not isServer && hasInterface) exitWith {};
 
 #include "strongpoint.h"
-
+//#define TEST
 #ifdef TEST
 #define CALLUP_INTERVAL	[10,10]
 #define RETIRE_INTERVAL	[10,10]
 #else
-#define CALLUP_INTERVAL	[120,180]
+#define CALLUP_INTERVAL	[180,300]
 #define RETIRE_INTERVAL	[60,60]
 #endif
 
@@ -79,10 +79,10 @@ SPM_Armor_RatingsWestAPCs =
 	["I_APC_Wheeled_03_cannon_F", [25, 3]]
 ];
 
-_apache_rating = 75;
-_ah1z_rating = 75;
+_apache_rating = 100;
+_ah1z_rating = 100;
 _littlebird_rating = 20;
-_f15_rating = 150;
+_f15_rating = 300;
 SPM_Armor_RatingsWestAir =
 [
 	["RHS_AH64D", [_apache_rating, 2]],
@@ -113,8 +113,8 @@ SPM_Armor_RatingsWestAir =
 	["FIR_F15J_IRST", [_f15_rating, 1]],
 	["FIR_F15K_1st", [_f15_rating, 1]],
 
-	["FIR_A10C", [150, 1]],
-	["FIR_F16C", [150, 1]],
+	["FIR_A10C", [300, 1]],
+	["FIR_F16C", [300, 1]],
 	// There are like 20+ version of the F16, we only use the blank one
 
 	//Vanilla hummingbird
@@ -124,12 +124,12 @@ SPM_Armor_RatingsWestAir =
 	["B_Heli_Attack_01_F", [75, 2]],
 	["B_Heli_Attack_01_dynamicLoadout_F", [75, 2]],
 
-	//A10D
-	["B_Plane_CAS_01_F", [100, 1]],
-	["B_Plane_CAS_01_dynamicLoadout_F", [100, 1]],
+	//A10D should be roughly equal to 3 Abrahms
+	["B_Plane_CAS_01_F", [450, 1]],
+	["B_Plane_CAS_01_dynamicLoadout_F", [450, 1]],
 
-	// Armed blackfish
-	["B_T_VTOL_01_armed_F", [60, 3]],
+	// Armed blackfish should be about 2 Abrahms
+	["B_T_VTOL_01_armed_F", [100, 3]],
 
 	["O_Plane_CAS_02_F", [150, 1]],
 	["O_Plane_CAS_02_dynamicLoadout_F", [150, 1]],
@@ -152,15 +152,11 @@ SPM_Armor_RatingsWestAirDefense =
 SPM_Armor_CallupsEastAPCs =
 [
 	["LOP_US_BMP2D",
-		[25, 3, 1.0,
-			{
-			}]],
-	["LOP_US_BTR70",
-		[25, 3, 1.0,
+		[20, 3, 0.2,
 			{
 			}]],
 	["LOP_US_BMP1",
-		[25, 3, 1.0,
+		[20, 3, 0.2,
 			{
 			}]]
 ];
@@ -170,12 +166,12 @@ SPM_Armor_RatingsEastAPCs = SPM_Armor_CallupsEastAPCs apply { [_x select 0, (_x 
 SPM_Armor_CallupsEastTanks =
 [
 	["LOP_US_T72BC",
-		[60, 3, 1.0,
+		[40, 3, 1.0,
 			{
 			}]],
 
 	["LOP_US_T72BB",
-		[60, 3, 1.0,
+		[40, 3, 1.0,
 			{
 			}]]
 ];
@@ -184,25 +180,11 @@ SPM_Armor_RatingsEastTanks = SPM_Armor_CallupsEastTanks apply { [_x select 0, (_
 
 SPM_Armor_CallupsEastAir =
 [
-	["RHS_Mi8mt_vvsc", [120, 3, 1.0,
-			{
-				params ["_unit"];
-
-				[_unit] call SPM_Armor_IgnoreUnarmed;
-			}]],
-	["RHS_Mi8MTV3_vvsc", [160, 3, 1.0,
-			{
-			}]],
-	["rhs_mi28n_vvsc", [180, 2, 1.0,
-			{
-				params ["_unit"];
-
-				[_unit] call SPM_Armor_IgnoreInfantry;
-			}]],
 	["RHS_Ka52_vvsc", [210, 2, 1.0,
 			{
 				params ["_unit"];
 
+				// Lets not kill every infantryman in the AO....
 				[_unit] call SPM_Armor_IgnoreInfantry;
 			}]]
 ];

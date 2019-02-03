@@ -19,7 +19,7 @@ SPM_AirDefense_RatingsWest =
 	["B_Heli_Light_01_armed_F", [20, 2]],
 	["B_Heli_Light_01_dynamicLoadout_F", [20, 2]],
 	["B_Plane_CAS_01_F", [120, 1]],
-	["B_Plane_CAS_01_dynamicLoadout_F", [120, 1]],
+	["B_Plane_CAS_01_dynamicLoadout_F", [240, 1]],
 //	["B_Plane_Fighter_01_F", [75, 1]],
 //	["B_Plane_Fighter_01_Stealth_F", [75, 1]],
 	["B_T_VTOL_01_armed_F", [60, 3]],
@@ -29,7 +29,7 @@ SPM_AirDefense_RatingsWest =
 	["O_Heli_Light_02_F", [20, 2]],
 	["O_Heli_Light_02_dynamicLoadout_F", [20, 2]],
 	["O_Plane_CAS_02_F", [120, 1]],
-	["O_Plane_CAS_02_dynamicLoadout_F", [120, 1]],
+	["O_Plane_CAS_02_dynamicLoadout_F", [240, 1]],
 //	["O_Plane_Fighter_02_F", [75, 1]],
 //	["O_Plane_Fighter_02_Stealth_F", [75, 1]],
 
@@ -40,9 +40,9 @@ SPM_AirDefense_RatingsWest =
 //	["I_Plane_Fighter_03_dynamicLoadout_F", [75, 1]],
 //	["I_Plane_Fighter_04_F", [75, 1]]
 
-	["RHS_AH64D", [50, 2]],
-	["FIR_A10C", [20, 2]],
-	["FIR_F16C", [20, 2]]
+	["RHS_AH64D", [60, 2]],
+	["FIR_A10C", [120, 2]],
+	["FIR_F16C", [120, 2]]
 ];
 
 SPM_AirDefense_CallupsEast =
@@ -53,13 +53,6 @@ SPM_AirDefense_CallupsEast =
 
 			_unit engineOn true;
 
-			{ _x disableAI "move" } forEach crew _unit;
-			_unit addEventHandler ["GetOut", { (_this select 2) enableAI "move" }];
-			_unit addEventHandler ["GetIn", { (_this select 0) engineOn true; (_this select 2) disableAI "move" }];
-
-			_unit addEventHandler ["Fired", { [_this select 0, _this select 1, _this select 5, 10 + random 10] call SPM_AirDefense_Reload }];
-
-			[_unit] call SPM_AirDefense_IgnoreGround;
 		}]]
 ];
 
