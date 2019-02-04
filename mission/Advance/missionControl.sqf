@@ -193,7 +193,7 @@ OO_TRACE_DECL(Advance_AnimateEnemyControl) =
 		_marker setMarkerBrush "solid";
 		_marker setMarkerSize [1, 1];
 
-		private _arty_mark = createMarker ["ARTY_ZONE", _areaPosition];
+		private _arty_mark = createMarker [format ["ARTY_ZONE_%1_%2", floor (_areaPosition select 0), floor (_areaPosition select 1)], _areaPosition];
 		_arty_mark setMarkerType "Minefield";
 		_arty_mark setMarkerColor "colorOPFOR";
 		_arty_mark setMarkerText "Active Artillary Zone";
