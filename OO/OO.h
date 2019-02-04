@@ -1,4 +1,4 @@
-#define OO_TRACE
+//#define OO_TRACE
 // Must define OO_CHECK and OO_TRACE_GET to get a trace on OO_GETs
 //#define OO_TRACE_GET
 //#define OO_CHECK
