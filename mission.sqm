@@ -50763,6 +50763,43 @@ class Mission
 			atlOffset=3.8146973e-006;
 		};
 		class Item690
+		class Item709
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8101.2192,34.951851,10158.17};
+			};
+			side="Empty";
+			flags=5;
+			class Attributes
+			{
+				init="call{this addAction [""<t color='#EEC330'>Teleport to Base</t>"",{(_this select 1) setPos aircraft}, nil, 6, true, false, """", ""true"", 5];}";
+				name="aircraft";
+			};
+			id=6730;
+			type="FlagPole_F";
+			atlOffset=0.003944397;
+		};
+		class Item710
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8063.0562,34.128784,9780.8379};
+			};
+			side="Empty";
+			flags=5;
+			class Attributes
+			{
+				init="call{this addAction [""<t color='#EEC330'>Teleport to Hangars</t>"",{(_this select 1) setPos aircraft}, nil, 6, true, false, """", ""true"", 10];}";
+				name="base";
+			};
+			id=6731;
+			type="FlagPole_F";
+			atlOffset=0.0039997101;
+		};
+		class Item711
 		{
 			dataType="Object";
 			class PositionInfo
@@ -51748,7 +51785,181 @@ class Mission
 				nAttributes=8;
 			};
 		};
-		class Item717
+		class Item738
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8088.873,31.203215,9749.1846};
+				angles[]={0,1.5621506,6.259192};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				init="call{_null = [this] execVM ""scripts\vehicle\init\Base_Slammer.sqf"";}";
+			};
+			id=6763;
+			type="rhsusf_m1a2sep1tuskiiwd_usarmy";
+			atlOffset=-0.00044441223;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="rhs_decalPlatoon_type";
+					expression="_this setVariable ['rhs_decalPlatoon_type', _value];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="ArmyPlt_Abrams_D";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="rhs_ammoslot_1_type";
+					expression="_this setVariable ['rhs_ammoslot_1_type', _value];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="rhs_mag_M829A3";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="rhs_ammoslot_2_type";
+					expression="_this setVariable ['rhs_ammoslot_2_type', _value];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="rhs_mag_M829A3";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[],[]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="rhs_ammoslot_3_type";
+					expression="_this setVariable ['rhs_ammoslot_3_type', _value];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="rhs_mag_M829A3";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="ace_cargo_space";
+					expression="[_this,_value] call ace_cargo_fnc_setSpace;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=2;
+						};
+					};
+				};
+				class Attribute6
+				{
+					property="rhs_decalBarrel_type";
+					expression="_this setVariable ['rhs_decalBarrel_type', _value];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="BarrelArt_Abrams_D";
+						};
+					};
+				};
+				class Attribute7
+				{
+					property="ace_cargo_size";
+					expression="[_this,_value] call ace_cargo_fnc_setSize;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=4;
+						};
+					};
+				};
+				nAttributes=8;
+			};
+		};
+		class Item739
 		{
 			dataType="Object";
 			class PositionInfo
@@ -55639,6 +55850,40 @@ class Mission
 			id=6832;
 			type="Box_Syndicate_WpsLaunch_F";
 			atlOffset=992.89526;
+		};
+		class Item782
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8045.1021,31.1619,9772.9395};
+				angles[]={0.00077204045,1.5460461,6.2824135};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				init="call{this allowDamage false; this enableSimulation false; this addAction [""<t color='#32CD32'>Cycle Airbase Cleanup</t>"",""scripts\misc\actions\clearItemsBASE_switch.sqf"",[],21,true,true,"""",'((vehicle _this) == _this) && ((_this distance _target) < 5)']; }";
+				name="basecontrol_2";
+			};
+			id=6810;
+			type="FIR_ATMS_Laptop";
+		};
+		class Item783
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8045.1045,30.605642,9772.9023};
+				angles[]={0.00077204045,4.7205734,6.2824135};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=6811;
+			type="FoldTable";
 		};
 	};
 };
