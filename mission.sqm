@@ -8,8 +8,7 @@ class EditorData
 	toggles=513;
 	class ItemIDProvider
 	{
-		nextID=6832;
-		nextID=6812;
+		nextID=6833;
 	};
 	class MarkerIDProvider
 	{
@@ -92,13 +91,14 @@ addons[]=
 	"A3_Characters_F_Jets",
 	"acex_sitting",
 	"A3_Air_F_Exp_VTOL_01",
-	"rhs_c_weapons"
+	"rhs_c_weapons",
+	"A3_Supplies_F_Exp_Ammoboxes"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=51;
+		items=52;
 		class Item0
 		{
 			className="A3_Structures_F";
@@ -443,6 +443,13 @@ class AddonsMetaData
 			name="AFRF Weapons Pack";
 			author="Red Hammer Studios";
 			url="http://www.rhsmods.org/";
+		};
+		class Item51
+		{
+			className="A3_Supplies_F_Exp";
+			name="Arma 3 Apex - Ammoboxes and Supplies";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
 		};
 	};
 };
@@ -11857,8 +11864,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=780;
-		items=784;
+		items=781;
 		class Item0
 		{
 			dataType="Object";
@@ -39482,8 +39488,8 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="A10C_SelectAmmoID";
-					expression="_this setVariable [""A10_SelectAmmo"",_value];";
+					property="A10C_ReplacePilotID";
+					expression="_this setVariable [""A10C_ReplacePilot"", _value]; [_this, _value] execVM 'FIR_A10C\sqs\init\replace_pilot.sqf';";
 					class Value
 					{
 						class data
@@ -39501,8 +39507,8 @@ class Mission
 				};
 				class Attribute1
 				{
-					property="A10C_ReplacePilotID";
-					expression="_this setVariable [""A10C_ReplacePilot"", _value]; [_this, _value] execVM 'FIR_A10C\sqs\init\replace_pilot.sqf';";
+					property="A10C_SelectAmmoID";
+					expression="_this setVariable [""A10_SelectAmmo"",_value];";
 					class Value
 					{
 						class data
@@ -50390,6 +50396,42 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
+				position[]={8100.5708,30.892851,10156.94};
+				angles[]={0,1.5562751,0};
+			};
+			side="Empty";
+			flags=1;
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=6710;
+			type="Land_i_Addon_04_V1_F";
+			atlOffset=0.52201462;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="allowDamage";
+					expression="_this allowdamage _value;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"BOOL"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
 		class Item679
 		{
 			dataType="Object";
@@ -50775,6 +50817,7 @@ class Mission
 			type="Land_HBarrier_Big_F";
 			atlOffset=-2.0980835e-005;
 		};
+		class Item691
 		{
 			dataType="Object";
 			class PositionInfo
@@ -51742,7 +51785,6 @@ class Mission
 				nAttributes=8;
 			};
 		};
-		class Item717
 		class Item738
 		{
 			dataType="Object";
@@ -54061,6 +54103,7 @@ class Mission
 				angles[]={0,1.5730362,0};
 			};
 			side="Empty";
+			flags=4;
 			class Attributes
 			{
 				init="call{[this,""charlie"",true,true,true,true,false] call cScripts_fnc_doStarterCrate;}";
@@ -54068,7 +54111,6 @@ class Mission
 			};
 			id=6808;
 			type="B_supplyCrate_F";
-			atlOffset=1.4214916;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -55793,39 +55835,21 @@ class Mission
 				nAttributes=1;
 			};
 		};
-		class Item782
+		class Item780
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={8045.1021,31.1619,9772.9395};
-				angles[]={0.00077204045,1.5460461,6.2824135};
+				position[]={9509.8066,918.3396,15808.792};
+				angles[]={-0,0,6.2816415};
 			};
 			side="Empty";
-			flags=4;
-			class Attributes
-			{
-				init="call{this allowDamage false; this enableSimulation false; this addAction [""<t color='#32CD32'>Cycle Airbase Cleanup</t>"",""scripts\misc\actions\clearItemsBASE_switch.sqf"",[],21,true,true,"""",'((vehicle _this) == _this) && ((_this distance _target) < 5)']; }";
-				name="basecontrol_2";
-			};
-			id=6810;
-			type="FIR_ATMS_Laptop";
-		};
-		class Item783
-		{
-			dataType="Object";
-			class PositionInfo
-			{
-				position[]={8045.1045,30.605642,9772.9023};
-				angles[]={0.00077204045,4.7205734,6.2824135};
-			};
-			side="Empty";
-			flags=4;
 			class Attributes
 			{
 			};
-			id=6811;
-			type="FoldTable";
+			id=6832;
+			type="Box_Syndicate_WpsLaunch_F";
+			atlOffset=992.89526;
 		};
 		class Item782
 		{
