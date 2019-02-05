@@ -202,7 +202,9 @@ TypeFilter_GroundAttackAircraft =
 
 TypeFilter_TransportFixedWing =
 [
-	["RHS_C130J", true]
+	["RHS_C130J", true],
+	["B_T_VTOL_01_vehicle_F", true],
+	["All", false]
 ];
 
 // Crewed ground attack aircraft
