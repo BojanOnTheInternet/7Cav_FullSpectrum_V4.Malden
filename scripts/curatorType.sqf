@@ -15,7 +15,7 @@ private _uidGameMasters =
 if (_uid in _uidGameMasters) exitWith { "GM" };
 
 private _uidMilitaryPolice =
-[
+[/*
 	"76561198057951824", // Mitsuma.R
 	"76561198168754324", // Dakota.N
 	"76561198064801106", // Tiddens.M
@@ -168,7 +168,7 @@ private _uidMilitaryPolice =
 	"76561197972476022", //	Thor.J
 	"76561197964943168", //	Ybarra.H
 	"76561198137547848", //	Kelso.M
-	"76561197992340643"  //	Flint.D
+	"76561197992340643"  //	Flint.D*/
 ];
 
 if (_uid in _uidMilitaryPolice) exitWith { "MP" };
