@@ -18,6 +18,7 @@ _items = [
   ["Land_BarGate_F", 50],
   ["Land_BagBunker_Small_F", 25],
   ["Land_BagBunker_Large_F", 50],
+  ["Land_ConcreteHedgehog_01_F", 5].
   ["Land_HelipadCircle_F", 50],
   ["Land_PortableLight_double_F", 1],
   ["PortableHelipadLight_01_red_F", 1]
