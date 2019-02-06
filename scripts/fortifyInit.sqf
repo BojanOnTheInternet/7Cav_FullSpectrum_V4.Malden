@@ -18,10 +18,11 @@ _items = [
   ["Land_BarGate_F", 50],
   ["Land_BagBunker_Small_F", 25],
   ["Land_BagBunker_Large_F", 50],
+  ["Land_HelipadCircle_F", 50],
   ["Land_PortableLight_double_F", 1],
   ["PortableHelipadLight_01_red_F", 1]
 ];
-[west, 400, _items] call acex_fortify_fnc_registerObjects;
+[west, 450, _items] call acex_fortify_fnc_registerObjects;
 
 // in scripts/vehicles/init/Base_FOB.sqf we set the vehicle location + radius condition
 
