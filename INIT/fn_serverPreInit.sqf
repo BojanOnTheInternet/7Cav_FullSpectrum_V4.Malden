@@ -328,6 +328,35 @@ OO_TRACE_DECL(SERVER_RemoteCallerCuratorType) =
 	[getPlayerUID _caller] call compile preprocessFile "scripts\curatorType.sqf";
 };
 
+OO_TRACE_DECL(SERVER_COMMAND_GM__FortifyPoints) =
+{
+	params ["_pointCount"];
+	_points = parseNumber (_pointCount select 0);
+	[west, _points, true] call acex_fortify_fnc_updateBudget;
+
+	[format ["%1 points have been added to the FOB budget", _points]] call SPM_Util_MessageCaller;
+
+	[OP_COMMAND_RESULT_MATCHED]
+};
+
+OO_TRACE_DECL(SERVER_COMMAND_GM__Fortify) =
+{
+	params ["_commandWords"];
+
+	private _commands =
+	[
+	["points", SERVER_COMMAND_GM__FortifyPoints]
+	];
+
+	private _match = [_commandWords select 0, _commands] call OP_COMMAND_Match;
+
+	if (_match select 0 < 0) exitWith { _match };
+
+	private _command = _match select 1;
+
+	[_commandWords select [1, 1e3]] call (_command select 1);
+};
+
 OO_TRACE_DECL(SERVER_COMMAND_GM__CurateAll) =
 {
 	[allUnits] call SERVER_CurateEditableObjects;
@@ -337,6 +366,7 @@ OO_TRACE_DECL(SERVER_COMMAND_GM__CurateAll) =
 
 	[OP_COMMAND_RESULT_MATCHED]
 };
+
 
 OO_TRACE_DECL(SERVER_COMMAND_GM__Curate) =
 {
@@ -366,7 +396,8 @@ OO_TRACE_DECL(SERVER_COMMAND_GM) =
 
 	private _commands =
 	[
-		["curate", SERVER_COMMAND_GM__Curate]
+		["curate", SERVER_COMMAND_GM__Curate],
+		["fortify", SERVER_COMMAND_GM__Fortify]
 	];
 
 	private _match = [_commandWords select 0, _commands] call OP_COMMAND_Match;
@@ -877,7 +908,7 @@ OO_TRACE_DECL(SERVER_Supply_StockExplosivesContainer) =
 	{
 		if (getText (_x >> "useActionTitle") find "Put" == 0) then { _explosiveTypes pushBack configName _x };
 	} forEach ("true" configClasses (configFile >> "CfgMagazines"));
-	
+
 	private _allocations = count _explosiveTypes;
 	private _capacityPerType = _capacity / _allocations;
 
@@ -963,7 +994,7 @@ OO_TRACE_DECL(SERVER_Supply_StockStaticWeaponsContainer) =
 	};
 
 	private _backpackTypes = ([] call compile preprocessFile "scripts\whitelistGear.sqf") select 1;
-	
+
 	private _weaponTypes = _backpackTypes select { getText (configFile >> "CfgVehicles" >> _x >> "assembleInfo" >> "assembleTo") != "" && { toLower (getText (configFile >> "CfgVehicles" >> _x >> "displayName")) find "mortar" == -1 } };
 
 	private _assembledTypes = _weaponTypes apply { getText (configFile >> "CfgVehicles" >> _x >> "assembleInfo" >> "assembleTo") };
@@ -995,7 +1026,7 @@ OO_TRACE_DECL(SERVER_Supply_StockMortarsContainer) =
 	};
 
 	private _backpackTypes = ([] call compile preprocessFile "scripts\whitelistGear.sqf") select 1;
-	
+
 	private _mortarTypes = _backpackTypes select { toLower (getText (configFile >> "CfgVehicles" >> _x >> "displayName")) find "mortar" >= 0 };
 
 	_mortarTypes = _mortarTypes apply { [_x, getNumber (configFile >> "CfgVehicles" >> _x >> "mass")] };
@@ -1021,7 +1052,7 @@ OO_TRACE_DECL(SERVER_Supply_StockItemsContainer) =
 	private _itemTypes = ([] call compile preprocessFile "scripts\whitelistGear.sqf") select 2;
 
 	_itemTypes = _itemTypes select { getText (configFile >> "CfgWeapons" >> _x >> "ItemInfo" >> "uniformModel") == "" && { getNumber (configFile >> "CfgWeapons" >> _x >> "ItemInfo" >> "mass") != 0 } };
-	
+
 	private _allocations = count _itemTypes;
 	private _capacityPerType = _capacity / _allocations;
 
@@ -1137,7 +1168,7 @@ SERVER_Skill_Default =
 	["general", 0.00, 0.00, 0.00]
 ];
 
-// Interpolate all skills from default values towards either min (_skill < 0.5) or max (_skill > 0.5) 
+// Interpolate all skills from default values towards either min (_skill < 0.5) or max (_skill > 0.5)
 OO_TRACE_DECL(SERVER_InitializeObject_SetSkill) =
 {
 	params ["_unit", "_skill"];
@@ -1159,7 +1190,7 @@ OO_TRACE_DECL(SERVER_InitializeObject_SetSkill) =
 OO_TRACE_DECL(SERVER_InitializeObject_Civilian) =
 {
 	params ["_category", "_group"];
-	
+
 	_group allowFleeing 1.0;
 
 	private _armedProbability = 0.01;
@@ -1359,7 +1390,7 @@ OO_TRACE_DECL(SERVER_Infantry_MakeSpecialForces) =
 			removeHeadgear _x;
 			_x addHeadgear _headgear;
 		};
-		
+
 		[_x, "CSAT_ScimitarRegiment"] call BIS_fnc_setUnitInsignia;
 
 		[_x, _skillLevel * 1.5] call SERVER_InitializeObject_SetSkill;
@@ -1390,7 +1421,7 @@ OO_TRACE_DECL(SERVER_Infantry_OnStartPatrol) =
 	{
 		private _garrison = OO_GET(_category,InfantryPatrolCategory,Garrison);
 		private _skillLevel = OO_GET(_garrison,ForceCategory,SkillLevel);
-		
+
 		[_group, _skillLevel] call SERVER_Infantry_MakeSpecialForces;
 	};
 };
@@ -1716,7 +1747,7 @@ SERVER_MonitorProximityRoundRequests =
 				_proximityDelay = 0;
 				_sound = [];
 				_speed = 0;
-				
+
 				if (getNumber (configFile >> "CfgAmmo" >> _roundType >> "timeToLive") > 5) then
 				{
 					private _fall = getArray (configFile >> "CfgAmmo" >> _roundType >> "soundFakeFall");

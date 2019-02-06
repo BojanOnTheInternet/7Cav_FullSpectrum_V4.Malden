@@ -1,6 +1,8 @@
+params ["_uid"];
+
 _isZeus = false;
 {
-	_isZeus = (_caller == (getAssignedCuratorUnit _x));
+	_isZeus = (_uid == getPlayerUID (getAssignedCuratorUnit _x));
 if(_isZeus) exitWith {true};
 } forEach allCurators;
 
