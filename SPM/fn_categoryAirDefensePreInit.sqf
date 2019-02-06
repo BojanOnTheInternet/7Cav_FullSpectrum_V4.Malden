@@ -41,8 +41,8 @@ SPM_AirDefense_RatingsWest =
 //	["I_Plane_Fighter_04_F", [75, 1]]
 
 	["RHS_AH64D", [60, 2]],
-	["FIR_A10C", [120, 2]],
-	["FIR_F16C", [120, 2]]
+	["FIR_A10C", [120, 1]],
+	["FIR_F16C", [120, 1]]
 ];
 
 SPM_AirDefense_CallupsEast =
