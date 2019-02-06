@@ -11,18 +11,17 @@ truck (init any vic with scripts/vehicles/init/Base_FOB.sqf).
 
 _items = [
   ["Land_HBarrier_1_F", 2],
-  ["Land_HBarrier_5_F", 10],
+  ["Land_HBarrier_5_F", 5],
   ["Land_HBarrierWall4_F", 10],
   ["Land_HBarrierWall_corner_F", 10],
-  ["Land_HBarrierTower_F", 50],
-  ["Land_BagFence_Long_F", 5],
+  ["Land_HBarrierTower_F", 25],
   ["Land_BarGate_F", 50],
   ["Land_BagBunker_Small_F", 25],
   ["Land_BagBunker_Large_F", 50],
-  ["Land_PortableLight_double_F", 5],
+  ["Land_PortableLight_double_F", 1],
   ["PortableHelipadLight_01_red_F", 1]
 ];
-[west, 300, _items] call acex_fortify_fnc_registerObjects;
+[west, 400, _items] call acex_fortify_fnc_registerObjects;
 
 // in scripts/vehicles/init/Base_FOB.sqf we set the vehicle location + radius condition
 
