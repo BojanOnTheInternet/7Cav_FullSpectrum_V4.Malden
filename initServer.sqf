@@ -1,7 +1,7 @@
 diag_log "initServer start";
 
 #include "SPM\strongpoint.h"
-//#include "\serverscripts\zeusserverscripts\zeus_assigner.sqf" // Zeus assigner
+#include "\serverscripts\zeusserverscripts\zeus_assigner.sqf" // Zeus assigner
 
 addMissionEventHandler ["PlayerConnected", SERVER_PlayerConnected];
 addMissionEventHandler ["PlayerDisconnected", SERVER_PlayerDisconnected];

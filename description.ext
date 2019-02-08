@@ -2,7 +2,7 @@ author = "Vex.W, JB & Bojan";
 overviewPicture = "media\images\loading.jpg";
 
 loadScreen = "media\images\loading.jpg";
-onLoadName = "7th Cav Tac2 1.0";
+onLoadName = "7th Cavalry Full Spectrum v4.2.0";
 onLoadMission = "Welcome to 7th Cavalry Tactical Realism! Join us on TeamSpeak at ts3.7cav.us Password: 7thCavalry";
 
 briefing = 0;
@@ -60,7 +60,6 @@ corpseManagerMode = 0;
 //#include "JB\dialog_repackInit.hpp"
 //#include "OP\dialog_command.hpp"
 //#include "OP\dialog_inspector.hpp"
-//#include "Radio\dialog_radios.hpp"
 
 class CfgFunctions
 {
@@ -71,7 +70,6 @@ class CfgFunctions
 	#include "JB\CfgFunctions.hpp"
 	#include "SPM\CfgFunctions.hpp"
 	#include "OP\CfgFunctions.hpp"
-	#include "RADIO\CfgFunctions.hpp"
 	#include "Diagnostics\CfgFunctions.hpp"
 	#include "cScripts\CavFnc\CfgFunctions.hpp"
     #include "cScripts\Loadouts\script\CfgFunctions.hpp"
@@ -87,7 +85,6 @@ class CfgSounds
 {
 	#include "AR_AdvancedRappelling\CfgSounds.hpp"
 	#include "JB\CfgSounds.hpp"
-	#include "RADIO\CfgSounds.hpp"
 	#include "SPM\CfgSounds.hpp"
 };
 
