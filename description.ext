@@ -2,7 +2,7 @@ author = "Vex.W, JB & Bojan";
 overviewPicture = "media\images\loading.jpg";
 
 loadScreen = "media\images\loading.jpg";
-onLoadName = "7th Cavalry Full Spectrum v4.2.0";
+onLoadName = "7th Cavalry Full Spectrum v4.2.1";
 onLoadMission = "Welcome to 7th Cavalry Tactical Realism! Join us on TeamSpeak at ts3.7cav.us Password: 7thCavalry";
 
 briefing = 0;
