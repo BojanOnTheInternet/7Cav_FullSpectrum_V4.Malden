@@ -110,9 +110,6 @@ player addEventHandler ["HandleRating", { 0 }];
 //[] call JB_fnc_containerInitPlayer;
 [CLIENT_EOD_SafeExtract] call JB_fnc_searchRubbleInitPlayer;
 
-[] call Radio_fnc_clickInit; // Radio clicks and line noise
-["User1"] call Radio_fnc_customClientInit; // Radios using extra channels
-
 [] call CLIENT_InitForceDryFire;
 [] call CLIENT_MonitorEnemyControlledAreas;
 
