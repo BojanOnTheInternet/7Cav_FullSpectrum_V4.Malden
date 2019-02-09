@@ -257,7 +257,7 @@ force force ace_pylons_timePerPylon = 5;
 
 // ACE Quick Mount
 force force ace_quickmount_distance = 5;
-force force ace_quickmount_enabled = true;
+force force ace_quickmount_enabled = false;
 ace_quickmount_enableMenu = 3;
 force force ace_quickmount_priority = 3;
 force force ace_quickmount_speed = 5;
