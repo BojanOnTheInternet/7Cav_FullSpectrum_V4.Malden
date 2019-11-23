@@ -4,7 +4,7 @@
 
 	waitUntil { time > 0 }; // Wait for the time system to get sorted out
 
-	private _sessionEndTimes = [6.0, 12.0, 18.0, 24.0]; // Hours
+	private _sessionEndTimes = [3.0, 15.0]; // Hours
 	private _sessionWarningTimes = [30, 15, 10, 5, 4, 3, 2, 1]; // Minutes
 
 	private _startHour = missionStart select 3;

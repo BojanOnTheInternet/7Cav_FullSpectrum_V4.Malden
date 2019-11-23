@@ -36,7 +36,7 @@ private _default_arsenal = [
     // CAV googles
     "rhs_googles_black", "rhs_googles_yellow", "rhs_googles_clear", "rhs_googles_orange", "rhs_ess_black", "rhsusf_oakley_goggles_blk", "rhsusf_oakley_goggles_clr", "rhsusf_oakley_goggles_ylw",
     // CAV default
-    "ACE_MapTools", "ItemMap", "ItemCompass", "ItemWatch",
+    "ACE_MapTools", "ItemMap", "ItemAndroid", "ItemCompass", "ItemWatch",
 
     // Supply Crate Weapons Export
     "rhs_weap_M136_hp",
@@ -64,7 +64,7 @@ private _alpha_arsenal = [
     // alpha Loadout Magazines Export
     "rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Red","rhsusf_mag_15Rnd_9x19_JHP","B_IR_Grenade","SmokeShell","SmokeShellBlue","SmokeShellRed","SmokeShellGreen","Chemlight_green","ACE_Chemlight_HiRed","Chemlight_blue","DemoCharge_Remote_Mag","rhsusf_200Rnd_556x45_box","Chemlight_red","ACE_Chemlight_HiYellow",
     // alpha Loadout Items Export
-    "ACRE_PRC152","ACRE_PRC117F","ACE_quikclot","ACE_morphine","ACE_epinephrine","ACE_tourniquet","ACE_Canteen","ACE_EntrenchingTool","ACE_MapTools","ACE_Flashlight_MX991","ACE_microDAGR","H_Cap_tan","rhsusf_shemagh_tan","ItemMap","ACE_Altimeter","ACE_Flashlight_XL50","ACE_Clacker","ACE_CableTie","ToolKit",40,"ACE_fieldDressing","ACRE_PRC343","ACE_IR_Strobe_Item",
+    "ACRE_PRC152","ACRE_PRC117F","ACE_quikclot","ACE_morphine","ACE_epinephrine","ACE_tourniquet","ACE_Canteen","ACE_EntrenchingTool","ACE_MapTools","ACE_Flashlight_MX991","ACE_microDAGR","H_Cap_tan","rhsusf_shemagh_tan","ItemcTab","ItemMap","ACE_Altimeter","ACE_Flashlight_XL50","ACE_Clacker","ItemAndroid","ACE_CableTie","ToolKit",40,"ACE_fieldDressing","ACRE_PRC343","ACE_IR_Strobe_Item",
     // alpha Loadout Gear Export
     "NVGogglesB_grn_F","rhsusf_hgu56p_visor_green","rhs_uniform_cu_ocp_1stcav","rhsusf_mbav_light","rhsusf_hgu56p_visor_mask_black","rhsusf_mbav_mg","rhsusf_ihadss","H_PilotHelmetFighter_B","U_B_PilotCoveralls",
     // alpha Loadout Backpacks Export
@@ -75,7 +75,7 @@ private _alpha_arsenal = [
     // Crate Magazines Export
     "rhs_mag_30Rnd_556x45_M855A1_Stanag","rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Red","rhs_200rnd_556x45_M_SAW","rhsusf_mag_15Rnd_9x19_JHP","rhs_mag_m67","SmokeShell","SmokeShellRed","SmokeShellBlue","SmokeShellGreen","SmokeShellOrange","SmokeShellYellow","SmokeShellPurple","B_IR_Grenade","ACE_M84","rhs_mag_M441_HE","rhs_mag_M433_HEDP","rhs_mag_m714_White","rhs_mag_m715_Green","rhs_mag_m716_yellow","rhs_mag_m713_Red","ACE_HuntIR_M203","rhs_mag_M585_white","Chemlight_green","Chemlight_red","Chemlight_yellow",
     // Crate Items Export
-    "ACRE_PRC152","ACRE_PRC117F","ACRE_PRC343","rhsusf_acc_anpeq15_bk_light","rhsusf_acc_ELCAN","ToolKit","ACE_Flashlight_MX991","ACE_CableTie","ACE_Chemlight_Shield","ACE_EarPlugs","ACE_quikclot","ACE_tourniquet","ACE_surgicalKit","ACE_morphine","rhsusf_ihadss","rhsusf_hgu56p_visor","rhsusf_hgu56p_visor_green","rhsusf_hgu56p_visor_mask_black","H_PilotHelmetFighter_B","DAR_Beret_Mar","rhsusf_patrolcap_ocp"
+    "ACRE_PRC152","ACRE_PRC117F","ACRE_PRC343","rhsusf_acc_anpeq15_bk_light","rhsusf_acc_ELCAN","ToolKit","ACE_Flashlight_MX991","ItemcTabHCam","ACE_CableTie","ACE_Chemlight_Shield","ACE_EarPlugs","ACE_quikclot","ACE_tourniquet","ACE_surgicalKit","ACE_morphine","rhsusf_ihadss","rhsusf_hgu56p_visor","rhsusf_hgu56p_visor_green","rhsusf_hgu56p_visor_mask_black","H_PilotHelmetFighter_B","DAR_Beret_Mar","rhsusf_patrolcap_ocp"
     // Crate Backpacks Export
 ];
 private _bravo_arsenal = [
@@ -96,7 +96,7 @@ private _bravo_arsenal = [
     // bravo Loadout Magazines Export
     "rhs_mag_30Rnd_556x45_M855A1_Stanag","rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Red","rhs_mag_m67","SmokeShell","SmokeShellBlue","SmokeShellGreen","SmokeShellRed","SmokeShellYellow","rhsusf_mag_15Rnd_9x19_JHP","rhs_mag_m714_White","rhs_mag_m713_Red","rhs_mag_m715_Green","rhs_mag_m662_red","rhs_mag_m661_green","rhs_mag_M441_HE","rhs_mag_M433_HEDP","ACE_HuntIR_M203","rhs_200rnd_556x45_M_SAW","rhsusf_100Rnd_762x51_m80a1epr","rhsusf_100Rnd_762x51_m62_tracer",
     // bravo Loadout Items Export
-    "ACRE_PRC152","ACE_quikclot","ACE_tourniquet","ACE_personalAidKit","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_HuntIR_monitor","rhsusf_shemagh_gogg_tan","ACE_SpraypaintRed","ACE_EntrenchingTool","ItemMap","ItemWatch","ToolKit","ACE_morphine",
+    "ACRE_PRC152","ACE_quikclot","ACE_tourniquet","ACE_personalAidKit","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_HuntIR_monitor","rhsusf_shemagh_gogg_tan","ACE_SpraypaintRed","ACE_EntrenchingTool","ItemcTab","ItemMap","ItemWatch","ToolKit","ItemAndroid","ACE_morphine",
     // bravo Loadout Gear Export
     "rhsusf_ANPVS_14","rhsusf_ach_helmet_headset_ocp","rhs_uniform_cu_ocp_1stcav","rhsusf_iotv_ocp_Teamleader","rhsusf_cvc_green_helmet","rhsusf_iotv_ocp_Repair","rhsusf_iotv_ocp_Squadleader","rhsusf_iotv_ocp_SAW","rhsusf_iotv_ocp_Rifleman",
     // bravo Loadout Backpacks Export
@@ -133,7 +133,7 @@ private _charlie_arsenal = [
     // charlie Loadout Magazines Export
     "rhs_mag_30Rnd_556x45_M855A1_Stanag","rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Red","rhs_mag_m67","SmokeShell","SmokeShellGreen","SmokeShellRed","SmokeShellYellow","B_IR_Grenade","SmokeShellOrange","rhs_mag_M441_HE","rhs_mag_m713_Red","UGL_FlareCIR_F","rhs_mag_m662_red","ACE_HuntIR_M203","rhs_mag_M397_HET","rhs_mag_m714_White","rhs_200rnd_556x45_M_SAW",
     // charlie Loadout Items Export
-    "ACRE_PRC152","ACE_quikclot","ACE_tourniquet","ACE_personalAidKit","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_HuntIR_monitor","ACE_SpraypaintRed","ACE_EntrenchingTool","ItemMap","ItemWatch","ACE_Flashlight_MX991","ACE_IR_Strobe_Item","Laserbatteries","ACE_Vector","ACE_MX2A","rhsusf_ANPVS_15","ACE_morphine","ACE_RangeTable_82mm","ACE_M26_Clacker","ACE_DefusalKit","Flagstack_Red","ACE_Fortify","Ace_M26_Clacker",
+    "ACRE_PRC152","ACE_quikclot","ACE_tourniquet","ACE_personalAidKit","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_HuntIR_monitor","ACE_SpraypaintRed","ACE_EntrenchingTool","ItemcTab","ItemMap","ItemWatch","ACE_Flashlight_MX991","ACE_IR_Strobe_Item","Laserbatteries","ACE_Vector","ACE_MX2A","rhsusf_ANPVS_15","ItemAndroid","ACE_morphine","ACE_RangeTable_82mm","ACE_M26_Clacker","ACE_DefusalKit","Flagstack_Red","ACE_Fortify","Ace_M26_Clacker",
     // charlie Loadout Gear Export
     "rhsusf_ach_helmet_headset_ocp","LOP_U_ISTS_Fatigue_19","rhsusf_spcs_ocp_squadleader","rhsusf_ach_helmet_headset_ess_ocp","rhsusf_spcs_ocp_teamleader_alt","rhsusf_spcs_ocp_grenadier","rhsusf_ach_helmet_camo_ocp","rhsusf_spcs_ocp_saw","rhsusf_ach_helmet_ocp_norotos","rhsusf_spcs_ocp_rifleman_alt","rhsusf_ach_helmet_ESS_ocp","rhsusf_spcs_ocp_medic","rhsusf_ach_helmet_ocp","rhsusf_spcs_ocp",
     // charlie Loadout Backpacks Export
@@ -154,7 +154,7 @@ private _heavyweapons_arsenal = [
     // heavyweapons Loadout Magazines Export
     "rhs_mag_30Rnd_556x45_M855A1_Stanag","rhs_mag_m67","SmokeShell","rhsusf_100Rnd_762x51_m80a1epr","rhsusf_100Rnd_762x51_m62_tracer","rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Red","SmokeShellGreen","SmokeShellRed","SmokeShellYellow","rhs_mag_M441_HE","rhs_mag_M397_HET","ACE_HuntIR_M203","rhs_mag_m714_White","rhs_200rnd_556x45_M_SAW",
     // heavyweapons Loadout Items Export
-    "ACRE_PRC152","ACE_quikclot","ACE_tourniquet","ACE_personalAidKit","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_SpraypaintRed","ACE_EntrenchingTool","ItemMap","ItemWatch","ACE_RangeTable_82mm","ACE_M26_Clacker","ACE_DefusalKit","ACE_HuntIR_monitor","Flagstack_Red","ACE_Fortify","Ace_M26_Clacker","ACE_morphine",
+    "ACRE_PRC152","ACE_quikclot","ACE_tourniquet","ACE_personalAidKit","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_SpraypaintRed","ACE_EntrenchingTool","ItemAndroid","ItemMap","ItemWatch","ACE_RangeTable_82mm","ACE_M26_Clacker","ACE_DefusalKit","ACE_HuntIR_monitor","Flagstack_Red","ACE_Fortify","Ace_M26_Clacker","ACE_morphine",
     // heavyweapons Loadout Gear Export
     "rhsusf_ANPVS_14","rhsusf_ach_helmet_headset_ocp","rhs_uniform_cu_ocp_1stcav","rhsusf_iotv_ocp_SAW","rhsusf_ach_helmet_ocp","LOP_U_ISTS_Fatigue_19","rhsusf_spcs_ocp",
     // heavyweapons Loadout Backpacks Export
@@ -177,7 +177,7 @@ private _medical_arsenal = [
     // medical Loadout Magazines Export
     "rhs_mag_30Rnd_556x45_M855A1_Stanag","rhsusf_mag_15Rnd_9x19_JHP","rhs_mag_m67","ACE_Chemlight_HiOrange","SmokeShell","SmokeShellBlue","SmokeShellOrange","SmokeShellGreen","SmokeShellRed","SmokeShellYellow",
     // medical Loadout Items Export
-    "ACRE_PRC152","ACE_personalAidKit","ACE_surgicalKit","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_adenosine","ACE_epinephrine","ACE_morphine","ACE_salineIV","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_EntrenchingTool","ItemMap","ItemWatch",35,"ACE_MicroDAGR",
+    "ACRE_PRC152","ACE_personalAidKit","ACE_surgicalKit","ACE_tourniquet","ACE_quikclot","ACE_elasticBandage","ACE_adenosine","ACE_epinephrine","ACE_morphine","ACE_salineIV","ACE_Canteen","ACE_EarPlugs","ACE_MapTools","ACE_CableTie","ACE_microDAGR","ACE_EntrenchingTool","ItemAndroid","ItemMap","ItemWatch",35,"ACE_MicroDAGR",
     // medical Loadout Gear Export
     "rhsusf_ach_bare_tan_headset","LOP_U_ISTS_Fatigue_19","rhsusf_mbav_medic","rhsusf_ach_helmet_headset_ocp",
     // medical Loadout Backpacks Export

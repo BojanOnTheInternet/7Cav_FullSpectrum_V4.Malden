@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -116,7 +116,7 @@ SPM_Strongpoint_Run =
 		{
 			if (_time > OO_GET(_strongpoint,Strongpoint,UpdateTime)) then
 			{
-				private _updateScript = [_strongpoint] spawn { params ["_strongpoint"]; scriptName "spawnSPM_Strongpoint_Run_Strongpoint"; [] call OO_METHOD(_strongpoint,Strongpoint,Update) };
+				private _updateScript = [_strongpoint] spawn { params ["_strongpoint"]; scriptName "SPM_Strongpoint_Run_Strongpoint"; [] call OO_METHOD(_strongpoint,Strongpoint,Update) };
 				waitUntil { sleep 0.1; scriptDone _updateScript };
 			};
 
@@ -125,14 +125,14 @@ SPM_Strongpoint_Run =
 
 				if (OO_GET(_strongpoint,Strongpoint,RunState) == "running" && _time > OO_GET(_category,Category,UpdateTime)) then
 				{
-					_updateScript = [_category] spawn { params ["_category"]; scriptName "spawnSPM_Strongpoint_Run_Category"; [] call OO_METHOD(_category,Category,Update) };
+					_updateScript = [_category] spawn { params ["_category"]; scriptName "SPM_Strongpoint_Run_Category"; [] call OO_METHOD(_category,Category,Update) };
 					waitUntil { sleep 0.1; scriptDone _updateScript };
 				};
 			} forEach OO_GET(_strongpoint,Strongpoint,Categories);
 
 			if (OO_GET(_strongpoint,Strongpoint,RunState) == "running") then
 			{
-				_updateScript = [_spawnManager] spawn { params ["_spawnManager"]; scriptName "spawnSPM_Strongpoint_Run_SpawnManager"; [] call OO_METHOD(_spawnManager,SpawnManager,Update) };
+				_updateScript = [_spawnManager] spawn { params ["_spawnManager"]; scriptName "SPM_Strongpoint_Run_SpawnManager"; [] call OO_METHOD(_spawnManager,SpawnManager,Update) };
 				waitUntil { sleep 0.1; scriptDone _updateScript };
 			};
 		};
@@ -265,7 +265,7 @@ OO_TRACE_DECL(SPM_Category_InitializeObject) =
 	private _strongpoint = OO_GETREF(_category,Category,Strongpoint);
 	private _initializeObject = OO_GET(_strongpoint,Strongpoint,InitializeObject);
 
-	[_category,_object] call _initializeObject;
+	[_category, _object] call _initializeObject;
 };
 
 OO_TRACE_DECL(SPM_Category_Update) =

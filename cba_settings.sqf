@@ -118,9 +118,9 @@ force force ace_repair_displayTextOnRepair = true;
 force force ace_repair_engineerSetting_fullRepair = 2;
 force force ace_repair_engineerSetting_repair = 1;
 force force ace_repair_engineerSetting_wheel = 0;
-force force ace_repair_fullRepairLocation = 0;
-force force ace_repair_repairDamageThreshold = 0.800653;
-force force ace_repair_repairDamageThreshold_engineer = 0.904635;
+force force ace_repair_fullRepairLocation = 3;
+force force ace_repair_repairDamageThreshold = 0.6;
+force force ace_repair_repairDamageThreshold_engineer = 0.3;
 force force ace_repair_wheelRepairRequiredItems = 0;
 
 // ACE Magazine Repack
@@ -249,15 +249,15 @@ force force ace_finger_maxRange = 10;
 // ACE Pylons
 force force ace_pylons_enabledForZeus = true;
 force force ace_pylons_enabledFromAmmoTrucks = true;
-force force ace_pylons_rearmNewPylons = false;
+force force ace_pylons_rearmNewPylons = true;
 force force ace_pylons_requireEngineer = false;
 force force ace_pylons_requireToolkit = true;
 force force ace_pylons_searchDistance = 15;
-force force ace_pylons_timePerPylon = 5;
+force force ace_pylons_timePerPylon = 10;
 
 // ACE Quick Mount
 force force ace_quickmount_distance = 5;
-force force ace_quickmount_enabled = true;
+force force ace_quickmount_enabled = false;
 ace_quickmount_enableMenu = 3;
 force force ace_quickmount_priority = 3;
 force force ace_quickmount_speed = 5;
@@ -519,7 +519,7 @@ force force Achilles_Debug_Output_Enabled = false;
 // ACRE2
 force force acre_sys_core_fullDuplex = false;
 force force acre_sys_core_ignoreAntennaDirection = true;
-force force acre_sys_core_interference = false;
+force force acre_sys_core_interference = true;
 //acre_sys_core_postmixGlobalVolume = 1;
 //acre_sys_core_premixGlobalVolume = 1;
 force force acre_sys_core_revealToAI = true;
@@ -529,6 +529,11 @@ force force acre_sys_core_ts3ChannelName = "";
 force force acre_sys_core_ts3ChannelPassword = "";
 force force acre_sys_core_ts3ChannelSwitch = false;
 force force acre_sys_core_unmuteClients = true;
+
+// ACRE2 Zeus
+acre_sys_zeus_zeusCanSpectate = true;
+acre_sys_zeus_zeusDefaultVoiceSource = false;
+acre_sys_zeus_zeusListenViaCamera = false;
 
 // CBA UI
 //cba_ui_StorePasswords = 1;

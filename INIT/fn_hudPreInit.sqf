@@ -107,7 +107,21 @@ HUD_Repair_Initialize =
 	addMissionEventHandler ["Draw3D", HUD_Repair_Draw];
 };
 
-HUD_Icons =
+HUDTESTCallback =
+{
+	params ["_descriptor"];
+
+	_descriptor params ["_position", "_key", "_color", "_minDistance", "_maxDistance", "_sizeInMeters", "_font"];
+
+	private _text = "AO Transport (en route)";
+
+	private _entities = _position nearEntities [["Helicopter"], 5];
+	if (count _entities > 0 && { count ((_entities select 0) getVariable ["JB_AT_Aircraft_Routes", []]) > 0 }) then { _text = "AO Transport (ready)" };
+
+	[_position, _text, _color, _minDistance, _maxDistance, _sizeInMeters, _font]
+};
+
+HUD_Names =
 [
 	["Microphone", ["\a3\ui_f\data\GUI\Rsc\RscDisplayArsenal\voice_ca.paa", 32]],
 	["Radio", ["\a3\ui_f\data\GUI\Cfg\CommunicationMenu\call_ca.paa", 32]],
@@ -120,7 +134,8 @@ HUD_Icons =
 	["Move2", ["\a3\ui_f\data\igui\cfg\simpleTasks\types\move2_ca.paa", 32]],
 	["Move3", ["\a3\ui_f\data\igui\cfg\simpleTasks\types\move3_ca.paa", 32]],
 	["Move4", ["\a3\ui_f\data\igui\cfg\simpleTasks\types\move4_ca.paa", 32]],
-	["Move5", ["\a3\ui_f\data\igui\cfg\simpleTasks\types\move4_ca.paa", 32]]
+	["Move5", ["\a3\ui_f\data\igui\cfg\simpleTasks\types\move4_ca.paa", 32]],
+	["HUDTESTCallback", [HUDTESTCallback, [], 90210]]
 ];
 
 // UserTexture_1x2_F
@@ -128,13 +143,19 @@ HUD_Icons =
 // UserTexture1m_F
 
 // Icon descriptor:
-// [position, string-or-texture-descriptor, current-color, min-distance, max-distance, size-in-meters, font]
+// [position, string-or-array, current-color, min-distance, max-distance, size-in-meters, font]
+// Array form is either [icon, size] or [code, ...].  The code will be called and is expected to return a non-code icon descriptor.
 
 #define FADE_DURATION 0.5
 
 HUD_DrawIcon =
 {
 	params ["_descriptor"];
+
+	if (typeName (_descriptor select 1) == "ARRAY" && { typeName (_descriptor select 1 select 0) == "CODE" }) then
+	{
+		_descriptor = [_descriptor] call (_descriptor select 1 select 0);
+	};
 
 	private _position = _descriptor select 0;
 
@@ -189,7 +210,7 @@ HUD_DrawIcon =
 
 HUD_GetMarkerIcons =
 {
-	params ["_prefix", "_icons"]; // Prefix must be of format "string_string_", e.g. "HUD_Pilot_"
+	params ["_prefix", "_icons"]; // Prefix must be of format "string_string_", e.g. "HUD_Greeting1_Pilot_Hello"
 
 	private _pieces = [];
 	private _descriptor = [];
@@ -198,6 +219,7 @@ HUD_GetMarkerIcons =
 	private _minDistance = 0;
 	private _maxDistance = 0;
 	private _sizeInMeters = 0;
+	private _named = [];
 
 	// Marker format "<prefix><name>_<label/icon>_<min-distance>_<max-distance>_<size-in-meters>_<font-family>"
 	private _newIcons = allMapMarkers select { _x find "HUD_" == 0 } apply
@@ -219,11 +241,11 @@ HUD_GetMarkerIcons =
 				}
 				else
 				{
-					_icon = [HUD_Icons, _key] call BIS_fnc_getFromPairs;
-					if (not isNil "_icon") then { _key = _icon };
+					_named = [HUD_Names, _key] call BIS_fnc_getFromPairs;
+					if (not isNil "_named") then { _key = +_named };
 
 					_color = getArray (configFile >> "CfgMarkerColors" >> getMarkerColor _x >> "color");
-					_color = _color apply { if (_x isEqualType 0) then { _x } else { [] call compile _x } };
+					_color = _color apply { if (_x isEqualType 0) then { _x } else { call compile _x } };
 
 					_minDistance = parseNumber _minDistance;
 					_maxDistance = parseNumber _maxDistance;
@@ -367,7 +389,7 @@ HUD_VehicleEntry_Initialize =
 					_vehicle = _newVehicles select _i;
 
 					if (count (HUD_VehicleEntry_Icons select { _x select 0 == _vehicle }) == 0) then
-					{
+					{	
 						_icons = [];
 
 						{

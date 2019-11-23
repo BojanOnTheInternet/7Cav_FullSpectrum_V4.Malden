@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -102,7 +102,7 @@ OO_TRACE_DECL(SPM_HeadquartersReinforced_CreateTraceObject) =
 	private _garrison = OO_GETREF(_objective,HeadquartersCategory,Garrison);
 	private _garrisonArea = OO_GET(_garrison,ForceCategory,Area);
 
-	// Put down a trace object to show gamemasters useful information
+	// Put down a trace object to show mission controllers useful information
 	private _traceObject = "Land_FirePlace_F" createVehicle (OO_GET(_garrisonArea,StrongpointArea,Position) vectorAdd ([1,0,0] vectorMultiply OO_GET(_garrisonArea,StrongpointArea,OuterRadius)));
 	_traceObject hideObjectGlobal true;
 	OO_SET(_objective,HeadquartersReinforcedCategory,_TraceObject,_traceObject);

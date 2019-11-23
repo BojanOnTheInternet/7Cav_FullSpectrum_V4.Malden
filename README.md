@@ -1,54 +1,71 @@
-<p align="center">
-<img src="https://github.com/7Cav/cScripts/blob/master/resourses/logo.png" width="600">
-</p>
-<p align="center">
-<a href="https://github.com/7Cav/cScripts/releases/latest"><img src="https://img.shields.io/github/release/7Cav/cScripts.svg?style=for-the-badge&label=Release%20Build" alt="Release Build Version"></a>
- <a href="https://github.com/7Cav/cScripts/releases/"><img src="https://img.shields.io/github/release/7Cav/cScripts/all.svg?style=for-the-badge&label=Pre-release" alt="Pre release and or current build version"></a>
- <a href="https://github.com/7Cav/cScripts/tags"><img src="https://img.shields.io/github/tag/7Cav/cScripts.svg?style=for-the-badge&colorB=df2d00&label=Latest%20Tag" alt="Dev-build or the latest tag of the current build."></a><br>
- <a href="https://github.com/7Cav/cScripts/releases/latest"><img src="https://img.shields.io/github/downloads/7cav/cScripts/total.svg?style=for-the-badge&label=Downloads" alt="cScripts Downloads"></a>
- <a href="https://github.com/7Cav/cScripts/issues"><img src="https://img.shields.io/github/issues-raw/7cav/cScripts.svg?style=for-the-badge&label=Issues" alt="cScripts Issues"></a>
-<a href="https://travis-ci.org/7Cav/cScripts">
-    <img src="https://img.shields.io/travis/7Cav/cScripts.svg?style=for-the-badge&logo=Travis-CI" alt="cScripts Build">
-</a>
-</p>
-cScripts is an easy to use framework for the ARMA3 S3 Operations staff and other mission makers. This framework contains functions and scripts that are easy to use and implement on a new mission. All scripts and functions are adapted to 7th Cavalry mission standards.
+7Cav Full Spectrum v4.2.2 changelog:
 
-## Minimum Requirements
-- **CBA**                                    - [Link](https://github.com/CBATeam/CBA_A3)
-- **ACE3**                                   - [Link](https://ace3mod.com/)
-- **RHSUSAF**                                - [Link](http://www.rhsmods.org/)
-- **ACRE2**                                  - [Link](https://github.com/IDI-Systems/acre2)
-- **Project OPFOR**                          - [Link](https://steamcommunity.com/sharedfiles/filedetails/?id=735566597)
-- **TF47 Launchers**                         - [Link](https://steamcommunity.com/sharedfiles/filedetails/?id=508476583)
-- **cTab**                                   - [Link](https://github.com/Riouken/cTab)
-- **ACE 3 Extension (Placeables)**           - [Link](https://steamcommunity.com/sharedfiles/filedetails/?id=866772689)
-- **Ares Mod Achilles Expansion** (OPTIONAL) - [Link](https://github.com/ArmaAchilles/AresModAchillesExpansion)
+Changed:
+- Typos in various places
+- Woodland camo has been swapped for desert camo on all vehicles
+- Anybody can now enter Apollo/Mustang vehicles in all positions, except driver
+- The surrender threshold has been increased. Hopefully this means less looking for a handful of AI in a large city
+- Removed canister rounds from MK19 HMMWV
+- Mustang's vehicles now count as medical vehicles after they respawn
+- Base logistics vehicles have had their spare wheels/tracks removed
+- ACE Cargo capacity for vehicles has been upped on some things
+- Enemy transport helicopters should spawn further out
+- Reduced number of support slots. Now we have 2 transport rotory, 2 attack rotory, 1 eagle, 1 air logistics (Titan)
+- Transport rotory pilots can now fly all transport rotory aircraft
+- Attack rotory pilots can now fly all attack rotory aircraft
+- Titan-1 is now the air logistics unit and can fly the V44 and vehicle transport chinook (vanilla version)
+- Logistics vehicles should no longer despawn if abandoned (although they will be marked to avoid being lost)
+- Concrete hedgehogs removed from fortify, replaced with concrete barrier
+- Apollo CP Box truck replaced with another type of SOV
+- Apollo CP SOV truck can be loaded into the V44 and slung by Titan-1 Chinook
+- C130 removed since, lets be honest, nobody was using it. Available to be spawned by Zeus
+- Disabled script that fixed broken buildings throughout the map
+- Countermeasures deployed on base no longer trigger a "Do not fire on base" message
 
-*These are the minimum requirements to run the script framework due to weapons, equipment, and references being used.*
+Added:
+- Infantry transport Chinook (RHS version)
+- Vehicle transport Chinook (Vanilla version)
+- Vehicle Chinook should be able to transport all Apollo vehicles
+- Static Stinger AA launcher for use by Apollo
+- "Rain rain go away" script. Hopefully no more random showers!
+- 1x MRZR for the awesome longshot dudes
+- Server should restart at 0900z and 2100z (times subject to change)
+- 155mm self-propelled gun for Apollo
+- Map rotation timer. By default, maps will rotate after 6 hours and once the current AO ends. If players want to stay on the map, Zeus can use a command to extend the timer
+- Zeus commands are now listed under the "Gamemaster" tab on the map (only visible when in Zeus slot)
+- Heavy lift area for Titan-1
+- TANOA!
 
-## Installation
-In order to install this script package you only need to [download the latest build](https://github.com/7Cav/cScripts/releases/latest) it and place the content in your mission folder located:
-`%USERPROFILE%\Documents\Arma 3 - Other Profiles\[MY ARMA3 USER NAME]\missions\[MY MISSION NAME].[ISLAND]`
+------
 
-*Note! If you have a `init.sqf` and/or a `description.ext` file included in your mission folder, they will be need to be replaced or edited in order to install this.*
+7Cav Full Spectrum v4.2.1 changelog:
 
-## What do cScripts provide?
-cScripts provides you with the basic scripts and functions for S3 Operation making.
+Fixed:
+- There should be less enemy armour spawning in, and they should spawn in less frequently.
+- Apollo and Mustang can now enter and drive each other's vehicles
+- Apollo members should be able to drive in the same vehicle together
+- Removed all of JB's radio stuff from Tac1 - this might help with radio issues on Tac2
+- The "abandonment" distance and time thresholds have been increased for land vehicles to 1.5km and 10 minutes (no players in that area for that time)
+- Logistics vehicles have a large ACE cargo capacity
+- Spare wheels and tracks added to logistic repair vehicles
+- FOB fortifications require you to be near the FOB CP vehicle (100m)
+- FOB fortifications require you be an Apollo unit.
+- Fixed bug with fortifications allowing any player to enter any vehicle
+- Fixed bug with splinting where option would not always appear for players (hopefully)
+- Fixed bug with splinting where taking any damage would cause your splints to "fall off"
+- Fixed a way players could bypass the vehicle restrictions
+- Changed the VTOL type that is spawned from infantry to vehicle
+- You can no longer load the Bradley into the logistics vehicles (lol)
+- Cut down the mission file size by a few MB by removing extra files
+- Lowered the max amount of AI from 225 to 150. This will hopefully help with the poor frame rate when we get to a busy server
 
-### Scripts Installed
-- **CavFnc**                    -   [7th Cavalry Function Library](https://github.com/7Cav/cScripts/wiki/Features/)
-- **Loadouts/Script**           -   [Poppy (1.1.0)](https://github.com/BaerMitUmlaut/Poppy)
-- **ViewingDistance**           -   [taw_vd (v1.5)](http://www.armaholic.com/page.php?id=19751)
-
-### AI Tweak (init.sqf)
-The AI in cScripts `init.sqf` have been changed to be more realistic and less ridiculous. The recommended default setting is the one provided, and it has been carefully tested, making it the best setting.
-
-### Custom mission customization and initialization
-All cScripts options, actions and initialization are optional and can be toggled on or off. They can be tweaked via CBA settings in an easy manner, this is to make the script as flexible as possible. Read more about how to use and change settings [here](https://github.com/7Cav/cScripts/wiki/CBA-Mission-Settings).
-
-### Custom mission modules (Achilles)
-cScripts offers a custom made module system based on Ares Mod Achilles Expansion custom mission module system.
-The modules are easy to use and allow for sand-boxing as well as tools for game masters. Read more about the mission modules [here](https://github.com/7Cav/cScripts/wiki/7Cav-Modules).
-
-### Automatic Loadout Distrubution (Poppy)
-cScripts core function is [Poppy](https://github.com/BaerMitUmlaut/Poppy) a reliable, self configuring, error finding loadout framework made by [BaerMitUmlaut](https://github.com/BaerMitUmlaut). The script automatically gives all BluFor players a predefined loadout in the list below. If you have an unrecognizable loadout, you will be given the default loadout (CommonBlufor).
+Added:
+- Repair logi truck now has limited fuel and ammo resupply points (half of what the regular trucks have)
+- Transport VTOL can now hold the Bradley through ACE Cargo
+- Ammo box spawner is now part of the arsenal boxes near the vehicle depot. Apollo members can load these up and put them into the larger cargo of their vehicles.
+- Zeus now has access to "mp" and "gm" commands
+- Zeus has a new command "gm fortify points <amount>" to add/remove budget from Apollo
+- Added helipad to the fortify list
+- Added concrete hedgehogs to the fortify list
+- Added grass cutter to the fortify list
+- Removed helipad lights + bar gate from the list

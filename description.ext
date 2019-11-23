@@ -1,8 +1,8 @@
-author = "Vex.W, JB & Bojan";
+author = "Vex.W, Dakota.N, Sweetwater.I, JB & Bojan";
 overviewPicture = "media\images\loading.jpg";
 
 loadScreen = "media\images\loading.jpg";
-onLoadName = "7th Cavalry Full Spectrum v4.2.0";
+onLoadName = "7Cav Full Spectrum v4.6.0";
 onLoadMission = "Welcome to 7th Cavalry Tactical Realism! Join us on TeamSpeak at ts3.7cav.us Password: 7thCavalry";
 
 briefing = 0;
@@ -26,17 +26,20 @@ enableDebugConsole[] =
 	"76561198089890491", // Vex.W
 	"76561198020218548", // Bickford.B
 
-	"76561198114637526"  // JB (not 7th Cavalry)
+	"76561198114637526",  // JB (not 7th Cavalry)
+	"76561198048006094" // Bojan (not 7th Cavalry)
 };
+enableTargetDebug = 1;
 
-	class Extended_PreInit_EventHandlers {
-        cScripts_preInit = "0 spawn compile preprocessFileLineNumbers 'cScripts\CavFnc\cScripts_preInit.sqf'";
-        settings = call compile preprocessFileLineNumbers "simple_splint\functions\fn_initsettings.sqf";
-    };
-    class Extended_PostInit_EventHandlers {
-        cScripts_postInit = "0 spawn compile preprocessFileLineNumbers 'cScripts\CavFnc\cScripts_postInit.sqf'";
-    };
-
+class Extended_PreInit_EventHandlers {
+	cScripts_preInit = "0 spawn compile preprocessFileLineNumbers 'cScripts\CavFnc\cScripts_preInit.sqf'";
+	tac2_preInit = "0 spawn compile preprocessFileLineNumbers 'Tac2\tac2_preInit.sqf'";
+	settings = "0 spawn compile preprocessFileLineNumbers 'simple_splint\functions\fn_initsettings.sqf'";
+};
+class Extended_PostInit_EventHandlers {
+	cScripts_postInit = "0 spawn compile preprocessFileLineNumbers 'cScripts\CavFnc\cScripts_postInit.sqf'";
+	tac2_postInit = "0 spawn compile preprocessFileLineNumbers 'Tac2\tac2_postInit.sqf'";
+};
 
 
 allowFunctionsLog = 0;
@@ -52,14 +55,13 @@ RespawnDialog = 0;
 wreckManagerMode = 0;
 corpseManagerMode = 0;
 
-//#include "VAS\menu.hpp"
 #include "scripts\common.hpp"				  		// Common dialog classes
 #include "JB\defines.hpp"
-//#include "JB\dialog_ammoInit.hpp"
-//#include "JB\dialog_repairInit.hpp"
-//#include "JB\dialog_repackInit.hpp"
-//#include "OP\dialog_command.hpp"
-//#include "OP\dialog_inspector.hpp"
+#include "JB\dialog_containerEdit.hpp"
+#include "OP\dialog_command.hpp"
+#include "OP\dialog_inspector.hpp"
+#include "Tac2\loyalty\loyalty_gui.hpp"
+#include "Tac2\loyalty\loyalty_hud.hpp"
 
 class CfgFunctions
 {
@@ -72,14 +74,16 @@ class CfgFunctions
 	#include "OP\CfgFunctions.hpp"
 	#include "Diagnostics\CfgFunctions.hpp"
 	#include "cScripts\CavFnc\CfgFunctions.hpp"
-    #include "cScripts\Loadouts\script\CfgFunctions.hpp"
-    #include "cScripts\ViewingDistance\CfgFunctions.hpp"
-    #include "simple_splint\CfgFunctions.hpp"		// Simple Splint
+	#include "cScripts\Loadouts\script\CfgFunctions.hpp"
+	#include "cScripts\ViewingDistance\CfgFunctions.hpp"
+	#include "simple_splint\CfgFunctions.hpp"		// Simple Splint
+	#include "Tac2\CfgFunctions.hpp"
 };
-	#include "cScripts\Loadouts\script\CfgPoppy.hpp"
-    #include "cScripts\ViewingDistance\GUI.h"
-    #include "cScripts\CfgUnitInsignia.hpp"
-    #include "cScripts\CfgLoadouts.hpp"
+
+#include "cScripts\Loadouts\script\CfgPoppy.hpp"
+#include "cScripts\ViewingDistance\GUI.h"
+#include "cScripts\CfgUnitInsignia.hpp"
+#include "cScripts\CfgLoadouts.hpp"
 
 class CfgSounds
 {
@@ -154,8 +158,9 @@ class RscTitles
 {
 	#include "scripts\vehicle\crew\CrewList.hpp"	// Occupants HUD for vehicles
 	#include "scripts\vehicle\paradrop\Paradrop.hpp"// Indicators for HALO and static lines
-	//#include "JB\display_medicalInit.hpp"			// Medic monitor when incapacitated
 	#include "Diagnostics\dialog_stripChart.hpp"
+	#include "Tac2\loyalty\loyalty_gui.hpp"
+	#include "Tac2\loyalty\loyalty_hud.hpp"
 };
 
 class Params
@@ -163,65 +168,109 @@ class Params
 	class Advance
 	{
 		title = "Main Advance";
-		texts[] = {"Started","Stopped"};
-		values[] = {1,0};
-		default = 1;
+		texts[] = {"Started","Suspended","Stopped"};
+		values[] = {2,1,0};
+		default = 2;
+		mutable = 1;
 	};
 
+	//TODO: Special operations command uses an internal variable to detect a shutdown.  Switch to
+	// using JB_MP_GetParamValue to figure out if it should be running, but leave the other states internal to special operations as they are
 	class SpecialOperations
 	{
 		title = "Special operations";
 		texts[] = {"Started","Stopped"};
 		values[] = {1,0};
-		default = 0;
+		default = 1;
+		mutable = 1;
+	};
+
+	class NumberPlayers
+	{
+		title = "Populate advances for a specified number of players";
+		texts[] = {"The actual number connected","5","10","15","20","25","30","35","40","45","50","55","60"};
+		values[] = {-1,5,10,15,20,25,30,35,40,45,50,55,60};
+		default = -1;
+		mutable = 1;
 	};
 
 	class ReviveSelf
 	{
-		title = "Revive self";
+		title = "Self revive";
 		texts[] = {"Enabled","Disabled"};
 		values[] = {1,0};
 		default = 0;
+		mutable = 1;
 	};
 
-	// The map will display enemies that soldiers have seen out to a certain distance
-	class MapSenseEnemyRange
+	class HALOAO
 	{
-		title = "Map sense enemy range";
-		values[] = {0, 100,150,200,250,300,350,400};
+		title = "HALO to current operation in an advance";
+		texts[] = {"Enabled","Disabled"};
+		values[] = {1,0};
 		default = 0;
+		mutable = 1;
+	};
+
+	class RestoreDestroyedBuildings
+	{
+		title = "Restore destroyed buildings at session start";
+		texts[] = {"Enabled","Disabled"};
+		values[] = {1,0};
+		default = 0;
+		mutable = 1;
+	};
+
+	class Rain
+	{
+		title = "Rainfall in weather simulation";
+		texts[] = {"Enabled","Disabled"};
+		values[] = {1,0};
+		default = 1;
+		mutable = 1;
 	};
 
 	// The map will display enemies that soldiers have seen out to a certain distance
 	class MapType
 	{
-		title = "Map type";
+		title = "Map display type";
 		texts[] = {"Individual","Group"};
 		values[] = {0,1};
 		default = 0;
 	};
-
+	
+	// The map will display enemies that soldiers have seen out to a certain distance
+	class MapSenseEnemyRange
+	{
+		title = "Map sense enemy range (meters)";
+		values[] = {0, 100,150,200,250,300,350,400};
+		default = 0;
+	};
+	
 	// Set the number of enemy infantry that will be created for each connected player
 	class NumberInfantryPerPlayer
 	{
-		title = "Number of enemy infantry to create per connected player";
+		title = "Number of enemy infantry per player per operation in an advance";
 		values[] = {0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5,10.0};
-		default = 4.0;
+		default = 6;
+		mutable = 1;
 	};
 
 	class MinimumInfantryPerOperation
 	{
-		title = "Minimum infantry in an operation";
+		title = "Minimum infantry per operation in an advance";
 		values[] = {8,16,32,40,48,56,64,72,80,88,96,104,112,120,128};
 		default = 32;
+		mutable = 1;
 	};
 
 	// Limit the number of active enemy infantry according to the performance of the server
 	class MaximumInfantryPerOperation
 	{
-		title = "Maximum infantry in an operation";
+		title = "Maximum infantry per operation in an advance";
 		values[] = {25,50,75,100,125,150,175,200,225,250,300};
-		default = 225;
+		default = 150;
+		mutable = 1;
 	};
 
 	// When identifying the next operation in an advance, we'd like to get from SpacingMinIdeal to SpacingMaxIdeal, but if that doesn't get us anything, we'll consider SpacingMin to SpacingMax
@@ -231,13 +280,15 @@ class Params
 		title = "Minimum absolute spacing between consecutive operations in an advance (meters)";
 		values[] = {0,500,1000,1500,2000,2500,3000};
 		default = 0;
+		mutable = 1;
 	};
 
 	class AdvanceSpacingMax
 	{
 		title = "Maximum absolute spacing between consecutive operations in an advance (meters)";
 		values[] = {2000,2500,3000,3500,4000,4500,5000};
-		default = 4500;
+		default = 3000;
+		mutable = 1;
 	};
 
 	class AdvanceSpacingMinIdeal
@@ -245,6 +296,7 @@ class Params
 		title = "Minimum ideal spacing between consecutive operations in an advance (meters)";
 		values[] = {0,500,1000,1500,2000,2500,3000};
 		default = 500;
+		mutable = 1;
 	};
 
 	class AdvanceSpacingMaxIdeal
@@ -252,43 +304,99 @@ class Params
 		title = "Maximum ideal spacing between consecutive operations in an advance (meters)";
 		values[] = {2000,2500,3000,3500,4000,4500,5000};
 		default = 2000;
+		mutable = 1;
 	};
 
 	class AdvanceSpacingPerPlayer
 	{
 		title = "Per-player additional spacing between consecutive operations in an advance (meters)";
 		values[] = {0,10,20,30,40,50,60};
-		default = 40;
+		default = 20;
+		mutable = 1;
 	};
 
 	class AdvanceGridSiteSpacing
 	{
-		title = "Additional advance operation sites randomly chosen from each cell of a regularly-spaced grid (meters)";
+		title = "Grid spacing used to select random sites for operations in an advance (meters)";
 		texts[] = {"Disabled","1000","2000","3000","4000","5000","6000","7000","8000","9000","10000"};
 		values[] = {-1,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000};
 		default = 3000;
+		mutable = 1;
 	};
 
 	class AdvanceDeviationAngle
 	{
 		title = "Maximum angle advance path will be permitted to turn between consecutive operations (degrees)";
 		values[] = {0,10,20,30,40,50,60,70,80,90,100,120,130,140,150};
-		default = 70;
+		default = 100;
+		mutable = 1;
 	};
 
-	class AdvanceAreaPerPlayer
+	class AdvanceAreaPerUnit
 	{
-		title = "Operation area";
+		title = "Size of operation area in an advance";
 		texts[] = {"Small", "Medium", "Large", "Very large"};
-		values[] = {625,2500,5625,10000}; // m^2 per player
-		default = 5625;
+		values[] = {500,1000,2000,4000}; // m^2 per AI
+		default = 1000;
+		mutable = 1;
+	};
+
+	class AdvancePatrolVehicleStrength
+	{
+		title = "Number of patrolling vehicles in an advance";
+		texts[] = {"None", "Very few", "Few", "Normal", "Many", "Very many"};
+		values[] = {0.0,0.25,0.5,1.0,1.5,2.0}; // Multiplier
+		default = 1.0;
+		mutable = 1;
 	};
 
 	class CounterattackProbability
 	{
-		title = "Base probability of counterattack at an operation during an advance";
+		title = "Base chance of counterattack at an operation during an advance";
 		texts[] = {"0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%"};
 		values[] = {0,10,20,30,40,50,60,70,80,90,100};
 		default = 40;
+		mutable = 1;
+	};
+
+	class CuratorTypeScheme
+	{
+		title = "Scheme for determining level of Zeus access";
+		texts[] = {"Steam ID", "Role", "Lesser of role and steam ID", "Higher of role and steam ID", "Scheme per slot"};
+		values[] = {0,1,2,3,4};
+		default = 2;
+	};
+};
+
+class CfgDebriefing
+{  
+	class RestrictedRole
+	{
+		title = "Restricted Mission Role";
+		subtitle = "";
+		description = "Certain game roles are reserved for members of 7th Cavalry.  Please return to the lobby and select a different role.";
+		pictureBackground = "";
+		picture = "";
+		pictureColor[] = {0.0,0.3,0.6,1};
+	};
+
+	class PoliceEjection
+	{
+		title = "Military Police Action";
+		subtitle = "";
+		description = "Your game session has been ended by a member of the military police.  Please abide by all server rules and heed the warnings that you are given about your conduct while playing on this server.";
+		pictureBackground = "";
+		picture = "";
+		pictureColor[] = {0.0,0.3,0.6,1};
+	};
+
+	class BootAll
+	{
+		title = "Military Police Action";
+		subtitle = "";
+		description = "All player sessions have been ended by a member of the military police.  This has been done in an effort to address a server issue.  You should be able to return to the game lobby and reconnect to the server.";
+		pictureBackground = "";
+		picture = "";
+		pictureColor[] = {0.0,0.3,0.6,1};
 	};
 };

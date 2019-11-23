@@ -5,7 +5,7 @@ _this spawn
 	private _position = param [2, [], [[]]];
 	private _direction = param [3, 0, [0]];
 
-	scriptName "spawnJB_fnc_halo";
+	scriptName "JB_fnc_halo";
 
 	[_unit] call HALO_AddParachute;
 

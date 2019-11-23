@@ -1,3 +1,5 @@
+MASS_TO_KG = 0.04545;
+
 AmmoFilter_TransferToTrolley =
 {
 	params ["_unit", "_candidate"];
@@ -49,18 +51,9 @@ TaruPod_AnimateDoors =
 	_vehicle animateDoor ["door_6_source", _value];
 };
 
-Radio_Radios =
-[
-	["O_UavTerminal", "LOW", [242/255, 173/255, 89/255, 1.0], [["30.0MHz", 30.0], ["31.5MHz", 31.5], ["33.0MHz", 33.0], ["34.5MHz", 34.5], ["36.0MHz", 36.0]], "User2"],
-	["I_UavTerminal", "HIGH", [242/255, 89/255, 89/255, 1.0], [["53.0MHz", 53.0], ["54.5MHz", 54.4], ["56.0MHz", 56.0], ["57.5.0MHz", 57.5], ["59.0MHz", 59.0]], "User3"]
-];
-
-Params_GetParamValue =
+BOTH_IsSpecOpsMember =
 {
-	params ["_name"];
-
-	private _override = format ["PARAMS_%1_Override", _name];
-	if (isNil _override) exitWith { [_name] call BIS_fnc_getParamValue };
-
-	call compile _override;
+	params ["_player"];
+	
+	_player getVariable ["SPM_SpecialOperations", false];
 };

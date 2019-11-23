@@ -133,7 +133,7 @@ else
 					private _projectile = _this select 6;
 					private _unit = _this select 7;
 
-					if (CLIENT_CuratorType == "GM") exitWith {};
+					if (CLIENT_CuratorType == "MC") exitWith {};
 
 					if (not unitIsUAV _unit) then
 					{

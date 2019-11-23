@@ -9,7 +9,7 @@
 	private _radius = 0;
 	private _selected = 0;
 
-	scriptName "spawnMonitorMissions";
+	scriptName "MonitorMissions";
 
 	private _stopAbandonedMissions = // Also "minimize" missions that have completed, but haven't been abandoned by the players
 	{
@@ -67,9 +67,23 @@
 		false;
 	};
 
+	private _advanceState = ["Advance"] call JB_MP_GetParamValueText;
+
 	while { true } do
 	{
-		if (Advance_RunState in ["stop", "suspend"]) then
+		private _advanceStateNew = ["Advance"] call JB_MP_GetParamValueText;
+
+		if (_advanceStateNew != _advanceState) then
+		{
+			if (_advanceStateNew == "Started" && _advanceState == "Stopped") then { ["NotificationEndAdvance", ["An operational advance has been started by command."]] remoteExec ["BIS_fnc_showNotification", 0] };
+			if (_advanceStateNew == "Started" && _advanceState == "Suspended") then { ["NotificationEndAdvance", ["The operational advance has been resumed by command."]] remoteExec ["BIS_fnc_showNotification", 0] };
+			if (_advanceStateNew == "Stopped") then { ["NotificationEndAdvance", ["The operational advance has been stopped by command."]] remoteExec ["BIS_fnc_showNotification", 0] };
+			if (_advanceStateNew == "Suspended" && _advanceState == "Started") then { ["NotificationEndAdvance", ["The operational advance has been suspended by command."]] remoteExec ["BIS_fnc_showNotification", 0] };
+		};
+
+		_advanceState = _advanceStateNew;
+
+		if (_advanceState in ["Stopped", "Suspended"]) then
 		{
 			OO_FOREACHINSTANCE(MissionAdvance,[],_stopRunningMissions);
 		}

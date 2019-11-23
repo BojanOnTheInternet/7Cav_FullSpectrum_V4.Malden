@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -97,7 +97,11 @@ SPM_GoToNextPerimeterPoint =
 	{
 		_state set [1, true];
 
-		private _buildingTask = [_group, _position, _checkRadius, _visit, _enter] call SPM_fnc_patrolBuildings;
+		private _buildings = nearestObjects [_position, ["HouseBase"], _checkRadius];
+		_buildings = _buildings select { random 1 < _visit };
+		_buildings = _buildings apply { [_x, random 1 < _enter] };
+
+		private _buildingTask = [_group, _buildings] call SPM_fnc_patrolBuildings;
 		if (([_buildingTask] call SPM_TaskGetState) == 0) then
 		{
 			[_buildingTask, SPM_PerimeterBuildingPatrolComplete, _task] call SPM_TaskOnComplete;

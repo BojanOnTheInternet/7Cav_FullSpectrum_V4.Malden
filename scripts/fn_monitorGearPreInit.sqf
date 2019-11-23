@@ -157,7 +157,7 @@ GR_UAVRestriction =
 		{
 			if ([_x, _p] call GR_Name_Matches_Pattern) then
 			{
-				_violations pushBackUnique (format [UAV_RESTRICTION_MSG, [_x, "CfgVehicles"] call JB_fnc_displayName]);
+				_violations pushBackUnique (format [UAV_RESTRICTION_MSG, [_x, "CfgWeapons"] call JB_fnc_displayName]);
 				player unassignItem _x;
 				player removeItem _x;
 				if (not (call GR_IsConfiguringGear)) then { [_x] call GR_DropGear };
@@ -340,7 +340,7 @@ GR_ATCRestriction =
 
 GR_ProhibitedItemsRestriction =
 {
-	if (isNil "GR_WhitelistItems") then { GR_WhitelistItems = call compile preprocessFile "scripts\whitelistGear.sqf" };
+	if (isNil "GR_WhitelistItems") then { GR_WhitelistItems = call CLIENT_fnc_whitelistGear };
 
 	private _whitelistWeapons = GR_WhitelistItems select 0;
 	private _whitelistBackpacks = GR_WhitelistItems select 1;

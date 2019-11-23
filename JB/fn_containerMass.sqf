@@ -20,7 +20,7 @@ private _containerMass =
 		_mass = _mass + getNumber (configFile >> "CfgWeapons" >> _x >> "ItemInfo" >> "mass") * (_items select 1 select _forEachIndex);
 	} forEach (_items select 0);
 
-	_mass / 22;
+	_mass;
 };
 
 private _mass = [_container] call _containerMass;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -68,16 +68,12 @@ OO_TRACE_DECL(SPM_MissionRaidTown_Create) =
 	private _civilianInnerRadius = _garrisonRadius + 75;
 	private _civilianOuterRadius = _garrisonRadius + 350;
 
-	private _buildings = [_missionPosition, 0, _civilianOuterRadius, 2] call SPM_Util_HabitableBuildings;
-
-	[_missionPosition, _garrisonRadius + 100, _garrisonRadius + 450] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
+	[_missionPosition, _garrisonRadius + 100, _garrisonRadius + 450, 2] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
 
 	OO_SET(_mission,Strongpoint,Name,"Special Operation");
-	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeObject);
+	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeCategoryObject);
 
-	OO_SET(_mission,Mission,ParticipantFilter,SERVER_IsSpecOpsMember);
-
-	OO_SET(_mission,Mission,Buildings,_buildings);
+	OO_SET(_mission,Mission,ParticipantFilter,BOTH_IsSpecOpsMember);
 
 	private _category = OO_NULL;
 	private _categories = [];
@@ -85,16 +81,25 @@ OO_TRACE_DECL(SPM_MissionRaidTown_Create) =
 	// Air defense
 	_area = [_missionPosition, 0, OO_GET(_mission,Strongpoint,ActivityRadius)] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(AirDefenseCategory);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_AirDefense_RatingsWest);
+	OO_SET(_category,ForceCategory,RatingsEast,SPM_AirDefense_RatingsEast);
+	OO_SET(_category,ForceCategory,CallupsEast,SPM_AirDefense_CallupsEast);
 	_categories pushBack _category;
 
 	// Transport
 	_category = [] call OO_CREATE(TransportCategory);
+	OO_SET(_category,TransportCategory,SeaTransports,SPM_Transport_CallupsEastSpeedboat);
+	OO_SET(_category,TransportCategory,GroundTransports,SPM_Transport_CallupsEastMarid);
+	OO_SET(_category,TransportCategory,AirTransports,SPM_Transport_CallupsEastMohawk);
 	_categories pushBack _category;
 
 	// Garrison
 	_area = [_missionPosition, 0, _garrisonRadius] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
 	["Name", "Garrison"] call OO_METHOD(_category,Category,SetTagValue);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
+	OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsEast);
+	OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsEast);
 
 	private _garrisonRatingEast = 0;
 	{ _garrisonRatingEast = _garrisonRatingEast + (_x select 1 select 0) } forEach OO_GET(_category,ForceCategory,RatingsEast);
@@ -136,55 +141,61 @@ OO_TRACE_DECL(SPM_MissionRaidTown_Create) =
 	[2, true, 50, 1, 0.5, 0.0] call OO_METHOD(_category,InfantryPatrolCategory,AddPatrol);
 	[2, false, 50, 1, 0.5, 0.0] call OO_METHOD(_category,InfantryPatrolCategory,AddPatrol);
 
+	private _preferredBuildingTypes = ["Structures_Village", "Structures_Town"];
 
+	private _buildings = [] call OO_METHOD(_mission,Mission,GetBuildings);
 	private _civilianBuildings = _buildings select { (getPos _x) distance _missionPosition > _civilianInnerRadius };
-	_civilianBuildings = _civilianBuildings select { getText (configFile >> "CfgVehicles" >> typeOf _x >> "vehicleClass") in ["Structures_Village", "Structures_Town"] };
-	private _civilians = (count _civilianBuildings * 0.7) min 40; // Leave at least 30% of the buildings empty
+	_civilianBuildings = _civilianBuildings select { getText (configFile >> "CfgVehicles" >> typeOf _x >> "vehicleClass") in _preferredBuildingTypes };
 
-	// Civilians
-	private _occupationLimits = [1,1];
-	_area = [_missionPosition, _civilianInnerRadius, _civilianOuterRadius] call OO_CREATE(StrongpointArea);
-	_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
-	["Name", "Civilians"] call OO_METHOD(_category,Category,SetTagValue);
-	OO_SET(_category,ForceCategory,SideEast,civilian);
-	OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsCivilian);
-	OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsCivilian);
-	OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_CallupsCivilian);
-	OO_SET(_category,InfantryGarrisonCategory,InitialReserves,_civilians);
-	OO_SET(_category,InfantryGarrisonCategory,PlanCallupsEast,SPM_InfantryGarrison_CallupsCivilian);
-	OO_SET(_category,InfantryGarrisonCategory,PlanReserves,count _civilianBuildings);
-	OO_SET(_category,InfantryGarrisonCategory,OccupationLimits,_occupationLimits);
-	OO_SET(_category,InfantryGarrisonCategory,HouseOutdoors,false);
-	OO_SET(_category,InfantryGarrisonCategory,RelocateProbability,SPM_Util_CivilianRelocateProbabilityByTimeOfDay);
-	_categories pushBack _category;
-
-	// Civilian Vehicles
-	_category = [_area] call OO_CREATE(CivilianVehiclesCategory);
-	["Name", "CivilianVehicles"] call OO_METHOD(_category,Category,SetTagValue);
-	_categories pushBack _category;
-
-
-
-	private _syndikat = floor random (_civilians * 0.1);
-	if (_syndikat > 0) then
+	if (count _civilianBuildings > 5) then
 	{
-#ifdef OO_TRACE
-		diag_log format ["SPM_MissionRaidTown_Create: creating %1 syndikat soldiers", _syndikat];
-#endif
+		private _civilians = (count _civilianBuildings * 0.7) min 40; // Leave at least 30% of the buildings empty
+
+		// Civilians
+		private _occupationLimits = [1,1];
+		_area = [_missionPosition, _civilianInnerRadius, _civilianOuterRadius] call OO_CREATE(StrongpointArea);
 		_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
-		["Name", "Guerillas"] call OO_METHOD(_category,Category,SetTagValue);
-		OO_SET(_category,ForceCategory,SideEast,independent);
-		OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsSyndikat);
-		OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsSyndikat);
-		OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_InitialCallupsSyndikat);
-		OO_SET(_category,InfantryGarrisonCategory,InitialReserves,_syndikat);
+		["Name", "Civilians"] call OO_METHOD(_category,Category,SetTagValue);
+		OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
+		OO_SET(_category,ForceCategory,SideEast,civilian);
+		OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsCivilian);
+		OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsCivilian);
+		OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_CallupsCivilian);
+		OO_SET(_category,InfantryGarrisonCategory,InitialReserves,_civilians);
+		OO_SET(_category,InfantryGarrisonCategory,PlanCallupsEast,SPM_InfantryGarrison_CallupsCivilian);
+		OO_SET(_category,InfantryGarrisonCategory,PlanReserves,count _civilianBuildings);
+		OO_SET(_category,InfantryGarrisonCategory,OccupationLimits,_occupationLimits);
+		OO_SET(_category,InfantryGarrisonCategory,HousingPreferences,_preferredBuildingTypes);
+		OO_SET(_category,InfantryGarrisonCategory,HouseOutdoors,false);
+		OO_SET(_category,InfantryGarrisonCategory,RelocateProbability,SPM_Util_CivilianRelocateProbabilityByTimeOfDay);
 		_categories pushBack _category;
+
+		// Civilian Vehicles
+		_category = [_area] call OO_CREATE(CivilianVehiclesCategory);
+		["Name", "CivilianVehicles"] call OO_METHOD(_category,Category,SetTagValue);
+		_categories pushBack _category;
+
+		private _syndikat = floor random (_civilians * 0.1);
+		if (_syndikat > 0) then
+		{
+			_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
+			["Name", "Guerillas"] call OO_METHOD(_category,Category,SetTagValue);
+			OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
+			OO_SET(_category,ForceCategory,SideEast,independent);
+			OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsSyndikat);
+			OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsSyndikat);
+			OO_SET(_category,ForceCategory,SkillLevel,0.35);
+			OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_InitialCallupsSyndikat);
+			OO_SET(_category,InfantryGarrisonCategory,InitialReserves,_syndikat);
+			_categories pushBack _category;
+		};
 	};
 
 	// Armor
 	_area = [_missionPosition, _garrisonRadius + 100, _garrisonRadius + 350] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(ArmorCategory);
 	["Name", "PatrolVehicles"] call OO_METHOD(_category,Category,SetTagValue);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_Armor_RatingsWestAPCs+SPM_Armor_RatingsWestTanks);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_MissionRaidTown_Armor_RatingsEast);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_MissionRaidTown_Armor_CallupsEast);
 

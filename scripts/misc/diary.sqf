@@ -4,27 +4,6 @@ waitUntil {!isNull player};
 
 #define BRIEFING
 #ifdef BRIEFING
-player createDiaryRecord ["diary", ["Special Operations",
-"
-Special operations consist of a series of missions executed by a small team.  That team has specific player slots in the server lobby, all beginning with 'SPECOPs'.
-It is intended to be a self-contained unit, with its own pilot, medics, marksmen and so forth.  Missions are requested via the satellite phone on the desk in the SPECOPs
-building.  Once requested, a series of missions will be provided to the team.  Failure on any mission will end the current series, requiring the team to make a request
-for a new series of missions.  Only SPECOPs members may request missions, complete the essential steps to a mission, or receive notifications from Special Operations Command.
-<br/>
-<br/>
-During missions that take place in cities and villages, the team may encounter enemy vehicles where the crew has dismounted in town before the SPECOPs team has arrived.
-Those vehicles may be taken and used by the SPECOPs team.  If destroyed, they do not respawn.  If damaged, it might not be possible to repair them, depending on
-the vehicle type.
-<br/>
-<br/>
-SPECOPs members are subject to fatigue and weight limits and are further restricted to first person gameplay.  At the same time, they are better marksmen than regular infantry.
-<br/>
-<br/>
-Note that the RPG gunner and team leader may operate armored vehicles as well as the Kajman attack helicopter (in cooperation with the
-SPECOPs pilot).  As with regular infantry, any team member may drive unarmored vehicles.
-"
-]];
-
 player createDiaryRecord ["diary", ["Advances",
 "
 An advance involves assaults on a series of locations on the island.  The current operation is indicated on the map by a 'crossed swords' task icon.  The map's 'Tasks' tab will
@@ -67,55 +46,82 @@ the assault will arrive by air, by land, and where practical, by sea.  Hold the 
 
 player createDiaryRecord ["diary", ["Unit callsigns",
 "
-<br/><font size='12'>Personnel</font>
+<br/><font face='TahomaB' size='12'>Personnel</font>
 <br/>
 <font face='EtelkaMonospacePro' size='10'>
-<br/>Air traffic control           Telos Tower
-<br/>JTAC                          Infidel
-<br/>
-<br/><font size='12'>Transport Aircraft</font>
+<br/>JTAC                           Infidel
+<br/>Logistics/FOB Ops              Apollo
+<br/>Field Medical                  Mustang
+<br/>Air traffic control            Telos Tower
+<br/></font>
+<br/><font face='TahomaB' size='12'>Transport Aircraft</font>
 <br/>
 <font face='EtelkaMonospacePro' size='10'>
-<br/>CH-67 Huron                   Grizzly 1
-<br/>Mi-290 Taru                   Grizzly 2 and 3
-<br/>UH-80 Ghost Hawk (Black)      Buffalo 1
-<br/>UH-80 Ghost Hawk (Camo)       Buffalo 2
-<br/>UH-80 Ghost Hawk (Recon)      Recon 1
-<br/>MH-9 Hummingbird (Black)      Sparrow 1
-<br/>MH-9 Hummingbird (Camo)       Sparrow 2
-<br/>V-44X Blackfish (Infantry)    Condor 1
-<br/>V-44X Blackfish (Vehicle)     Condor 2
+<br/>UH-60 Blackhawk                Buffalo 1/2
+<br/>MH-6 Little Bird               Raven 1
+<br/>CH-47 Chinook                  Grizzly 1
+<br/>V-44X Blackfish (transport)    Titan 1
 </font>
 <br/>
-<br/><font size='12'>Combat Support</font>
+<br/><font face='TahomaB' size='12'>Attack Aircraft</font>
 <br/>
 <font face='EtelkaMonospacePro' size='10'>
-<br/>A-164 Wipeout                 Eagle 1
-<br/>AH-99 Blackfoot               Raider 1
-<br/>WY-55 Hellcat                 Raider 2 and 3
-<br/>V-44X Blackfish (armed)       Spectre
-<br/>Mortar                        Odin
+<br/>A-10 Thunderbolt               Hog 1
+<br/>F-16 Fighting Falcon           Eagle 1
+<br/>V-44X Blackfish (armed)        Spectre 1
+<br/>AH-6 Attack Little Bird        Sparrow 1
+<br/>AH-64 Apache                   Raider 1
 </font>
 <br/>
-<br/><font size='12'>Combat Air Patrol</font>
+<br/>
+<br/><font face='TahomaB' size='12'>Armor</font>
 <br/>
 <font face='EtelkaMonospacePro' size='10'>
-<br/>F/A-181 Black Wasp II         Eagle 2 and 3
+<br/>M1 Abramms                     Sabre 1/2
+<br/>Armored personnel carriers     Banshee 1/2/3/4
 </font>
 <br/>
-<br/>Additional aircraft acquire callsigns by type.  Attack jets are Eagles, attack helicopters are Raiders, etc.
+"
+]];
+
+player createDiaryRecord ["diary", ["Radio Channels",
+"
+<font face='EtelkaMonospacePro' size='10'><br/>01 - Gunslinger Platoon Net</font>
+<br/>            Used to communicate between infantry squads in field
 <br/>
-<br/><font size='12'>Armor</font>
+<font face='EtelkaMonospacePro' size='10'><br/>02 - Aviation</font>
+<br/>            Used for air to air communications and CTAF/Air Traffic Control
 <br/>
-<font face='EtelkaMonospacePro' size='10'>
-<br/>M2A1 Slammer                  Sabre 1 and 2
-<br/>IFV-6a Cheetah                Flyswatter
-<br/>Armored personnel carriers    Tincan
-</font>
+<font face='EtelkaMonospacePro' size='10'><br/>03 thru 09 - Other Platoon Nets</font>
+<br/>            Used whenever there is an MCC or multiple platoons, also utilized if a Platoon comes in for a Platoon FTX
 <br/>
-<br/>Additional armored vehicles acquire callsigns by type.  Main battle tanks are Sabres, etc.
-<font face='EtelkaMonospacePro' size='10'>
-</font>
+<font face='EtelkaMonospacePro' size='10'><br/>10 / 11 - IDF-1 and IDF-2</font>
+<br/>            Used to conduct indirect fire missions from artillery or mortars
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>12 / 13 - CAS-1 and CAS-2</font>
+<br/>            Used to call in fixed-wing or attack rotary close air support
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>14 - Ground-To-Air</font>
+<br/>            Used to conduct pick-up requests from logistical aviation units 
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>15 - Logistics</font>
+<br/>            Used by Apollo and Mustang personnel to dispatch where needed. 
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>16 - FARP Requests</font>
+<br/>            Used to communicate with Apollo personnel when you are inbound to a FARP as to what you need using the FARM acronym. FOXTROT - FUEL (state current fuel state if requesting FOXTROT) / ALPHA - AMMUNITION / ROMEO - REPAIRS / MIKE - MEDICAL (use triage category for multiple casualties) 
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>17 - Convoy</font>
+<br/>            Used when conducting a convoy 
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>18 - Zeus</font>
+<br/>            Used to communicate with a Zeus if required 
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>19 - CAG</font>
+<br/>            Classified 
+<br/>
+<font face='EtelkaMonospacePro' size='10'><br/>20 - Command</font>
+<br/>            Used to coordinate across different platoons or other big picture items 
+<br/>
 "
 ]];
 #endif
@@ -134,21 +140,6 @@ you will be able to enter any Teamspeak channels.
 "
 ]];
 
-player createDiaryRecord ["diary", ["Mission key bindings",
-"
-B - When flying a transport helicopter and depending on circumstances, this key will start a sling interaction, detach all slung cargo, attach a Taru pod, or detach a Taru pod.  Matches the control setting for 'Helicopter Movement, Rope interaction'.<br/>
-H - Holster or sling your current weapon.<br/>
-V - When jogging or running with rifle in hand, this key will cause you to jump.  Matches the control setting for 'Infantry Movement, Step over'.<br/>
-V - When descending in a parachute, this key will cut away your chute.<br/>
-V+V - When ejecting from an aircraft capable of paradropping troops, this key will start a paradrop.  Above 100m will start a static line drop and above 250m will start a HALO drop.<br/>
-PAUSE/BREAK - Insert or remove earplugs.<br/>
-CTRL+SHIFT+U - Hide or show the mission HUD, which shows various labels and icons on objects in the world.<br/>
-CTRL+SHIFT+R - Enable or disable microphone clicks and line noise for transmissions received on the group channel.<br/>
-CTRL+SHIFT+G - Enable or disable variable-strength throwing.  This is for grenades, light sticks, etc.<br/>
-CTRL+SHIFT+SCROLL - Enable or disable fatigue/stamina.  This is only available to classes where fatigue/stamina is turned off by default.<br/>
-"
-]];
-
 player createDiaryRecord ["diary", ["Rules of conduct",
 "
 <br/>1. No fratricide.
@@ -160,18 +151,5 @@ player createDiaryRecord ["diary", ["Rules of conduct",
 <br/>7. No vehicles allowed on runways or landing pads unless it is a support vehicle being used for that purpose
 <br/>
 <br/>If you see a player in violation of any of the above, contact a moderator or administrator (TeamSpeak).  For more information on these rules, see the billboards at base.
-"
-]];
-
-if (not (player diarySubjectExists "credits")) then { player createDiarySubject ["credits", "Credits"] };
-
-player createDiaryRecord ["credits", ["Strongpoint",
-"
-<br/>
-<font align='center'>Design</font><br/>
-<font size='16' align='center'>Dakota (7th Cavalry)</font><br/>
-<br/>
-<font align='center'>Scripting</font><br/>
-<font size='16' align='center'>JB</font><br/><br/>
 "
 ]];

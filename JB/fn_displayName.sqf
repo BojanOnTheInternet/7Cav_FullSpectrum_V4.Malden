@@ -1,28 +1,14 @@
-private _class = param [0, "", [""]];
-private _parentClass = param [1, "", [""]];
+params [["_class", "", [""]], ["_category", "", [""]]];
 
-private _displayName = "";
+if (_category != "") exitWith { getText (configFile >> _category >> _class >> "displayName") };
 
-if (_parentClass != "") then
-{
-	_displayName = getText (configFile >> _parentClass >> _class >> "displayName");
-}
-else
-{
-	_displayName = getText (configFile >> "CfgVehicles" >> _class >> "displayName");
+private _displayName = getText (configFile >> "CfgVehicles" >> _class >> "displayName");
+if (_displayName != "") exitWith { _displayName };
 
-	if (_displayName == "") then
-	{
-		_displayName = getText (configFile >> "CfgWeapons" >> _class >> "displayName");
-	};
-	if (_displayName == "") then
-	{
-		_displayName = getText (configFile >> "CfgMagazines" >> _class >> "displayName");
-	};
-	if (_displayName == "") then
-	{
-		_displayName = getText (configFile >> "CfgAmmo" >> _class >> "displayName");
-	};
-};
+_displayName = getText (configFile >> "CfgWeapons" >> _class >> "displayName");
+if (_displayName != "") exitWith { _displayName };
 
-_displayName;
+_displayName = getText (configFile >> "CfgMagazines" >> _class >> "displayName");
+if (_displayName != "") exitWith { _displayName };
+
+getText (configFile >> "CfgAmmo" >> _class >> "displayName")

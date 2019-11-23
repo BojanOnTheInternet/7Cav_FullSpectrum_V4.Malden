@@ -11,7 +11,8 @@ player setDir (_respawn select 1);
 
 [player, [Headquarters, Carrier], []] execVM "scripts\greenZoneInit.sqf"; // No-combat zones
 
-hideBody player;
+player addEventHandler ["Killed", { [_this select 0] spawn { sleep 300; hideBody (_this select 0) } }];
+
 [player, "novoice"] remoteExec ["setSpeaker", 0, true]; //JIP
 
 if (not isNil "CLIENT_RespawnLoadout") then { player setUnitLoadout CLIENT_RespawnLoadout };
@@ -21,7 +22,7 @@ private _cameraView = profileNamespace getVariable "CLIENT_RespawnCamera";
 if (not isNil "_cameraView" && { _cameraView in ["EXTERNAL", "INTERNAL"] }) then { player switchCamera _cameraView };
 [] spawn
 {
-	scriptName "spawnOnPlayerRespawn-CameraView";
+	scriptName "OnPlayerRespawn-CameraView";
 
 	private _player = player;
 	private _cameraView = "";
@@ -37,27 +38,10 @@ if (not isNil "_cameraView" && { _cameraView in ["EXTERNAL", "INTERNAL"] }) then
 	};
 };
 
-CLIENT_ClearVehicleInventory =
-{
-	[] spawn
-	{
-		private _itemCount = 0; { _itemCount = _itemCount + _x } forEach ((getItemCargo vehicle player select 1) + (getWeaponCargo vehicle player select 1) + (getBackpackCargo vehicle player select 1) + (getMagazineCargo vehicle player select 1));
-		private _message = format ["Clear inventory on %1? (%2 items)", [typeOf vehicle player] call JB_fnc_displayName, _itemCount];
-		if ([_message, "CLEAR VEHICLE INVENTORY", true, true, findDisplay 46] call BIS_fnc_guiMessage) then { [vehicle player] call JB_fnc_containerClear };
-	};
-};
-
-CLIENT_ClearVehicleInventoryCondition =
-{
-	if (vehicle player isKindOf "Man") exitWith { false };
-
-	if (player != driver vehicle player && player != commander vehicle player && player != gunner vehicle player) exitWith { false };
-
-	true
-};
+[] call CLIENT_EC_PlayerInit;
 
 player addAction ["Clear vehicle inventory", CLIENT_ClearVehicleInventory, [], 0, false, true, "", "[] call CLIENT_ClearVehicleInventoryCondition"];
-player addAction ["Unflip Vehicle", { [cursorTarget] call JB_fnc_flipVehicle }, [], 0, true, true, "", "(vehicle player) == player && { (player distance cursorTarget) < (sizeOf typeOf cursorTarget) * 0.3 } && { [cursorTarget] call JB_fnc_flipVehicleCondition }"];
+player addAction ["Unflip Vehicle", { [cursorObject] call JB_fnc_flipVehicle }, [], 0, true, true, "", "vehicle player == player && { getCursorObjectParams select 2 <= 2 } && { [cursorObject] call JB_fnc_flipVehicleCondition }"];
 
 ["respawn"] call compile preProcessFile format ["scripts\class\%1.sqf", typeOf player];
 

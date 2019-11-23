@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -50,13 +50,11 @@ OO_TRACE_DECL(SPM_SatelliteCommunicationCenter_CreateSatellitePhone) =
 
 	private _objectPosition = [];
 
-	private _box = ["Box_CSAT_Equip_F", _position, _direction + 270, "can_collide"] call SPM_fnc_spawnVehicle;
-	private _phone = ["Land_SatellitePhone_F", call SPM_Util_RandomSpawnPosition, 0, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _box = ["Box_CSAT_Equip_F", call SPM_Util_RandomSpawnPosition, _direction + 270] call SPM_fnc_spawnVehicle;
+	[_category, _box] call OO_GET(_category,Category,InitializeObject);
 
-	_phone attachTo [_box, [0, -0.1 + random 0.2, 0.55], ""];
-	_phone setDir (85 + random 10);
-
-	[_phone, "CSCC", "SATELLITE"] call TRACE_SetObjectString;
+	private _phone = ["Land_SatellitePhone_F", call SPM_Util_RandomSpawnPosition, 0] call SPM_fnc_spawnVehicle;
+	[_category, _phone] call OO_GET(_category,Category,InitializeObject);
 
 	[_box] call JB_fnc_containerClear;
 	[_box] call JB_fnc_containerLock;
@@ -64,11 +62,18 @@ OO_TRACE_DECL(SPM_SatelliteCommunicationCenter_CreateSatellitePhone) =
 	_box addEventHandler ["HandleDamage", SPM_SatelliteCommunicationCenter_HandleDamage_Box];
 	_box addEventHandler ["Killed", SPM_SatelliteCommunicationCenter_Killed_Box];
 
+	_phone attachTo [_box, [0, -0.1 + random 0.2, 0.55], ""];
+	_phone setDir (85 + random 10);
+
+	[_phone, "CSCC", "SATELLITE"] call TRACE_SetObjectString;
+
+	_box setPos _position;
+
 	[_category, _phone, _indoor] spawn
 	{
 		params ["_category", "_phone", "_indoor"];
 
-		scriptName "spawnSPM_SatelliteCommunicationCenter_CreateSatellitePhone";
+		scriptName "SPM_SatelliteCommunicationCenter_CreateSatellitePhone";
 
 		// Run comms chatter
 		[_phone, _indoor] remoteExec ["SPM_CommunicationCenter_CommunicationChatter", 0, true];//JIP
@@ -113,7 +118,7 @@ OO_TRACE_DECL(SPM_SatelliteCommunicationCenter_CreateSatelliteAntenna) =
 {
 	params ["_category", "_position", "_direction", "_simulationEnabled"];
 
-	private _antenna = ["Land_SatelliteAntenna_01_F", _position, _direction, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _antenna = ["Land_SatelliteAntenna_01_F", _position, _direction] call SPM_fnc_spawnVehicle;
 	_antenna enableSimulation _simulationEnabled;
 
 	OO_GET(_category,SatelliteCommunicationCenterCategory,_CenterObjects) append [_antenna];
@@ -140,11 +145,11 @@ OO_TRACE_DECL(SPM_SatelliteCommunicationCenter_CreateCamoflagedVehicle) =
 	private _camoNetType = OO_GET(_category,SatelliteCommunicationCenterCategory,CamoNetType);
 
 	_objectPosition = _position vectorAdd ([[0.000, 2.000, 0.000], _direction] call SPM_Util_RotatePosition2D);
-	private _truck = [_truckType, _objectPosition, (_direction - 90) - 5 + random 10, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _truck = [_truckType, _objectPosition, (_direction - 90) - 5 + random 10] call SPM_fnc_spawnVehicle;
 	_truck setRepairCargo 0; // Prevent players from repairing on the enemy vehicle
 	[_category, _truck] call OO_GET(_category,Category,InitializeObject);
 
-	private _camoNet = [_camoNetType, _position, _direction, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _camoNet = [_camoNetType, _position, _direction] call SPM_fnc_spawnVehicle;
 
 	OO_GET(_category,SatelliteCommunicationCenterCategory,_CenterObjects) append [_camoNet, _truck];
 

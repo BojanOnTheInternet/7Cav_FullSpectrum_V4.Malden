@@ -23,6 +23,7 @@ OO_TRACE_DECL(JB_CO_PickUpAction) =
 		private _dimensions = (boundingBoxReal _object) select 1;
 		private _rotate = (_dimensions select 0) < (_dimensions select 1);
 		private _offset = if (_rotate) then { _dimensions select 0 } else { _dimensions select 1 };
+		_offset = _offset + 0.2; // Body thickness
 
 		if (not local _object) then
 		{

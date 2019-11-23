@@ -4,7 +4,7 @@ player setVariable ["JB_CO_Player", [_jogLimit, _liftLimit]];
 
 JB_CO_AddActions =
 {
-	private _actionPickUp = player addAction ["Pick up object", { [cursorObject] call JB_CO_PickUpAction }, nil, 10, true, true, "", "(player distance2D cursorObject <= 2) && { [cursorObject] call JB_CO_PickUpActionCondition }"];
+	private _actionPickUp = player addAction ["Pick up object", { [cursorObject] call JB_CO_PickUpAction }, nil, 5, true, true, "", "getCursorObjectParams select 2 <= 2 && { [cursorObject] call JB_CO_PickUpActionCondition }"];
 	private _actionDrop = player addAction ["Drop object", { [] call JB_CO_DropAction }, nil, 10, true, true, "", "[] call JB_CO_DropActionCondition"];
 
 	private _data = player getVariable "JB_CO_Player";

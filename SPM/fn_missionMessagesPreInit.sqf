@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -31,9 +31,9 @@ OO_TRACE_DECL(SPM_Mission_Message) =
 	};
 };
 
-OO_TRACE_DECL(SPM_Mission_SpecOpsMembers) =
+SPM_Mission_SpecOpsMembers =
 {
-	allPlayers select { [_x] call SERVER_IsSpecOpsMember }
+	allPlayers select { [_x] call BOTH_IsSpecOpsMember }
 };
 
 if (not hasInterface) exitWith {};
@@ -248,7 +248,13 @@ OO_TRACE_DECL(SPM_Mission_MessageShow) =
 
 		if ("title" in _media) then
 		{
-			titleText [_message joinString "\n", "plain down", 0.5];
+			if (typeName _message == "ARRAY") then {
+				titleText [_message joinString "\n", "plain down", 0.5];
+			}
+			else {
+				titleText [_message, "plain down", 0.5];
+			};
+			
 		};
 
 		if ("notification" in _media) then

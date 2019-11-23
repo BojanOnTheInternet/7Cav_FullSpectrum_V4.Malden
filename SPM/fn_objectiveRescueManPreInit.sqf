@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -126,7 +126,11 @@ OO_TRACE_DECL(SPM_ObjectiveRescueMan_Update) =
 			private _unitProvider = OO_GET(_objective,ObjectiveRescueMan,UnitProvider);
 			private _unit = OO_GET(_unitProvider,UnitProvider,Unit);
 
-			if (not alive _unit) exitWith { OO_SET(_objective,MissionObjective,State,"failed") };
+			if (not alive _unit) exitWith
+			{
+				OO_SET(_objective,MissionObjective,State,"failed");
+				[_objective, ["Rescue failed.  Target has been killed.", ""], "event"] call OO_METHOD(_objective,Category,SendNotification);
+			};
 		};
 
 		case "succeeded";

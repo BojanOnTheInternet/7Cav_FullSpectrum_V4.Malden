@@ -2,7 +2,7 @@ _this spawn
 {
 	params ["_nominalAimCoefficient"];
 
-	scriptName "spawnJB_fnc_weaponSwayInit";
+	scriptName "JB_fnc_weaponSwayInit";
 
 	private _lastWeapon = "";
 	private _player = player;

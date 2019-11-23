@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -13,12 +13,12 @@ if (not isServer && hasInterface) exitWith {};
 #include "strongpoint.h"
 
 #define CALLUP_DISTANCE 7500
-#define RETIRE_DISTANCE 4000
+#define RETIRE_DISTANCE 7500
 
 #ifdef TEST
 #define CALLUP_INTERVAL [10,10]
 #else
-#define CALLUP_INTERVAL [120,300]
+#define CALLUP_INTERVAL [720,1020]
 #endif
 
 OO_BEGIN_STRUCT(Airfield);
@@ -34,7 +34,7 @@ SPM_AirPatrol_Airfields = [];
 
 switch (toLower worldName) do
 {
-	case "malden":
+	case "altis":
 	{
 		private _position = [];
 		private _spawnPosition = [];
@@ -43,7 +43,7 @@ switch (toLower worldName) do
 		_position = [09110, 21510, 0];
 		_spawnPosition = [09150, 21480, 0];
 		_airfield = [] call OO_CREATE(Airfield);
-		OO_SET(_airfield,Airfield,Name,"Moray");
+		OO_SET(_airfield,Airfield,Name,"Krya Nera Airfield");
 		OO_SET(_airfield,Airfield,Position,_position);
 		OO_SET(_airfield,Airfield,Radius,300);
 		OO_SET(_airfield,Airfield,SpawnPosition,_spawnPosition);
@@ -55,7 +55,7 @@ switch (toLower worldName) do
 		_position = [11490, 11720, 0];
 		_spawnPosition = [11360, 11440, 0];
 		_airfield = [] call OO_CREATE(Airfield);
-		OO_SET(_airfield,Airfield,Name,"7Cav Main Base");
+		OO_SET(_airfield,Airfield,Name,"AAC Airfield");
 		OO_SET(_airfield,Airfield,Position,_position);
 		OO_SET(_airfield,Airfield,Radius,400);
 		OO_SET(_airfield,Airfield,SpawnPosition,_spawnPosition);
@@ -64,84 +64,43 @@ switch (toLower worldName) do
 
 		SPM_AirPatrol_Airfields pushBack _airfield;
 
+		_position = [20990, 07270, 0];
+		_spawnPosition = [21120, 07330, 0];
+		_airfield = [] call OO_CREATE(Airfield);
+		OO_SET(_airfield,Airfield,Name,"Selakano Airfield");
+		OO_SET(_airfield,Airfield,Position,_position);
+		OO_SET(_airfield,Airfield,Radius,400);
+		OO_SET(_airfield,Airfield,SpawnPosition,_spawnPosition);
+		OO_SET(_airfield,Airfield,SpawnDirection,10);
+		OO_SET(_airfield,Airfield,Functional,false);
+
+		SPM_AirPatrol_Airfields pushBack _airfield;
+
+		_position = [26920, 24730, 0];
+		_spawnPosition = [27150, 24900, 0];
+		_airfield = [] call OO_CREATE(Airfield);
+		OO_SET(_airfield,Airfield,Name,"Molos Airfield");
+		OO_SET(_airfield,Airfield,Position,_position);
+		OO_SET(_airfield,Airfield,Radius,400);
+		OO_SET(_airfield,Airfield,SpawnPosition,_spawnPosition);
+		OO_SET(_airfield,Airfield,SpawnDirection,235);
+		OO_SET(_airfield,Airfield,Functional,true);
+
+		SPM_AirPatrol_Airfields pushBack _airfield;
+
+		_position = [14720, 16590, 0];
+		_spawnPosition = [14360, 15900, 0];
+		_airfield = [] call OO_CREATE(Airfield);
+		OO_SET(_airfield,Airfield,Name,"Altis International Airport");
+		OO_SET(_airfield,Airfield,Position,_position);
+		OO_SET(_airfield,Airfield,Radius,1200);
+		OO_SET(_airfield,Airfield,SpawnPosition,_spawnPosition);
+		OO_SET(_airfield,Airfield,SpawnDirection,40);
+		OO_SET(_airfield,Airfield,Functional,true);
+
+		SPM_AirPatrol_Airfields pushBack _airfield;
 	};
 };
-
-SPM_AirPatrol_RatingsWest =
-[
-	["B_Plane_Fighter_01_F", [200, 1]],
-	["B_Plane_Fighter_01_Stealth_F", [200, 1]],
-
-	["O_Plane_Fighter_02_F", [200, 1]],
-	["O_Plane_Fighter_02_Stealth_F", [300, 1]],
-
-	["I_Plane_Fighter_03_AA_F", [200, 1]],
-	["I_Plane_Fighter_03_dynamicLoadout_F", [200, 1]],
-	["I_Plane_Fighter_04_F", [200, 1]],
-
-	["RHS_AH64D (AH64)", [100, 1]],
-	["FIR_A10C (A10)", [100, 1]],
-
-	["FIR_F16C (F16)", [100, 1]]
-];
-
-SPM_AirPatrol_CallupsEast =
-[
-	["rhs_mig29s_vvs", [100, 1, 1.0,
-			{
-				params ["_unit"];
-
-				{
-					if (_x in ["rhs_ammo_r27_base", "rhs_ammo_r73m"]) then { _unit setAmmoOnPylon [_forEachIndex + 1, 0]; _unit setPylonLoadOut [_forEachIndex + 1, ""] };
-				} forEach getPylonMagazines _unit;
-
-				_unit removeWeapon "rhs_weap_r27r_Launcher";
-				_unit removeWeapon "rhs_weap_r27t_Launcher";
-
-				_unit engineOn true;
-				_unit setVelocityModelSpace [0, 300 * 0.2778, 0];
-				_unit flyInHeight (100 + random 200);
-
-				_unit setVariable ["SPM_Force_EssentialMagazines", [["rhs_ammo_r73m", 0], ["rhs_ammo_r73m", 0],["rhs_ammo_r73m", 0]]];
-			}]],
-	["rhs_mig29sm_vvs", [150, 1, 1.0,
-			{
-				params ["_unit"];
-
-				{
-					if (_x in ["rhs_ammo_r27_base", "rhs_ammo_r73m"]) then { _unit setAmmoOnPylon [_forEachIndex + 1, 0]; _unit setPylonLoadOut [_forEachIndex + 1, ""] };
-				} forEach getPylonMagazines _unit;
-
-				_unit removeWeapon "rhs_weap_r27r_Launcher";
-				_unit removeWeapon "rhs_weap_r27t_Launcher";
-
-				_unit engineOn true;
-				_unit setVelocityModelSpace [0, 300 * 0.2778, 0];
-				_unit flyInHeight (100 + random 200);
-
-				_unit setVariable ["SPM_Force_EssentialMagazines", [["rhs_ammo_r73m", 0], ["rhs_ammo_r73m", 0],["rhs_ammo_r73m", 0]]];
-			}]],
-
-	["RHS_Su25SM_vvs", [100, 1, 1.0,
-			{
-				params ["_unit"];
-
-				{
-					if (_x in ["rhs_ammo_fab250", "rhs_ammo_s8_penetrator", "rhs_ammo_s8DF", "rhs_ammo_r60m"]) then { _unit setAmmoOnPylon [_forEachIndex + 1, 0]; _unit setPylonLoadOut [_forEachIndex + 1, ""] };
-				} forEach getPylonMagazines _unit;
-
-				_unit removeWeapon "rhs_weap_fab250";
-				_unit removeWeapon "rhs_weap_s8df";
-
-				_unit engineOn true;
-				_unit setVelocityModelSpace [0, 300 * 0.2778, 0];
-				_unit flyInHeight (100 + random 200);
-
-				_unit setVariable ["SPM_Force_EssentialMagazines", [["rhs_ammo_r60m", 0], ["rhs_ammo_r60m", 0], ["rhs_ammo_s8_penetrator", 0], ["rhs_ammo_s8_penetrator", 0]]];
-			}]]
-];
-
-SPM_AirPatrol_RatingsEast = SPM_AirPatrol_CallupsEast apply { [_x select 0, (_x select 1) select [0, 2]] };
 
 OO_TRACE_DECL(SPM_Chain_NearestAirfield) =
 {
@@ -179,22 +138,22 @@ OO_TRACE_DECL(SPM_AirPatrol_Retire) =
 	params ["_forceUnitIndex", "_category"];
 
 	private _forceUnit = OO_GET(_category,ForceCategory,ForceUnits) select _forceUnitIndex;
-	private _vehicle = OO_GET(_forceUnit,ForceUnit,Vehicle);
 
 	// If already retiring, return
-	if ((group driver _vehicle) getVariable ["SPM_Force_Retiring", false]) exitWith {};
+	if ([_forceUnit] call SPM_Force_IsRetiring) exitWith {};
 
+	private _vehicle = OO_GET(_forceUnit,ForceUnit,Vehicle);
 	private _position = _vehicle getVariable "SPM_AirPatrol_RetirePosition";
+	private _group = [] call OO_METHOD(_forceUnit,ForceUnit,GetGroup);
 
-	{
-		[_x] call SPM_DeletePatrolWaypoints;
+	[_group] call SPM_DeletePatrolWaypoints;
 
-		[units _x] call SPM_Util_AIOnlyMove;
+	[units _group] call SPM_Util_AIOnlyMove;
 
-		private _waypoint = [_x, _position] call SPM_AddPatrolWaypoint;
-		[_waypoint, SPM_WS_SalvageAirPatrol, _category] call SPM_AddPatrolWaypointStatements;
-		_x setVariable ["SPM_Force_Retiring", true];
-	} forEach ([] call OO_METHOD(_forceUnit,ForceUnit,GetGroups));
+	private _waypoint = [_group, _position] call SPM_AddPatrolWaypoint;
+	[_waypoint, SPM_WS_SalvageAirPatrol, _category] call SPM_AddPatrolWaypointStatements;
+
+	[_forceUnit, true] call SPM_Force_SetRetiring;
 };
 
 OO_TRACE_DECL(SPM_AirPatrol_Reinstate) =
@@ -202,15 +161,14 @@ OO_TRACE_DECL(SPM_AirPatrol_Reinstate) =
 	params ["_forceUnitIndex", "_category"];
 
 	private _forceUnit = OO_GET(_category,ForceCategory,ForceUnits) select _forceUnitIndex;
+	private _group = [] call OO_METHOD(_forceUnit,ForceUnit,GetGroup);
 
-	{
-		[_x] call SPM_DeletePatrolWaypoints;
+	[_group] call SPM_DeletePatrolWaypoints;
 
-		[units _x] call SPM_Util_AIFullCapability;
+	[units _group] call SPM_Util_AIFullCapability;
 
-		_x setVariable ["SPM_Force_Retiring", nil];
-		[_category, _x] call SPM_AirPatrol_Task_Patrol;
-	} forEach ([] call OO_METHOD(_forceUnit,ForceUnit,GetGroups));
+	[_forceUnit, false] call SPM_Force_SetRetiring;
+	[_category, _group] call SPM_AirPatrol_Task_Patrol;
 };
 
 OO_TRACE_DECL(SPM_AirPatrol_WS_TargetDestroyed) =
@@ -273,7 +231,7 @@ OO_TRACE_DECL(SPM_AirPatrol_RestrictTargeting) =
 	{
 		params ["_vehicle"];
 
-		scriptName "spawnSPM_AirPatrol_RestrictTargeting";
+		scriptName "SPM_AirPatrol_RestrictTargeting";
 
 		private _target = objNull;
 		private _baseAreas = [0, -1, -1] call SERVER_OperationBlacklist;
@@ -394,6 +352,9 @@ OO_TRACE_DECL(SPM_AirPatrol_CreateAirfieldStrongpoint) =
 
 	private _area = [_airfieldPosition, 0, _airfieldRadius] call OO_CREATE(StrongpointArea);
 	private _airDefense = [_area] call OO_CREATE(AirDefenseCategory);
+	OO_SET(_airDefense,ForceCategory,RatingsWest,SPM_AirDefense_RatingsWest);
+	OO_SET(_airDefense,ForceCategory,RatingsEast,SPM_AirDefense_RatingsEast);
+	OO_SET(_airDefense,ForceCategory,CallupsEast,SPM_AirDefense_CallupsEast);
 	OO_SET(_airDefense,ForceCategory,RangeWest,10000);
 	[_airDefense] call OO_METHOD(_airfieldStrongpoint,Strongpoint,AddCategory);
 
@@ -467,7 +428,7 @@ OO_TRACE_DECL(SPM_AirPatrol_Update)	 =
 
 			_airfieldStrongpoint = OO_GET(_category,AirPatrolCategory,AirfieldStrongpoint);
 
-			[_airfieldStrongpoint] spawn { params ["_airfieldStrongpoint"]; scriptName "spawnSPM_AirPatrol_AirfieldRun"; [] call OO_METHOD(_airfieldStrongpoint,Strongpoint,Run) }; // Cannot spawn OO_METHODs
+			[_airfieldStrongpoint] spawn { params ["_airfieldStrongpoint"]; scriptName "SPM_AirPatrol_AirfieldRun"; [] call OO_METHOD(_airfieldStrongpoint,Strongpoint,Run) }; // Cannot spawn OO_METHODs
 		};
 
 		private _airfield = OO_GET(_category,AirPatrolCategory,Airfield);
@@ -517,10 +478,6 @@ OO_TRACE_DECL(SPM_AirPatrol_Create) =
 	params ["_category", "_area"];
 
 	OO_SET(_category,ForceCategory,Area,_area);
-
-	OO_SET(_category,ForceCategory,RatingsWest,SPM_AirPatrol_RatingsWest);
-	OO_SET(_category,ForceCategory,RatingsEast,SPM_AirPatrol_RatingsEast);
-	OO_SET(_category,ForceCategory,CallupsEast,SPM_AirPatrol_CallupsEast);
 };
 
 OO_TRACE_DECL(SPM_AirPatrol_Delete) =

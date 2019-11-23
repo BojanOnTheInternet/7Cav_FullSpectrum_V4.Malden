@@ -116,7 +116,7 @@ JBR_RepairSystem =
 	{
 		params ["_systemIndex"];
 
-		scriptName "spawnJBR_RepairSystem";
+		scriptName "JBR_RepairSystem";
 
 		disableSerialization;
 
@@ -215,21 +215,17 @@ JBR_RepairSystem =
 
 JBR_InspectVehicleCondition =
 {
-	private _vehicle = param [0, objNull, [objNull]];
+	params ["_vehicle"];
 
 	if (vehicle player != player) exitWith { false };
 
-	if (isNull _vehicle) exitWith { false };
-
-	if (!alive _vehicle) exitWith { false };
+	if (not alive _vehicle) exitWith { false };
 
 	if (locked _vehicle in [2, 3]) exitWith { false };
 
 	if (side _vehicle getFriend side player < 0.6) exitWith { false };
 
 	if (not (lifeState player in ["HEALTHY", "INJURED"])) exitWith { false };
-
-	if (player distance _vehicle > (sizeOf (typeOf _vehicle)) / 2) exitWith { false };
 
 	if ([animationState player, ["cin", "inv"]] call JB_fnc_matchAnimationState) exitWith { false };
 
@@ -247,6 +243,8 @@ JBR_InspectVehicle =
 	(findDisplay 46) createDisplay "JBR_Repair";
 	waitUntil { not isNull (findDisplay REPAIR_DISPLAY) };
 
+	call CLIENT_DisableActionMenu;
+
 	disableSerialization;
 	private _display = findDisplay REPAIR_DISPLAY;
 	private _systemsList = _display displayCtrl SYSTEMS_LIST;
@@ -263,17 +261,20 @@ JBR_InspectVehicle =
 	{
 		params ["_display"];
 
-		scriptName "spawnJBR_InspectVehicle";
+		scriptName "JBR_InspectVehicle";
 
 		disableSerialization;
 
-		while { not isNull _display } do
+		while { not isNull _display && lifeState player in ["HEALTHY", "INJURED"] } do
 		{
 			{
 				[_x, _forEachIndex] call JBR_UpdateSystemRow;
 			} forEach JBR_VehicleSystems;
+
 			sleep 1;
 		};
+
+		if (not isNull _display) then { _display closeDisplay IDC_CANCEL };
 	};
 };
 
@@ -369,6 +370,8 @@ JBR_RepairUnload =
 	{
 		[] call JBR_RepairSystemStop;
 	};
+
+	call CLIENT_EnableActionMenu;
 };
 
 JBR_RepairDoneAction =
@@ -380,7 +383,7 @@ JBR_RepairDoneAction =
 
 JBR_SetupActions =
 {
-	player addAction ["<t color='#FFFF99'>Inspect vehicle condition</t>", { [cursorTarget] call JBR_InspectVehicle }, [], 0, false, true, "", "[cursorTarget] call JBR_InspectVehicleCondition;"];
+	player addAction ["<t color='#FFFF99'>Repair vehicle</t>", { [cursorObject] call JBR_InspectVehicle }, [], 0, false, true, "", "getCursorObjectParams select 2 <= 2 && { [cursorObject] call JBR_InspectVehicleCondition }"];
 };
 
 private _unit = param [0, objNull, [objNull]];

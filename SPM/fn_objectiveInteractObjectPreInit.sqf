@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -20,9 +20,10 @@ SPM_ObjectiveInteractObject_InteractCondition =
 
 	if (not (lifeState _player in ["HEALTHY", "INJURED"])) exitWith { false };
 
+	private _data = _target getVariable "SPM_ObjectiveInteractObject_Data";
+
 	if (_player distance2D _target > (_data select 7)) exitWith { false };
 
-	private _data = _target getVariable "SPM_ObjectiveInteractObject_Data";
 	if (not ([_target, _player] call (_data select 2))) exitWith { false };
 
 	true
@@ -160,7 +161,11 @@ OO_TRACE_DECL(SPM_ObjectiveInteractObject_Update) =
 		{
 			private _object = OO_GET(_objective,MissionObjective,ObjectiveObject);
 			if (isNull _object) exitWith { OO_SET(_objective,MissionObjective,State,"error") };
-			if (not alive _object) exitWith { OO_SET(_objective,MissionObjective,State,"failed") };
+			if (not alive _object) exitWith
+			{
+				OO_SET(_objective,MissionObjective,State,"failed");
+				[_objective, ["Interaction failed.  Target has been destroyed", ""], "event"] call OO_METHOD(_objective,Category,SendNotification);
+			};
 		};
 
 		case "succeeded";

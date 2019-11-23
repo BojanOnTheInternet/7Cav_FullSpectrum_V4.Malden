@@ -4,7 +4,7 @@ JBMAP_InstallDisplayControlDrawHandler =
 	{
 		params ["_displays", "_displayNumber", "_controlNumber", "_handler", "_monitor"];
 
-		scriptName "spawnJBMAP_InstallDisplayControlDrawHandler";
+		scriptName "JBMAP_InstallDisplayControlDrawHandler";
 
 		disableSerialization;
 
@@ -40,15 +40,12 @@ JBMAP_InitializeOverlay =
 	{
 		params ["_mapDraw", "_gpsDraw"];
 
-		scriptName "spawnInstallMapDrawHandlers";
+		scriptName "InstallMapDrawHandlers";
 
 		[{ allDisplays }, 12, 51, _mapDraw, false] call JBMAP_InstallDisplayControlDrawHandler; // Main map
 		[{ allDisplays }, 160, 51, _mapDraw, true] call JBMAP_InstallDisplayControlDrawHandler; // UAV
 		[{ allDisplays }, -1, 500, _mapDraw, true] call JBMAP_InstallDisplayControlDrawHandler; // Artillery
-//		if (CLIENT_CuratorType == "GM") then
-//		{
-//			[{ allDisplays }, 312, 50, _mapDraw, true] call JBMAP_InstallDisplayControlDrawHandler; // Curator
-//		};
+		[{ allDisplays }, 312, 50, _mapDraw, true] call JBMAP_InstallDisplayControlDrawHandler; // Curator
 
 		[{ uiNamespace getVariable "IGUI_Displays" }, 311, 101, _gpsDraw, false] call JBMAP_InstallDisplayControlDrawHandler; // GPS
 	};

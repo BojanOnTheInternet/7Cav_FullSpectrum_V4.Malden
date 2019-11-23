@@ -18,7 +18,7 @@ JB_CHAT_MonitorChat =
 {
 	_this spawn
 	{
-		scriptName "spawnJB_CHAT_MonitorChat";
+		scriptName "JB_CHAT_MonitorChat";
 
 		while { not isNil "JB_CHAT_Handlers" } do
 		{

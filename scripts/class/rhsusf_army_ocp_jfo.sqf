@@ -6,20 +6,21 @@ if (_state == "init") then
 	[] call HUD_Infantry_Initialize;
 	[] call HUD_Repair_Initialize;
 
+	[] call Tac2_fnc_treeCutterInitPlayer;
+
 	player setVariable ["SPM_BranchOfService", "support"];
-	player setVariable ["JBA_LogisticsSpecialist", true, true]; //JIP
+	player setVariable ["JBA_LogisticsSpecialist", true, true];
+	player setvariable ["ACE_IsEngineer", 2];
+	player setVariable ["TAC2_canFortify", true];
 
 	[player] call CLIENT_SetInfantryVehiclePermissions;
 	{
-		player setVariable [_x, [[TypeFilter_LogisticsVehicles, [], {}], [TypeFilter_All, [VPC_UnlessOccupied], {}]] + (player getVariable _x)];
-		player setVariable [_x, [[TypeFilter_BaseServiceVehicles, [], {}]] + (player getVariable _x)];
-	} forEach ["VP_Driver"];
+		// Let Apollo drive anything
+		player setVariable [_x, [[TypeFilter_All, [], {}]] + (player getVariable _x)];
+	} forEach ["VP_Driver", "VP_Pilot", "VP_Gunner", "VP_Turret"];
 };
 
 if (_state == "respawn") then
 {
 
-	private _restrictions = [];
-    _restrictions pushBack { [GR_All + GR_FinalPermissions] call GR_All};
-    [_restrictions] call CLIENT_fnc_monitorGear;
 };

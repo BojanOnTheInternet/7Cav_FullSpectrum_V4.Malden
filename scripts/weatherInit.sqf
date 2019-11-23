@@ -1,15 +1,25 @@
+ZeusEnabledWeather = true;
+
 [] spawn
 {
-	scriptName "spawnWeatherInit";
+	scriptName "WeatherInit";
 
 	// SERVER_Weather = [[random-triple-for-overcast, chance-of-rain-per-storm-period, chance-of-storm-having-lightning], ...] one entry for each month
+
+	if ((["Rain"] call JB_MP_GetParamValue) == 0) then
+	{
+		{
+			_x set [1, 0];
+		} forEach SERVER_Weather;
+	};
+
 
 	private _times = [date] call BIS_fnc_sunriseSunsetTime;
 	private _nightEnd = (_times select 0) - 0.9;
 	private _nightStart = (_times select 1) + 0.9;
 
 	private _gameNightDuration = ((24 - _nightStart) + _nightEnd);
-	private _realNightDuration = 1.0; // hours of realtime night
+	private _realNightDuration = 2.0; // hours of realtime night
 	private _acceleration = _gameNightDuration / _realNightDuration;
 
 	private _month = date select 1;
@@ -62,51 +72,56 @@
 
 	while { true } do
 	{
-		_time = diag_tickTime;
+		if (ZeusEnabledWeather) then {
+			_time = diag_tickTime;
 
-		(2 * random 5) setWindDir (_windDirection + (-60 + random 120));
+			(2 * random 5) setWindDir (_windDirection + (-60 + random 120));
 
-		if (_fog == 0) then { 10 setFog 0 };
+			if (_fog == 0) then { 10 setFog 0 };
 
-		if (_time >= _nextOvercastUpdate) then
-		{
-			_nextOvercastUpdate = _time + 60 * 60 + random (60 * 60);
-
-			[random [(overcast - 0.25) max 0, overcast, (overcast + 0.25) min 1]] call _setOvercast;
-		};
-
-		if (_time >= _nextStormUpdate) then
-		{
-			private _stormDuration = 3 * 60 + random (12 * 60);
-			_nextStormUpdate = _time + _stormDuration;
-
-			private _transition = 1 + random 19;
-
-			if (overcast > 0.5) then
+			if (_time >= _nextOvercastUpdate) then
 			{
-				_rain = 0;
-				_fog = 0;
-				_lightning = 0;
+				_nextOvercastUpdate = _time + 60 * 60 + random (60 * 60);
 
-				if (random 1 < _chanceOfRain) then
-				{
-					_rain = random overcast;
-					_fog = (_rain * 0.1);
-					_lightning = random (SERVER_Weather select (_month - 1) select 2);
-				};
-
-				_transition setRain _rain;
-				_transition setFog _fog;
-				_transition setLightnings _lightning;
+				[random [(overcast - 0.25) max 0, overcast, (overcast + 0.25) min 1]] call _setOvercast;
 			};
 
-			_transition setWindStr random overcast;
-			_transition setWindForce overcast;
-			_transition setGusts random overcast;
+			if (_time >= _nextStormUpdate) then
+			{
+				private _stormDuration = 3 * 60 + random (12 * 60);
+				_nextStormUpdate = _time + _stormDuration;
+
+				private _transition = 1 + random 19;
+
+				if (overcast > 0.5) then
+				{
+					_rain = 0;
+					_fog = 0;
+					_lightning = 0;
+
+					if (random 1 < _chanceOfRain) then
+					{
+						_rain = random overcast;
+						_fog = (_rain * 0.1);
+						_lightning = random (SERVER_Weather select (_month - 1) select 2);
+					};
+
+					_transition setRain _rain;
+					_transition setFog _fog;
+					_transition setLightnings _lightning;
+				};
+
+				_transition setWindStr random overcast;
+				_transition setWindForce overcast;
+				_transition setGusts random overcast;
+			};
+
+			setTimeMultiplier (if (daytime > _nightStart || daytime < _nightEnd) then { _acceleration } else { 1.0 });
+
+			sleep 10;
+		} else {
+			sleep 30;
 		};
 
-		setTimeMultiplier (if (daytime > _nightStart || daytime < _nightEnd) then { _acceleration } else { 1.0 });
-
-		sleep 10;
 	};
 };

@@ -1,51 +1,31 @@
+// Transport pilot
 private _state = param [0, "", [""]];
 
 if (_state == "init") then
 {
-
 	[] call MAP_InitializeGeneral;
 	[] call HUD_Pilot_Initialize;
 
 	player setVariable ["SPM_BranchOfService", "air"];
-
+	player setvariable ["ACE_IsEngineer", 2];
 	[player] call CLIENT_SetInfantryVehiclePermissions;
-
-	switch (roleDescription player) do
+	
 	{
-		case "Pilot (UH-60M)@BUFFALO-1":
-		{
-			{
-				player setVariable [_x, [[TypeFilter_Buffalo, [], {}]] + (player getVariable _x)];
-			} forEach ["VP_Pilot", "VP_Turret"];
-		};
-		case "Pilot (UH-60M)@BUFFALO-2":
-		{
-			{
-				player setVariable [_x, [[TypeFilter_Buffalo, [], {}]] + (player getVariable _x)];
-			} forEach ["VP_Pilot", "VP_Turret"];
-		};
-		case "Pilot (MH-6)@RAVEN-1":
-		{
-			{
-				player setVariable [_x, [[TypeFilter_Raven, [], {}]] + (player getVariable _x)];
-			} forEach ["VP_Pilot"];
-		};
-		case "Pilot (AH-6)@SPARROW-1":
-		{
-			{
-				player setVariable [_x, [[TypeFilter_Sparrow, [], {}]] + (player getVariable _x)];
-			} forEach ["VP_Pilot"];
-		};
-	};
-
+		player setVariable [_x, [[TypeFilter_TransportRotory, [], {}]] + (player getVariable _x)];
+	} forEach ["VP_Pilot"];
 	{
-		player setVariable [_x, [[TypeFilter_BaseServiceVehicles, [], {}]] + (player getVariable _x)];
+		player setVariable [_x, [[TypeFilter_All, [], {}]] + (player getVariable _x)];
 	} forEach ["VP_Driver"];
+
+	// Override the infantry turret permissions so we can enable the copilot as appropriate
+	_permissions = [];
+	_permissions pushBack [TypeFilter_InfantryVehicles, [], {}];
+    _permissions pushBack [TypeFilter_TransportRotory, [], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot true } }];
+	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed, VPC_UnlessLogisticsDriving], {}];
+	player setVariable ["VP_Turret", _permissions];
 };
 
 if (_state == "respawn") then
 {
-	private _restrictions = [];
-    _restrictions pushBack { [GR_All + GR_FinalPermissions] call GR_All};
-    [_restrictions] call CLIENT_fnc_monitorGear;
+
 };

@@ -1,5 +1,4 @@
 #include "..\..\SPM\strongpoint.h"
-//#define TEST
 #ifdef TEST
 #define DELAY_AT_END_OF_OPERATION 0
 #define DELAY_BETWEEN_OPERATIONS 0
@@ -26,13 +25,13 @@
 #define SITE_IMPORTANCE_LIMIT 2.5
 
 Advance_Sites = []; // [description, position, reserve-multiplier]
-Advance_CurrentOperation = OO_NULL;
+Advance_CurrentMission = OO_NULL;
 
 OO_TRACE_DECL(Advance_GetGridSites) =
 {
 	private _sites = [];
 
-	private _gridSpacing = ["AdvanceGridSiteSpacing"] call Params_GetParamValue;
+	private _gridSpacing = ["AdvanceGridSiteSpacing"] call JB_MP_GetParamValue;
 
 	for "_x" from 0 to worldSize / _gridSpacing do
 	{
@@ -55,6 +54,7 @@ OO_TRACE_DECL(Advance_GetSites) =
 
 	//private _sites = [] call Advance_GetGridSites;
 	private _sites = [];
+
 	private _position = [];
 
 	{
@@ -123,13 +123,13 @@ Advance_StructureImportance =
 
 Advance_GetSiteImportance =
 {
-	params ["_sitePosition", "_garrisonRadius"];
+	params ["_sitePosition", "_controlRadius"];
 
 	// Check to see if it's some labeled location of significance
 
 	private _weight = 0.0;
 
-	private _locals = nearestLocations [_sitePosition, ["NameLocal"], _garrisonRadius];
+	private _locals = nearestLocations [_sitePosition, ["NameLocal"], _controlRadius];
 	_weight = _weight + 1.0 * ({ text _x == "storage" } count _locals);
 	_weight = _weight + 1.5 * ({ text _x == "factory" } count _locals);
 	_weight = _weight + 1.5 * ({ text _x == "power plant" } count _locals);
@@ -143,7 +143,7 @@ Advance_GetSiteImportance =
 	private _width = 0;
 	private _height = 0;
 	private _importance = 0;
-
+		
 	{
 		_importance = [Advance_StructureImportance, getText (configFile >> "CfgVehicles" >> typeOf _x >> "vehicleClass")] call BIS_fnc_getFromPairs;
 		if (not isNil "_importance") then
@@ -157,7 +157,7 @@ Advance_GetSiteImportance =
 			_weight = _weight + (_width * _length) * _importance
 		};
 
-	} forEach (_sitePosition nearObjects ["House", _garrisonRadius]);
+	} forEach (_sitePosition nearObjects ["House", _controlRadius]);
 
 	_weight
 };
@@ -196,7 +196,7 @@ OO_TRACE_DECL(Advance_AnimateEnemyControl) =
 		private _arty_mark = createMarker [format ["ARTY_ZONE_%1_%2", floor (_areaPosition select 0), floor (_areaPosition select 1)], _areaPosition];
 		_arty_mark setMarkerType "Minefield";
 		_arty_mark setMarkerColor "colorOPFOR";
-		_arty_mark setMarkerText "Active Artillary Zone";
+		_arty_mark setMarkerText "Active Artillery Zone";
 
 		private _border = createMarker [_marker + "_BORDER", _areaPosition]; // The limit of expansion
 		_border setMarkerShape "ellipse";
@@ -209,18 +209,18 @@ OO_TRACE_DECL(Advance_AnimateEnemyControl) =
 		{
 			[_message, 2] remoteExec ["JB_fnc_showBlackScreenMessage", _x];
 		} forEach (allPlayers select { _x distance _areaPosition < _areaRadius });
-
+	
 		sleep _delay;
 
-		private _steps = [call _getExpansionInterval];
-		_waveDuration = _waveDuration + (_steps select 0); // We're going to expand the first interval at time zero.
-
-		while { _steps select (count _steps - 1) < _waveDuration } do
-		{
-			_steps pushBack (((call _getExpansionInterval) + (_steps select (count _steps - 1))) min _waveDuration);
-		};
-
-		_steps = _steps apply { [_x, _areaRadius * _x / _waveDuration] };
+		private _steps = [call _getExpansionInterval]; 
+		_waveDuration = _waveDuration + (_steps select 0); // We're going to expand the first interval at time zero. 
+ 
+		while { _steps select (count _steps - 1) < _waveDuration } do 
+		{ 
+			_steps pushBack (((call _getExpansionInterval) + (_steps select (count _steps - 1))) min _waveDuration); 
+		}; 
+ 
+		_steps = _steps apply { [_x, _areaRadius * _x / _waveDuration] }; 
 
 		private _step = [];
 		private _expansionTime = 0;
@@ -255,32 +255,41 @@ OO_TRACE_DECL(Advance_RunMission) =
 		{
 			params ["_mission"];
 
-			scriptName "spawnRunMission";
+			scriptName "RunMission";
 
 			[] call OO_METHOD(_mission,Strongpoint,Run);
 		};
 
-	Advance_CurrentOperation = _mission;
+	Advance_CurrentMission = _mission;
+	missionNamespace setVariable ["Advance_CurrentMissionPosition", [_position, OO_GET(_mission,Strongpoint,ActivityRadius)], true];
+
 	while { OO_GET(_mission,Mission,MissionState) == "unresolved" && not (OO_GET(_mission,Strongpoint,RunState) in ["stopped", "deleted"]) } do
 	{
 		sleep 1;
 	};
-	Advance_CurrentOperation = OO_NULL;
+
+	Advance_CurrentMission = OO_NULL;
+	missionNamespace setVariable ["Advance_CurrentMissionPosition", [], true];
 
 	if (OO_GET(_mission,Mission,MissionState) == "completed-failure") then
 	{
 		[_position, _controlRadius, 10, 120, { 2 + random 2 }, { 10 + random 10 }] call Advance_AnimateEnemyControl;
 	};
+
+	if (serverTime > MissionEndTime) then {
+		["end1", true] remoteExec ["BIS_fnc_endMission"];
+	};
 };
 
-OO_TRACE_DECL(Advance_GarrisonRadius) =
+OO_TRACE_DECL(Advance_ControlRadius) =
 {
-	private _numberPlayers = call SPM_Util_NumberPlayers;
-	private _areaPerPlayer = ["AdvanceAreaPerPlayer"] call Params_GetParamValue; // m^2
-	private _garrisonRadius = sqrt ((_numberPlayers * _areaPerPlayer) / pi);
-	_garrisonRadius = _garrisonRadius max 150;
+	params ["_numberUnits"];
 
-	_garrisonRadius
+	private _areaPerUnit = ["AdvanceAreaPerUnit"] call JB_MP_GetParamValue; // m^2
+	private _controlRadius = sqrt ((_numberUnits * _areaPerUnit) / pi);
+	_controlRadius = _controlRadius max 50;
+
+	_controlRadius
 };
 
 // Note that the reserve is determined by the initial population AFTER limits are applied to it.  For example, if the initial population should be 200 with a site importance of 2.5, then the reserve
@@ -289,19 +298,17 @@ OO_TRACE_DECL(Advance_ExecuteOperation) =
 {
 	params ["_siteName", "_sitePosition", "_siteImportance"];
 
-	private _garrisonRadius = call Advance_GarrisonRadius;
+	private _numberPlayers = call SPM_Util_NumberPlayers;
+	private _garrisonCount = ((_numberPlayers * (["NumberInfantryPerPlayer"] call JB_MP_GetParamValue)) max (["MinimumInfantryPerOperation"] call JB_MP_GetParamValue)) min (["MaximumInfantryPerOperation"] call JB_MP_GetParamValue);
+	private _controlRadius = [_garrisonCount] call Advance_ControlRadius;
 
-	if (SPM_Util_OperationImportanceOverride != -1) then { _siteImportance = SPM_Util_OperationImportanceOverride };
-	if (_siteImportance == -1) then
-	{
-		_siteImportance = [_sitePosition, _garrisonRadius] call Advance_GetSiteImportance;
-		_siteImportance = _siteImportance min SITE_IMPORTANCE_LIMIT;
-	};
+	_siteImportance = [_sitePosition, _controlRadius] call Advance_GetSiteImportance;
+	_siteImportance = _siteImportance min SITE_IMPORTANCE_LIMIT;
 
 	// Possibly enlarge the radius if minimal cover
-	private _cover = (count nearestTerrainObjects [_sitePosition, ["tree", "rock"], _garrisonRadius, false, true]) * 1.0 + (count (_sitePosition nearObjects ["House", _garrisonRadius])) * 5.0;
-	private _density = _cover / (pi * _garrisonRadius * _garrisonRadius);
-	_garrisonRadius = _garrisonRadius * ([_density, Advance_CoverDensityMap] call SPM_Util_MapValueRange);
+	private _cover = (count nearestTerrainObjects [_sitePosition, ["tree", "rock"], _controlRadius, false, true]) * 1.0 + (count (_sitePosition nearObjects ["House", _controlRadius])) * 5.0;
+	private _density = _cover / (pi * _controlRadius * _controlRadius);
+	_controlRadius = _controlRadius * ([_density, Advance_CoverDensityMap] call SPM_Util_MapValueRange);
 
 	// Determine the influence of various factions
 	private _influence = [["csat", 0], ["aaf", 0], ["fia", 0], ["syndikat", 0]];
@@ -316,15 +323,12 @@ OO_TRACE_DECL(Advance_ExecuteOperation) =
 	private _totalInfluence = 0.0; { _totalInfluence = _totalInfluence + (_x select 1) } forEach _influence;
 	_influence = _influence apply { [_x select 0, (_x select 1) / _totalInfluence ] };
 
-	private _numberPlayers = call SPM_Util_NumberPlayers;
-	private _garrisonCount = ((_numberPlayers * (["NumberInfantryPerPlayer"] call Params_GetParamValue)) max (["MinimumInfantryPerOperation"] call Params_GetParamValue)) min (["MaximumInfantryPerOperation"] call Params_GetParamValue);
-
 	// If the site importance translates to an insignificant reserve, don't bother with a reserve
 	private _garrisonReserves = if (_siteImportance < 0.2) then { 0 } else { _garrisonCount * _siteImportance };
 
 #ifndef TEST_COUNTERATTACK
 	// Create the mission and add the factions
-	private _mission = [_siteName, _sitePosition, _garrisonRadius] call OO_CREATE(MissionAdvance);
+	private _mission = [_siteName, _sitePosition, _controlRadius] call OO_CREATE(MissionAdvance);
 	{
 		[(_x select 0), _garrisonCount * (_x select 1), _garrisonCount * (_x select 1), _garrisonReserves * (_x select 1), _x select 1] call OO_METHOD(_mission,MissionAdvance,AddFaction);
 	} forEach _influence;
@@ -337,20 +341,20 @@ OO_TRACE_DECL(Advance_ExecuteOperation) =
 	[_mission] call Advance_RunMission;
 
 	// If the mission system is stopped, we're out
-	if (Advance_RunState != "run") exitWith {};
+	if ((["Advance"] call JB_MP_GetParamValueText) != "Started") exitWith {};
 
 	// If the mission wasn't a success, no counterattack
 	if (OO_GET(_mission,Mission,MissionState) != "completed-success") exitWith {};
 
 	// If the enemy doesn't want to counterattack, no counterattack
-	if (random 100 > ((["CounterattackProbability"] call Params_GetParamValue) * _siteImportance)) exitWith {};
+	if (random 100 > ((["CounterattackProbability"] call JB_MP_GetParamValue) * _siteImportance)) exitWith {};
 #endif
 
 	// Counterattack
 
 	// No initial garrison, so add them to the attacking reserve
 	_garrisonReserves = _garrisonReserves + _garrisonCount;
-	_mission = [_siteName + " (counterattack)", _sitePosition, _garrisonRadius] call OO_CREATE(MissionAdvance);
+	_mission = [_siteName + " (counterattack)", _sitePosition, _controlRadius] call OO_CREATE(MissionAdvance);
 	{
 		[(_x select 0), _garrisonCount * (_x select 1), 0, _garrisonReserves * (_x select 1), _x select 1] call OO_METHOD(_mission,MissionAdvance,AddFaction);
 	} forEach _influence;
@@ -359,7 +363,7 @@ OO_TRACE_DECL(Advance_ExecuteOperation) =
 	if (count OO_GET(_mission,Mission,Objectives) == 0) exitWith { call OO_DELETE(_mission) };
 
 	// Delay before the counterattack, making sure to skip it if the advance is stopped during the delay
-	if (not ([{ Advance_RunState != "run" }, DELAY_BEFORE_COUNTERATTACK] call JB_fnc_timeoutWaitUntil)) then { [_mission] call Advance_RunMission };
+	if (not ([{ (["Advance"] call JB_MP_GetParamValueText) != "Started" }, DELAY_BEFORE_COUNTERATTACK] call JB_fnc_timeoutWaitUntil)) then { [_mission] call Advance_RunMission };
 };
 
 OO_TRACE_DECL(Advance_CreateAirOperations) =
@@ -371,6 +375,9 @@ OO_TRACE_DECL(Advance_CreateAirOperations) =
 
 	private _patrolArea = [[worldSize/2.0,worldSize/2.0,0], 0, 10] call OO_CREATE(StrongpointArea);
 	private _airPatrol = [_patrolArea] call OO_CREATE(AirPatrolCategory);
+	OO_SET(_airPatrol,ForceCategory,RatingsWest,SPM_AirPatrol_RatingsWest);
+	OO_SET(_airPatrol,ForceCategory,RatingsEast,SPM_AirPatrol_RatingsEast);
+	OO_SET(_airPatrol,ForceCategory,CallupsEast,SPM_AirPatrol_CallupsEast);
 	OO_SET(_airPatrol,ForceCategory,RangeWest,worldSize);
 	OO_SET(_airPatrol,ForceCategory,UnitsCanRetire,true);
 	OO_SET(_airPatrol,AirPatrolCategory,PatrolType,"target");
@@ -442,9 +449,8 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 	private _maxSpacingIdeal = 0.0;
 	private _minRange = 0.0;
 	private _maxRange = 0.0;
-	private _deviationAngle = ["AdvanceDeviationAngle"] call Params_GetParamValue;
-
-	private _garrisonRadius = 0.0;
+	private _deviationAngle = ["AdvanceDeviationAngle"] call JB_MP_GetParamValue;
+	
 	private _blacklist = [];
 
 	private _capitalWeight = 0.0;
@@ -467,11 +473,11 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 	private _markerColors = ["ColorRed", "ColorBlack", "ColorGreen", "ColorBrown", "ColorYellow"];
 #endif
 
-	while { Advance_RunState in ["run", "suspend"] && count _site > 0 } do
+	while { (["Advance"] call JB_MP_GetParamValueText) in ["Started", "Suspended"] && count _site > 0 } do
 	{
-		switch (Advance_RunState) do
+		switch (["Advance"] call JB_MP_GetParamValueText) do
 		{
-			case "run":
+			case "Started":
 			{
 				_site params ["_siteName", "_sitePosition", "_siteImportance"];
 #ifdef TEST_SHOW_ALGORITHM
@@ -486,13 +492,13 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 #endif
 				_completedSites pushBack _site;
 
-				if ([{ Advance_RunState != "run" }, _sleepBeforeOperation] call JB_fnc_timeoutWaitUntil) exitWith {};
+				if ([{ (["Advance"] call JB_MP_GetParamValueText) != "Started" }, _sleepBeforeOperation] call JB_fnc_timeoutWaitUntil) exitWith {};
 
-				_playerSpacingPad = (["AdvanceSpacingPerPlayer"] call Params_GetParamValue) * (call SPM_Util_NumberPlayers);
-				_minSpacing = (["AdvanceSpacingMin"] call Params_GetParamValue) + _playerSpacingPad;
-				_maxSpacing = (["AdvanceSpacingMax"] call Params_GetParamValue) + _playerSpacingPad;
-				_minSpacingIdeal = (["AdvanceSpacingMinIdeal"] call Params_GetParamValue) + _playerSpacingPad;
-				_maxSpacingIdeal = (["AdvanceSpacingMaxIdeal"] call Params_GetParamValue) + _playerSpacingPad;
+				_playerSpacingPad = (["AdvanceSpacingPerPlayer"] call JB_MP_GetParamValue) * (call SPM_Util_NumberPlayers);
+				_minSpacing = (["AdvanceSpacingMin"] call JB_MP_GetParamValue) + _playerSpacingPad;
+				_maxSpacing = (["AdvanceSpacingMax"] call JB_MP_GetParamValue) + _playerSpacingPad;
+				_minSpacingIdeal = (["AdvanceSpacingMinIdeal"] call JB_MP_GetParamValue) + _playerSpacingPad;
+				_maxSpacingIdeal = (["AdvanceSpacingMaxIdeal"] call JB_MP_GetParamValue) + _playerSpacingPad;
 #ifdef TEST_SHOW_ALGORITHM
 				private _markerName = format ["ADV_MINI_%1", _siteName];
 				createMarker [_markerName, _sitePosition];
@@ -527,8 +533,6 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 				_neighbors = _neighbors select { _position = _sites select (_x select 3) select 1; _blacklist findIf { [_position, _x] call SPM_Util_PositionInArea } == -1 };
 
 				if (count _neighbors == 0) exitWith { _site = [] }; // Advance ends if all neighbors are blacklisted
-
-				_garrisonRadius = call Advance_GarrisonRadius;
 
 				// Compute the distance each neighbor is from the ideal range of distances
 				{
@@ -583,7 +587,7 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 				// [weight, site-index]
 
 				// Select all of the highest-weighted sites
-				_neighbors = _neighbors select { _x select 0 > (_neighbors select 0 select 0) * 0.95 };
+				_neighbors = _neighbors select { _x select 0 > (_neighbors select 0 select 0) * 0.60 };
 
 				_siteIndex = (selectRandom _neighbors) select 1;
 				_direction = (_site select 1) getDir (_sites select _siteIndex select 1);
@@ -595,7 +599,7 @@ OO_TRACE_DECL(Advance_ExecuteOperationalAdvance) =
 #endif
 			};
 
-			case "suspend":
+			case "Suspended":
 			{
 				[_airOperations] call Advance_DeleteAirOperations;
 				_sleepBeforeOperation = 0;
@@ -613,15 +617,15 @@ OO_TRACE_DECL(Advance_PlayerConnected) =
 	_this spawn
 	{
 		params ["_id", "_uid", "_name", "_jip", "_owner"];
-
+	
 		if (_name == "__SERVER__") exitWith {}; // Server declaring its creation
 
 		private _player = objNull;
 		[{ _player = [_uid] call SERVER_GetPlayerByUID; not isNull _player }, 30, 1] call JB_fnc_timeoutWaitUntil;
 
-		if (OO_ISNULL(Advance_CurrentOperation)) exitWith {};
+		if (OO_ISNULL(Advance_CurrentMission)) exitWith {};
 
-		[_player] call OO_METHOD(Advance_CurrentOperation,MissionAdvance,NotifyPlayer);
+		[_player] call OO_METHOD(Advance_CurrentMission,MissionAdvance,NotifyPlayer);
 	};
 };
 
@@ -657,13 +661,26 @@ Advance_CompletedSites = [];
 
 addMissionEventHandler ["PlayerConnected", Advance_PlayerConnected];
 
+MissionEndWarningGiven = false;
+MissionEndTime = serverTime + 14400;
+
+[] spawn {
+	while {true} do {
+		if (serverTime > MissionEndTime && !MissionEndWarningGiven ) then {
+			[["The map will rotate after this AO is completed. Inform Zeus if you want the time extended.", "plain",1]] remoteExec ["titleText"];
+			MissionEndWarningGiven = true;
+		};
+		sleep 15;
+	};
+};
+
 while { true } do
 {
-	while { Advance_RunState in ["stop", "suspend"] } do
+	while { (["Advance"] call JB_MP_GetParamValueText) in ["Stopped", "Suspended"] } do
 	{
 		sleep 1;
 
-		if (Advance_RunState == "stop") then { Advance_AvailableSites = [] };
+		//if ((["Advance"] call JB_MP_GetParamValueText) == "Stopped") then { Advance_AvailableSites = [] };
 	};
 
 	if (count Advance_AvailableSites == 0) exitWith {};
@@ -672,8 +689,8 @@ while { true } do
 
 	private _advance = [] spawn
 	{
-		scriptName "spawnExecuteOperationalAdvance";
-
+		scriptName "ExecuteOperationalAdvance";
+		
 		[Advance_AvailableSites, Advance_CompletedSites] call Advance_ExecuteOperationalAdvance;
 	};
 
@@ -681,14 +698,14 @@ while { true } do
 
 	// Notify everyone that the advance is over
 	private _sleep = 0;
-	if (Advance_RunState == "run" && count Advance_CompletedSites > 2) then
+	if ((["Advance"] call JB_MP_GetParamValueText) == "Started" && count Advance_CompletedSites > 2) then
 	{
 		["NotificationEndAdvance", ["This operational advance is complete."]] remoteExec ["BIS_fnc_showNotification", 0];
 		_sleep = DELAY_BETWEEN_OPERATIONAL_ADVANCES;
 	};
 
 	// Sleep between advances
-	[{ Advance_RunState != "run" }, _sleep] call JB_fnc_timeoutWaitUntil;
+	[{ (["Advance"] call JB_MP_GetParamValueText) != "Started" }, _sleep] call JB_fnc_timeoutWaitUntil;
 };
 
-["end1", true] call BIS_fnc_endMission;
+["end1", true] remoteExec ["BIS_fnc_endMission"];

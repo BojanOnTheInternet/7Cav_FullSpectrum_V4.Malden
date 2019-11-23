@@ -19,15 +19,15 @@ JB_RE_C_OrderedCallsArrived =
 
 JB_RE_C_Exec =
 {
-	params ["_groupID", "_callID", "_code", "_parameters"];
+	params ["_code", "_parameters"];
 
-	if (typeName _code == typeName "") then
+	if (isNil "_parameters") then
 	{
-		_parameters call compile format ["_this call %1", _code]
+		if (_code isEqualType "") then { call compile format ["call %1", _code] } else { call _code };
 	}
-	else // code
+	else
 	{
-		_parameters call _code;
+		if (_code isEqualType "") then { _parameters call compile format ["_this call %1", _code] } else { _parameters call _code };
 	};
 };
 
@@ -40,9 +40,7 @@ JB_RE_C_CallInOrder =
 	JB_RE_C_Calls sort true;
 
 	{
-		{
-			_x call JB_RE_C_Exec;
-		} forEach (_x select 1);
+		[_x select 2, _x select 3] call JB_RE_C_Exec;
 	} forEach JB_RE_C_Calls;
 };
 
@@ -51,7 +49,7 @@ JB_RE_C_RemoteExec =
 {
 	if (isRemoteExecutedJIP) exitWith { JB_RE_C_Calls pushBack _this };
 
-	_this call JB_RE_C_Exec;
+	[_this select 2, _this select 3] call JB_RE_C_Exec;
 };
 
 if (hasInterface && not isServer) exitWith {};
@@ -111,18 +109,11 @@ JB_RE_GroupCreate =
 
 JB_RE_Execute =
 {
-	params ["_code", "_parameters", "_recipients", ["_group", JB_RE_S_DefaultGroup, [[]]]];
+	params ["_code", "_parameters", ["_recipients", 0], ["_group", JB_RE_S_DefaultGroup, [[]]]];
 
 	if (not (_group select JB_RE_GROUP_ISJIP)) exitWith
 	{
-		if (_code isEqualType "") then
-		{
-			_parameters remoteExec [_code, _recipients]
-		}
-		else
-		{
-			[_parameters, _code] remoteExec ["call", _recipients]
-		};
+		[_code, _parameters] remoteExec ["JB_RE_C_Exec", _recipients];
 	};
 
 	private _callID = (_group select JB_RE_GROUP_CALLS) pushBack "";

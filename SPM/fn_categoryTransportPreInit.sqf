@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -11,57 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 if (not isServer && hasInterface) exitWith {};
 
 #include "strongpoint.h"
-
-SPM_Transport_CallupsEastMohawk =
-[
-	["RHS_Mi8AMT_vvs", [1, 2, 1.0,
-			{
-				params ["_unit"];
-
-				private _flyInHeight = 50;
-				_unit setPos (getPos _unit vectorAdd [0,0,_flyInHeight]);
-				_unit flyInHeight _flyInHeight;
-			}]]
-];
-
-SPM_Transport_CallupsEastMarid =
-[
-	["LOP_US_UAZ_DshKM",
-		[1, 3, 2.0, // Double weighted in case this is combined with the two Zamaks
-			{
-				params ["_unit"];
-
-				[_unit, "greenhex", []] call BIS_fnc_initVehicle;
-			}
-		]]
-];
-
-SPM_Transport_CallupsEastZamak =
-[
-	["LOP_US_Ural", [1, 3, 1.0, {}]],
-	["LOP_US_Ural_open", [1, 3, 1.0, {}]]
-];
-
-SPM_Transport_CallupsEastTruck =
-[
-	["I_C_Van_01_transport_F", [1, 3, 0.5, {}]],
-	["I_G_Van_01_transport_F", [1, 3, 0.2, {}]],
-	["C_Truck_02_covered_F", [1, 3, 1.0, {}]],
-	["C_Truck_02_transport_F", [1, 3, 1.0, {}]]
-];
-
-SPM_Transport_CallupsEastSpeedboat =
-[
-	["O_Boat_Armed_01_hmg_F",
-		[1, 3, 1.0,
-			{
-				params ["_unit"];
-
-				[_unit] call SPM_Transport_RemoveWeapons;
-				_unit addMagazine "500Rnd_65x39_Belt_Tracer_Green_Splash";
-				_unit addWeapon "LMG_RCWS";
-			}]]
-];
 
 SPM_Transport_RemoveWeapons =
 {

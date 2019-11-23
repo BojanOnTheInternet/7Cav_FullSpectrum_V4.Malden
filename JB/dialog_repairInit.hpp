@@ -40,7 +40,7 @@ class JBR_Repair
 		class iInstructions : RscText
 		{
 			idc = 1160;
-			text = "Press space to start/stop system repair";
+			text = "Press space to start/stop repair of the selected system";
 			x = 0.25;
 			y = 0.66;
 			w = 0.35;

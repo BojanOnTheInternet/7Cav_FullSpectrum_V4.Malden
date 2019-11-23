@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -50,18 +50,18 @@ OO_TRACE_DECL(SPM_Checkpoints_CreateCheckpoint) =
 	{
 		case (_side1 distance _side2 < 12.0):
 		{
-			_gate = ["Land_BarGate_01_open_F", _position vectorAdd (_perpendicular1 vectorMultiply 0.5), _direction, "can_collide"] call SPM_SpawnVehicle;
+			_gate = ["Land_BarGate_01_open_F", _position vectorAdd (_perpendicular1 vectorMultiply 0.5), _direction] call SPM_fnc_spawnVehicle;
 			_gate allowDamage false;
 			_objects pushBack _gate;
 		};
 		case (_side1 distance _side2 < 24.0):
 		{
-			_gate = ["Land_BarGate_01_open_F", _position vectorAdd (_perpendicular1 vectorMultiply 4.1), _direction, "can_collide"] call SPM_SpawnVehicle;
+			_gate = ["Land_BarGate_01_open_F", _position vectorAdd (_perpendicular1 vectorMultiply 4.1), _direction] call SPM_fnc_spawnVehicle;
 			_gate allowDamage false;
 			_objects pushBack _gate;
 			_side1 = _position vectorAdd (_perpendicular1 vectorMultiply (8.2 + 1.0));
 
-			_gate = ["Land_BarGate_01_open_F", _position vectorAdd (_perpendicular2 vectorMultiply 4.1), _direction + 180, "can_collide"] call SPM_SpawnVehicle;
+			_gate = ["Land_BarGate_01_open_F", _position vectorAdd (_perpendicular2 vectorMultiply 4.1), _direction + 180] call SPM_fnc_spawnVehicle;
 			_gate allowDamage false;
 			_objects pushBack _gate;
 			_side2 = _position vectorAdd (_perpendicular2 vectorMultiply (8.2 + 1.0));
@@ -70,24 +70,24 @@ OO_TRACE_DECL(SPM_Checkpoints_CreateCheckpoint) =
 
 	//TODO: Bunker and sandbags should be simple objects
 
-	private _bunker = ["Land_BagBunker_Small_F", _side1 vectorAdd (_perpendicular1 vectorMultiply (4.5 / 2.0)), _direction + 90, "can_collide"] call SPM_SpawnVehicle;
+	private _bunker = ["Land_BagBunker_Small_F", _side1 vectorAdd (_perpendicular1 vectorMultiply (4.5 / 2.0)), _direction + 90] call SPM_fnc_spawnVehicle;
 	_objects pushBack _bunker;
 	(_objects select (count _objects - 1)) enableSimulationGlobal false;
 
-	_objects pushBack (["Land_BagFence_Long_F", _side1 vectorAdd (_perpendicular1 vectorMultiply (4.5 + 0.0)), _direction + 90, "can_collide"] call SPM_SpawnVehicle);
+	_objects pushBack (["Land_BagFence_Long_F", _side1 vectorAdd (_perpendicular1 vectorMultiply (4.5 + 0.0)), _direction + 90] call SPM_fnc_spawnVehicle);
 	(_objects select (count _objects - 1)) enableSimulationGlobal false;
 
-	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [-2.07,-2.37,-0.93], _direction + 135, "can_collide"] call SPM_SpawnVehicle);
-	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [ 2.37,-2.34,-0.88], _direction + 45, "can_collide"] call SPM_SpawnVehicle);
-	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [ 2.16, 1.85,-0.99], _direction - 45, "can_collide"] call SPM_SpawnVehicle);
-	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [-1.64, 2.20,-1.02], _direction - 135, "can_collide"] call SPM_SpawnVehicle);
+	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [-2.07,-2.37,-0.93], _direction + 135] call SPM_fnc_spawnVehicle);
+	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [ 2.37,-2.34,-0.88], _direction + 45] call SPM_fnc_spawnVehicle);
+	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [ 2.16, 1.85,-0.99], _direction - 45] call SPM_fnc_spawnVehicle);
+	_objects pushBack (["Land_PortableLight_single_F", _bunker modelToWorld [-1.64, 2.20,-1.02], _direction - 135] call SPM_fnc_spawnVehicle);
 
 	private _razorWire = [];
 	private _positions = [];
 	
-	_razorWire pushBack (["Land_Razorwire_F", _side1 vectorAdd (_perpendicular1 vectorMultiply (5.4 + 8.7 / 2.0)), _direction, "can_collide"] call SPM_SpawnVehicle);
-	_razorWire pushBack (["Land_Razorwire_F", _side2 vectorAdd (_perpendicular2 vectorMultiply (8.7 / 2.0)), _direction, "can_collide"] call SPM_SpawnVehicle);
-	_razorWire pushBack (["Land_Razorwire_F", _side2 vectorAdd (_perpendicular2 vectorMultiply (8.7 + 8.7 / 2.0)), _direction, "can_collide"] call SPM_SpawnVehicle);
+	_razorWire pushBack (["Land_Razorwire_F", _side1 vectorAdd (_perpendicular1 vectorMultiply (5.4 + 8.7 / 2.0)), _direction] call SPM_fnc_spawnVehicle);
+	_razorWire pushBack (["Land_Razorwire_F", _side2 vectorAdd (_perpendicular2 vectorMultiply (8.7 / 2.0)), _direction] call SPM_fnc_spawnVehicle);
+	_razorWire pushBack (["Land_Razorwire_F", _side2 vectorAdd (_perpendicular2 vectorMultiply (8.7 + 8.7 / 2.0)), _direction] call SPM_fnc_spawnVehicle);
 
 	{
 		_positions = [getPos _x];
@@ -150,15 +150,22 @@ OO_TRACE_DECL(SPM_Checkpoints_IdentifyCheckpoints) =
 	private _area = OO_GET(_category,CheckpointsCategory,Area);
 	private _center = OO_GET(_area,StrongpointArea,Position);
 	private _outerRadius = OO_GET(_area,StrongpointArea,OuterRadius);
+	private _coverage = OO_GET(_category,CheckpointsCategory,Coverage);
 
 	private _road = [_center, 50] call BIS_fnc_nearestRoad;
 	if (isNull _road) exitWith { [] };
 
 	private _checkpoints = [];
+	private _positions = [];
+	private _exclusions = [];
 	{
-		private _positions = [getPos (_x select 1)];
+		_positions = [getPos (_x select 1)];
+		_exclusions = [];
 
 		[_positions, 20, ["WALL", "HOUSE"]] call SPM_Util_ExcludeSamplesByProximity;
+		[_positions, _center, _coverage select 0, _coverage select 1, _exclusions] call SPM_Util_ExcludeSamplesByDirection;
+		_positions = _exclusions;
+
 		if (count _positions > 0) then
 		{
 			private _checkpoint = [] call OO_CREATE(Checkpoint);
@@ -221,6 +228,8 @@ OO_BEGIN_STRUCT(Checkpoint);
 	OO_DEFINE_PROPERTY(Checkpoint,_BlockingObjects,"ARRAY",[]);
 OO_END_STRUCT(Checkpoint);
 
+private _defaultCoverage = [0,360]; // All directions
+
 OO_BEGIN_SUBCLASS(CheckpointsCategory,Category);
 	OO_OVERRIDE_METHOD(CheckpointsCategory,Root,Create,SPM_Checkpoints_Create);
 	OO_OVERRIDE_METHOD(CheckpointsCategory,Root,Delete,SPM_Checkpoints_Delete);
@@ -228,5 +237,6 @@ OO_BEGIN_SUBCLASS(CheckpointsCategory,Category);
 	OO_DEFINE_PROPERTY(CheckpointsCategory,Garrison,"#OBJ",OO_NULL);
 	OO_DEFINE_PROPERTY(CheckpointsCategory,GarrisonLimit,"SCALAR",1e30); // Limit the number of infantry that can be used for checkpoints
 	OO_DEFINE_PROPERTY(CheckpointsCategory,Area,"ARRAY",[]); // StrongpointArea structure
+	OO_DEFINE_PROPERTY(CheckpointsCategory,Coverage,"ARRAY",_defaultCoverage); // Which angular range should be considered for placing checkpoints
 	OO_DEFINE_PROPERTY(CheckpointsCategory,Checkpoints,"ARRAY",[]);
 OO_END_SUBCLASS(CheckpointsCategory);

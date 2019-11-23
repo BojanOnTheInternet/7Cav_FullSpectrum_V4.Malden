@@ -18,11 +18,9 @@ private _matchesPattern = false;
 	}
 	else
 	{
-		if (_vehicleTypeLength >= _wildcard) then
-		{
-			_matchesPattern = (_vehicleType select [0, _wildcard]) == (_pattern select [0, _wildcard]);
-		};
+		_matchesPattern = [_vehicleType, _pattern] call JB_fnc_regexMatch;
 	};
+
 	if (_matchesPattern) exitWith { if (count _x == 2) then { _passesFilter = _x select 1 } else { _passesFilter = _x select [1,2] } };
 } forEach _filter;
 

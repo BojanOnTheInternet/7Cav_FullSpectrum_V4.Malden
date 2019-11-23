@@ -13,9 +13,11 @@ class cScripts {
         class initModules {};
         class initTagging {};
 
+        class initFortify {};
+
         class initCuratorObjectPlaced {};
     };
-    class DiaryRecord {
+    class documents {
         file = "cScripts\cavFnc\functions\documents";
         class Doc_Info {};
         class Doc_MissionControl {};
@@ -24,7 +26,7 @@ class cScripts {
         class DocRadio_MEDEVAC {};
         class DocRadio_ROTARYPICKUP {};
         class DocRadio_SPOTREP {};
-        
+
         class DocChklist_CFF {};
         class DocChklist_JMTASKS {};
         class DocChklist_LZSPECS {};
@@ -49,58 +51,77 @@ class cScripts {
 
         class doEmptyCrate {};
     };
-    class systems {
-        file = "cScripts\cavFnc\functions\systems";
+    class players {
+        file = "cScripts\cavFnc\functions\players";
         class setPreInitPlayerSettings {};
         class setPostInitPlayerSettings {};
 
+        class getPlayerClan {};
+        class isPlayerClan {};
+
+        class getPlayerRank {};
+        class setPlayerRank {};
+
+        class getPlayerRole {};
+
+        class getPlayerName {};
+
+        class setTeamColor {};
+
+        class doPlayerAnnouncement {};
+
+        class getRadioChannel {};
+        class setRadioChannel {};
+
+        class getCompanyVariable {};
+        class hasCompanyVariable {};
+        
+        class getSquadName {};
+        class getSquadInsignia {};
+    };
+    class mission {
+        file = "cScripts\cavFnc\functions\mission";
+        class gate {};
+        class teleport {};
+
+        class addGetOutHelo {};
+
+        class addJump {};
+
+        class setVehicleLable {};
+    };
+    class systems {
+        file = "cScripts\cavFnc\functions\systems";
         class setVehicleInventory {};
         class setVehicleSettings {};
 
         class addQuickSelection {};
         class addInsigniaSelection {};
 
-        class getPlayerRank {};
-        class setPlayerRank {};
-        class getPlayerName {};
-        class doPlayerAnnouncement {};
-
-        class addJump {};
+       // Plane jump
         class doJump {};
+        class handleJump {};
 
         // Buttons and options
         class addReGear {};
         class addHeal {};
         class addArsenal {};
         class addAceCategory {};
+        class addLoadoutAction {};
 
-        class addGetOutHelo {};
+        // Helo get out
         class doGetOutHeloLeft {};
         class doGetOutHeloRight {};
 
-        class getCompanyVariable {};
-        class hasCompanyVariable {};
-
-        class gate {};
-        class teleport {};
+        class addQuickSelectionList {};
+        class addInsigniaSelectionList {};
 
         class addObjectToCurator {};
-    };
-    class selections {
-        file = "cScripts\cavFnc\functions\selections";
-        class initQuickSelections {};
-        class initInsigniaSelections {};
-    };
-    class simulation {
-        file = "cScripts\cavFnc\functions\simulation";
-        class sim_jump {};
-    };
 
-    class misc {
-        file = "cScripts\cavFnc\functions\texture";
-        class flag {};
+        class getChannelName {};
 
-        class setVehicleLable {};
+        class addFortifyArea {};
+
         class createVehicleLable {};
         class getVehicleLable {};
     };
@@ -113,8 +134,8 @@ class cScripts {
         class moduleCreateSpecialWeaponsCrate {};
 
         class moduleApplyVehicleLable {};
+        class moduleApplyVehicleInventory {};
 
-        class moduleApplyFlag {};
         class moduleMakeDoctor {};
         class moduleMakeEngineer {};
 

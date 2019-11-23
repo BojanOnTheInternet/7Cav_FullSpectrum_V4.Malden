@@ -4,7 +4,7 @@ player setVariable ["OP_Selection", OP_SELECTION_NULL, true];
 
 [] spawn
 {
-	scriptName "spawnOP_fnc_initClient";
+	scriptName "OP_fnc_initClient";
 
 	while { true } do
 	{

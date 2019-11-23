@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -24,13 +24,10 @@ OO_TRACE_DECL(SPM_Util_GetOwnerPlayer) =
 
 #define OO_TRACE_DECL(name) name
 
-SPM_Util_OperationImportanceOverride = -1;
-SPM_Util_NumberPlayersOverride = -1;
 SPM_Util_MessageReceivers = [{ systemchat (_this select 0) }];
 
 OO_TRACE_DECL(SPM_Util_PushMessageReceiver) =
 {
-	
 	params ["_receiver"];
 
 	SPM_Util_MessageReceivers pushBack _receiver;
@@ -63,11 +60,13 @@ OO_TRACE_DECL(SPM_Util_SurrenderVehicle) =
 
 	if (not alive _vehicle) exitWith {};
 
+	if ({ alive _x } count crew _vehicle == 0) exitWith {};
+
 	if (_vehicle isKindOf "Tank" || _vehicle isKindOf "Car") then
 	{
 		_vehicle forceFlagTexture "\A3\Data_F\Flags\Flag_white_CO.paa";
 	};
-
+/*
 	{
 		_vehicle removeMagazineTurret [_x select 0, _x select 1];
 	} forEach magazinesAllTurrets _vehicle;
@@ -76,7 +75,7 @@ OO_TRACE_DECL(SPM_Util_SurrenderVehicle) =
 	{
 		_vehicle setFuel 0.0;
 	};
-
+*/
 	{
 		[_x] call SPM_Util_SurrenderMan;
 	} forEach crew _vehicle;
@@ -103,47 +102,16 @@ OO_TRACE_DECL(SPM_Util_StopCowering) =
 	_unit switchMove "aidlpknlmstpsnonwnondnon_ai";
 };
 
-SPM_Util_SurrenderMan_CS = call JB_fnc_criticalSectionCreate;
-SPM_Util_SurrenderMan_Pending = [];
-
-OO_TRACE_DECL(SPM_Util_SurrenderMan_Monitor) =
+OO_TRACE_DECL(SPM_C_Util_SurrenderMan_Surrender) =
 {
-	scriptName "spawnSPM_Util_SurrenderMan_Monitor";
+	params ["_man"];
 
-	while { true } do
-	{
-		SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionEnter;
+	if ([_man] call SPM_Util_IsCowering) then { [_man] call SPM_Util_StopCowering };
 
-		if (count SPM_Util_SurrenderMan_Pending == 0) exitWith { SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionLeave };
-
-		for "_i" from count SPM_Util_SurrenderMan_Pending - 1 to 0 step -1 do
-		{
-			_man = SPM_Util_SurrenderMan_Pending select _i;
-
-			if (not alive _man) then
-			{
-				SPM_Util_SurrenderMan_Pending deleteAt _i;
-			}
-			else
-			{
-				// If in a state where he can get into the surrender pose
-				//TODO: More cases.  Only the ones we run into are handled here.  There's also free fall and probably others.
-				if (vehicle _man == _man && { not (((animationState _man) select [0, 4]) in ["aswm", "assw"]) }) then
-				{
-					SPM_Util_SurrenderMan_Pending deleteAt _i;
-					if ([_man] call SPM_Util_IsCowering) then { _man switchMove "aidlpknlmstpsnonwnondnon_ai" }; // Break out of cower
-					_man action ["surrender"];
-				};
-			};
-		};
-
-		SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionLeave;
-
-		sleep 0.5;
-	};
+	_man addAction ["Secure prisoner", { deleteVehicle (_this select 0) }, nil, 10, true, true, "", "vehicle _this == _this && alive _target", 2];
 };
 
-SPM_C_Util_SurrenderMan_DestroyLoadedMagazines =
+SPM_C_Util_SurrenderMan_DestroyPlayerLoadedMagazines =
 {
 	params ["_personalWeapon"];
 
@@ -161,99 +129,6 @@ SPM_C_Util_SurrenderMan_DestroyLoadedMagazines =
 		private _magazineType = vehicle player currentMagazineturret _turret;
 		private _roundsPerMagazine = [_magazineType] call JBA_RoundsPerMagazine;
 		[vehicle player, _turret, _magazineType, _roundsPerMagazine - 1] call JBA_AdjustTurretAmmo;
-	};
-};
-
-SPM_Util_SurrenderMan_Killed =
-{
-	params ["_unit", "_killer", "_instigator"];
-
-	if (_instigator == _unit) exitWith {};
-
-	[_instigator == _killer] remoteExec ["SPM_C_Util_SurrenderMan_DestroyLoadedMagazines", _instigator];
-};
-
-SPM_Util_SurrenderMan_Functions = ["target", "autotarget", "autocombat", "cover"];
-
-OO_TRACE_DECL(SPM_Util_SurrenderMan) =
-{
-	params ["_man"];
-
-	if (captive _man) exitWith {};
-
-	_man setCaptive true;
-	{ _man disableAI _x } forEach SPM_Util_SurrenderMan_Functions;
-
-	if ((vehicle _man) isKindOf "StaticWeapon") then
-	{
-		[_man] orderGetIn false;
-		[_man] allowGetIn false;
-	};
-
-	_man addEventHandler ["Killed", SPM_Util_SurrenderMan_Killed];
-
-	SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionEnter;
-
-		SPM_Util_SurrenderMan_Pending pushBackUnique _man;
-		if (count SPM_Util_SurrenderMan_Pending == 1) then
-		{
-			[] spawn SPM_Util_SurrenderMan_Monitor;
-		};
-
-	SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionLeave;
-};
-
-// Surrender the specified men and vehicles.  A wave of surrender propagates outwards from the center to a
-// the specified radius in the specified elapsed time.  Any units outside of the radius are then instantly surrendered.
-OO_TRACE_DECL(SPM_Util_Surrender) =
-{
-	params ["_men", "_vehicles", "_center", "_radius", "_elapsedTime"];
-
-	if (_elapsedTime == 0 || _radius == 0) exitWith
-	{
-		{ [_x] call SPM_Util_SurrenderVehicle } forEach _vehicles;
-		{ [_x] call SPM_Util_SurrenderMan } forEach _men;
-	};
-
-	_this spawn
-	{
-		params ["_men", "_vehicles", "_center", "_radius", "_elapsedTime"];
-
-		_men = _men apply { [(_center distance _x) - 10 + random 20, _x] };
-		_men sort true;
-
-		_vehicles = _vehicles apply { [(_center distance _x) - 10 + random 20, _x] };
-		_vehicles sort true;
-
-		private _timeInterval = 0.5;
-		private _intervals = _elapsedTime / _timeInterval;
-		private _distanceInterval = _radius / _intervals;
-
-		private _crew = objNull;
-
-		private _distance = 0;
-		while { count _vehicles > 0 || count _men > 0 } do
-		{
-			_distance = _distance + _distanceInterval;
-			if (_distance < _radius) then
-			{
-				sleep _timeInterval;
-			}
-			else
-			{
-				_distance = 1e10;
-			};
-
-			while { count _vehicles > 0 && { (_vehicles select 0 select 0) < _distance } } do
-			{
-				[(_vehicles deleteAt 0) select 1] call SPM_Util_SurrenderVehicle;
-			};
-
-			while { count _men > 0 && { (_men select 0 select 0) < _distance } } do
-			{
-				[(_men deleteAt 0) select 1] call SPM_Util_SurrenderMan;
-			};
-		};
 	};
 };
 
@@ -812,7 +687,8 @@ OO_TRACE_DECL(SPM_Util_GetGroundSpawnpoint) =
 
 	if (count _positions == 0) exitWith { [[],0] };
 
-	private _position = _positions select 0;
+	//private _position = _positions select 0; Bojan \/
+	private _position = _positions select (random (count _positions));
 
 	[_position, _position getDir _areaPosition]
 };
@@ -983,6 +859,43 @@ OO_TRACE_DECL(SPM_Util_SampleAreaGrid) =
 	_positions
 };
 
+OO_TRACE_DECL(SPM_Util_SampleAreaRandom) =
+{
+	params ["_center", "_innerRadius", "_outerRadius", "_samples"];
+
+	private _positions = [];
+
+	if (_innerRadius >= _outerRadius) exitWith { _positions };
+
+	private _position = [0,0,0];
+
+	private _outerRadiusSquared = _outerRadius * _outerRadius;
+	private _r = 0;
+	private _a = 0;
+	private _getPosition =
+	{
+		_r = sqrt (random _outerRadiusSquared);
+		_a = random 360;
+		[_r * cos _a, _r * sin _a, 0]
+	};
+
+	for "_i" from 1 to _samples do
+	{
+		_position = call _getPosition;
+		if (_innerRadius > 0) then
+		{
+			while { vectorMagnitude _position < _innerRadius } do
+			{
+				_position = call _getPosition;
+			};
+		};
+
+		_positions pushBack (_center vectorAdd _position);
+	};
+
+	_positions
+};
+
 OO_TRACE_DECL(SPM_Util_SampleAreaPerimeter) =
 {
 	params ["_center", "_radius", "_stepSize", ["_stepSizeUnits", "meters", [""]], ["_startAngle", random 360, [0]], ["_sweepAngle", 360, [0]]];
@@ -1090,6 +1003,8 @@ OO_TRACE_DECL(SPM_Util_ExcludeSamplesByHeightASL) =
 OO_TRACE_DECL(SPM_Util_ExcludeSamplesVisibleToViewers) =
 {
 	params ["_positions", "_radius", "_viewers", "_excludedPositions"];
+
+	if (count _viewers == 0) exitWith {};
 
 	private _saveFilteredPositions = not isNil "_excludedPositions";
 
@@ -1386,37 +1301,13 @@ OO_TRACE_DECL(SPM_Util_PlaceVehicleOnSurface) =
 	_vehicle setPosASL [_position select 0, _position select 1, 10000 - ((getPosVisual _vehicle) select 2)];
 };
 
-if (isServer) then
-{
-	SPM_Util_DeleteEmptyGroups =
-	{
-		{ 
-			if (count units _x == 0) then 
-			{ 
-				deleteGroup _x; 
-			}; 
-		} forEach allGroups;
-	};
-
-	//TODO: Not clear if this is necessary, but we pile up a lot of empty groups because we delete only units.  Does ARMA clean up empty groups?  Will it sacrifice
-	// an empty group when at the group limit and a new group is requested?
-	[] spawn
-	{
-		scriptName "spawnSPM_Util_DeleteEmptyGroups";
-
-		while { true } do
-		{
-			[] call SPM_Util_DeleteEmptyGroups;
-			sleep 20;
-		};
-	};
-};
-
 OO_TRACE_DECL(SPM_Util_NumberPlayers) =
 {
-	if (SPM_Util_NumberPlayersOverride == -1) exitWith { { not (_x isKindOf "HeadlessClient_F") } count allPlayers };
+	private _parameterValue = ["NumberPlayers"] call JB_MP_GetParamValue;
 
-	SPM_Util_NumberPlayersOverride
+	if (_parameterValue == -1) exitWith { { not (_x isKindOf "HeadlessClient_F") } count allPlayers };
+
+	_parameterValue
 };
 
 OO_TRACE_DECL(SPM_Util_NumberServiceMembers) =
@@ -1468,7 +1359,7 @@ OO_TRACE_DECL(SPM_Util_CreateFlagpole) =
 	private _flagpolePosition = [_positions, _center] call SPM_Util_ClosestPosition;
 	private _flagpoleDirection = [_flagpolePosition, 0] call SPM_Util_EnvironmentAlignedDirection;
 
-	private _flagpole = [_flag, _flagpolePosition, _flagpoleDirection, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _flagpole = [_flag, _flagpolePosition, _flagpoleDirection] call SPM_fnc_spawnVehicle;
 	_flagpole setVectorUp [0,0,1];  // Will rotate around the origin of the object, which is usually in its middle
 	_flagpole allowDamage false;
 
@@ -1511,15 +1402,16 @@ OO_TRACE_DECL(SPM_Util_PromoteMemberToOfficer) =
 
 	private _descriptor = [[_appearanceType]] call SPM_fnc_groupFromClasses;
 	private _replacementGroup = [_descriptor select 0, _descriptor select 1, getPosATL _member, getDir _member, false] call SPM_fnc_spawnGroup;
+	[_garrison, _replacementGroup] call OO_GET(_category,Category,InitializeObject);
+
 	private _replacementMember = leader _replacementGroup;
 	private _replacementForceUnit = [_replacementMember, [_replacementMember]] call OO_CREATE(ForceUnit);
 
-	deleteVehicle _member;
+	[_forceUnit, _replacementForceUnit] call OO_METHOD(_garrison,ForceCategory,ReplaceUnit);
 
 	[_replacementMember] join _group;
 	deleteGroup _replacementGroup;
-
-	[_forceUnit, _replacementForceUnit] call OO_METHOD(_garrison,ForceCategory,ReplaceUnit);
+	deleteVehicle _member;
 
 	true
 };
@@ -1581,18 +1473,35 @@ OO_TRACE_DECL(SPM_Util_IsUrbanEnvironment) =
 	count _buildings > _area * 0.0005
 };
 
-// Figure out the direction of the closest fence, wall or house.  Returns _default if no context for direction
+// Figure out the direction of the closest house.  If nothing, then the closest fence or wall.  Returns _default if no context for direction,
 OO_TRACE_DECL(SPM_Util_EnvironmentAlignedDirection) =
 {
-	params ["_position", "_default", ["_radius", 20, [0]]];
+    params ["_position", "_default", ["_radius", 20, [0]]];
 
-	private _objects = (nearestTerrainObjects [_position, ["fence", "wall", "house"], _radius]) apply { [(_position distance _x) - sizeOf typeOf _x, _x] };
+    private _objects = (_position nearObjects ["NonStrategic", _radius]) apply { [_position distance _x, getDir _x] };
 
-	if (count _objects == 0) exitWith { if (isNil "_default") then { nil } else { _default } };
+    private _roads = _position nearRoads _radius;
 
-	_objects sort true;
+    _objects append (_roads select { getDir _x != 0 } apply { [_position distance _x, getDir _x ] }); // Roads with inherent directions (includes runways)
+    _objects append (_roads select { count roadsConnectedTo _x > 0 } apply { [_position distance _x, _x getDir ((roadsConnectedTo _x) select 0)] }); // Roads connected to other roads
 
-	getDir (_objects select 0 select 1);
+    if (count _objects > 0) exitWith
+    {
+        _objects sort true;
+        _objects select 0 select 1;
+    };
+
+    private _objects = ((nearestTerrainObjects [_position, ["wall"], _radius]) apply { [_position distance _x, getDir _x] });
+
+    if (count _objects > 0) exitWith
+    {
+        _objects sort true;
+        _objects select 0 select 1;
+    };
+
+    if (isNil "_default") exitWith { nil };
+   
+    _default
 };
 
 OO_TRACE_DECL(SPM_Util_FireTurretWeapon) =
@@ -1610,6 +1519,144 @@ OO_TRACE_DECL(SPM_Util_FireTurretWeapon) =
 			{
 				_details = _details select 0;
 				_vehicle action ["UseMagazine", _vehicle, _crew, _details select 4, _details select 3];
+			};
+		};
+	};
+};
+
+if (not isServer && hasInterface) exitWith {};
+
+SPM_Util_SurrenderMan_CS = call JB_fnc_criticalSectionCreate;
+SPM_Util_SurrenderMan_Pending = [];
+
+OO_TRACE_DECL(SPM_Util_SurrenderMan_Monitor) =
+{
+	scriptName "SPM_Util_SurrenderMan_Monitor";
+
+	while { true } do
+	{
+		SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionEnter;
+
+		if (count SPM_Util_SurrenderMan_Pending == 0) exitWith { SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionLeave };
+
+		for "_i" from count SPM_Util_SurrenderMan_Pending - 1 to 0 step -1 do
+		{
+			_man = SPM_Util_SurrenderMan_Pending select _i;
+
+			if (not alive _man) then
+			{
+				SPM_Util_SurrenderMan_Pending deleteAt _i;
+			}
+			else
+			{
+				// If in a state where he can get into the surrender pose
+				//TODO: More cases.  Only the ones we run into are handled here.  There's also free fall and probably others.
+				if (vehicle _man == _man && { not (((animationState _man) select [0, 4]) in ["aswm", "assw"]) }) then
+				{
+					SPM_Util_SurrenderMan_Pending deleteAt _i;
+
+					[[_man], SPM_C_Util_SurrenderMan_Surrender] remoteExec ["call", 0];
+					_man action ["surrender"];
+				};
+			};
+		};
+
+		SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionLeave;
+
+		sleep 0.5;
+	};
+};
+
+SPM_Util_SurrenderMan_Killed =
+{
+	params ["_unit", "_killer", "_instigator"];
+
+	if (not isPlayer _instigator) exitWith {};
+
+	if (_instigator == _unit) exitWith {};
+
+	[_instigator == _killer] remoteExec ["SPM_C_Util_SurrenderMan_DestroyPlayerLoadedMagazines", _instigator];
+};
+
+SPM_Util_SurrenderMan_Functions = ["target", "autotarget", "autocombat", "cover"];
+
+OO_TRACE_DECL(SPM_Util_SurrenderMan) =
+{
+	params ["_man"];
+
+	if (captive _man || isPlayer _man) exitWith {};
+
+	_man setCaptive true;
+	{ _man disableAI _x } forEach SPM_Util_SurrenderMan_Functions;
+
+	if ((vehicle _man) isKindOf "StaticWeapon") then
+	{
+		[_man] orderGetIn false;
+		[_man] allowGetIn false;
+	};
+
+	_man addEventHandler ["Killed", SPM_Util_SurrenderMan_Killed];
+
+	SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionEnter;
+
+		SPM_Util_SurrenderMan_Pending pushBackUnique _man;
+		if (count SPM_Util_SurrenderMan_Pending == 1) then
+		{
+			[] spawn SPM_Util_SurrenderMan_Monitor;
+		};
+
+	SPM_Util_SurrenderMan_CS call JB_fnc_criticalSectionLeave;
+};
+
+// Surrender the specified men and vehicles.  A wave of surrender propagates outwards from the center to a
+// the specified radius in the specified elapsed time.  Any units outside of the radius are then instantly surrendered.
+OO_TRACE_DECL(SPM_Util_Surrender) =
+{
+	params ["_men", "_vehicles", "_center", "_radius", "_elapsedTime"];
+
+	if (_elapsedTime == 0 || _radius == 0) exitWith
+	{
+		{ [_x] call SPM_Util_SurrenderVehicle } forEach _vehicles;
+		{ [_x] call SPM_Util_SurrenderMan } forEach _men;
+	};
+
+	_this spawn
+	{
+		params ["_men", "_vehicles", "_center", "_radius", "_elapsedTime"];
+
+		_men = _men apply { [(_center distance _x) - 10 + random 20, _x] };
+		_men sort true;
+
+		_vehicles = _vehicles apply { [(_center distance _x) - 10 + random 20, _x] };
+		_vehicles sort true;
+
+		private _timeInterval = 0.5;
+		private _intervals = _elapsedTime / _timeInterval;
+		private _distanceInterval = _radius / _intervals;
+
+		private _crew = objNull;
+
+		private _distance = 0;
+		while { count _vehicles > 0 || count _men > 0 } do
+		{
+			_distance = _distance + _distanceInterval;
+			if (_distance < _radius) then
+			{
+				sleep _timeInterval;
+			}
+			else
+			{
+				_distance = 1e10;
+			};
+
+			while { count _vehicles > 0 && { (_vehicles select 0 select 0) < _distance } } do
+			{
+				[(_vehicles deleteAt 0) select 1] call SPM_Util_SurrenderVehicle;
+			};
+
+			while { count _men > 0 && { (_men select 0 select 0) < _distance } } do
+			{
+				[(_men deleteAt 0) select 1] call SPM_Util_SurrenderMan;
 			};
 		};
 	};

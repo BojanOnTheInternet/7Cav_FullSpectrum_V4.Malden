@@ -13,7 +13,7 @@ if (isNumber (missionConfigFile >> "briefing") && { getNumber (missionConfigFile
 {
 	[] spawn
 	{
-		scriptName "spawnCloseBriefingScreen";
+		scriptName "CloseBriefingScreen";
 
 		waitUntil
 			{
@@ -36,32 +36,15 @@ TypeFilter_All =
 	["All", true]
 ];
 
-TypeFilter_Aircraft =
+TypeFilter_TransportRotory =
 [
 	["ParachuteBase", false],
-	["Air", true],
-	["All", false]
-];
-
-//Buffalo Only
-TypeFilter_Buffalo =
-[
-	["ParachuteBase", false],
-	["RHS_UH60M", true],
+	["RHS_UH60M*", true],
 	["B_Heli_Transport_01_F", true],
 	["B_Heli_Transport_03_unarmed_F", true],
 	["B_Heli_Transport_03_F", true],
-	["RHS_CH_47F_10", true],
-	["RHS_CH_47F_light", true],
-	["RHS_UH60M_ESSS_d", true],
-	["RHS_UH60M_ESSS2_d", true],
-	["RHS_UH60M2_d", true],
-	["RHS_UH60M_MEV2_dsd", true],
-	["RHS_UH60M_MEV_d", true],
-	["rhsusf_CH53E_USMC_D", true],
-	["RHS_UH1Y_UNARMED_d", true],
-	["RHS_UH1Y_FFAR_d", true],
-	["RHS_UH1Y_d", true],
+	["rhsusf_CH53E_USMC*", true],
+	["RHS_UH1*", true],
 	["B_CTRG_Heli_Transport_01_sand_F", true],
 	["B_CTRG_Heli_Transport_01_tropic_F", true],
 	["rhs_uh1h_hidf_unarmed", true],
@@ -75,17 +58,33 @@ TypeFilter_Buffalo =
 	["LOP_IRAN_UH1Y_UN", true],
 	["LOP_IRAN_CH47F", true],
 	["LOP_IRAN_CH47F", true],
+	["RHS_MELB_MH6M", true],
+	["B_Heli_Light_01_F", true],
+	["rhs_uh1h_hidf", true],
+	["RHS_MELB_H6M", true],
+	["B_Heli_Light_01_F", true],
+	["RHS_CH_47F*", true],
 
-	//Allowing Buffalo crew to run the armed blackfish as an AC130
+	// Allowing Buffalo crew to run the armed blackfish as an AC130
 	["B_T_VTOL_01_armed_F", true],
+
+	// Titan vehicles
+	["RHS_C130J", true],
+	["B_T_VTOL_01_vehicle_F", true],
+	["B_Heli_Transport_03_unarmed_F", true],
 
 	["All", false]
 ];
 
-//Sparrow Only
-TypeFilter_Sparrow =
+//Raider Only
+TypeFilter_AttackRotory =
 [
 	["ParachuteBase", false],
+	["RHS_AH64D", true],
+	["B_Heli_Attack_01_dynamicLoadout_F", true],
+	["RHS_AH1Z", true],
+	["RHS_AH64D", true],
+	["RHS_AH64D", true],
 	["RHS_MELB_AH6M", true],
 	["B_Heli_Light_01_dynamicLoadout_F", true],
 	["RHS_UH1Y_FFAR_d", true],
@@ -93,419 +92,101 @@ TypeFilter_Sparrow =
 	["All", false]
 ];
 
-//Eagle Only
-TypeFilter_Eagle =
-[
-	["ParachuteBase", false],
-	["FIR_F16C_Blank", true],
-	["B_Plane_Fighter_01_F", true],
-	["B_Plane_Fighter_01_Stealth_F", true],
-	["FIR_F151%", true],
-	["rhsusf_f22", true],
-	["FIR_A10C", true],
-	["B_Plane_CAS_01_dynamicLoadout_F", true],
-	["FIR_A10A_1%", true],
-	["RHS_A10", true],
-	["All", false]
-];
-
-//Raider Only
-TypeFilter_Raider =
-[
-	["ParachuteBase", false],
-	["RHS_AH64D", true],
-	["B_Heli_Attack_01_dynamicLoadout_F", true],
-	["RHS_AH1Z", true],
-	["RHS_AH64D", true],
-	["RHS_AH64D", true],
-	["All", false]
-];
-
-//Raven only
-TypeFilter_Raven =
-[
-	["ParachuteBase", false],
-	["RHS_MELB_MH6M", true],
-	["B_Heli_Light_01_F", true],
-	["rhs_uh1h_hidf", true],
-	["All", false]
-];
-
-// Co-pilotable Aircraft that we want co-pilots to be able to get into
-// or we want infantry to ride in as "gunners"
-TypeFilter_TransportAircraft =
-[
-	//Format
-	["ParachuteBase", false],
-	//Vanilla Helis
-	["B_Heli_Transport_03_F", true],
-	["B_Heli_Transport_03_unarmed_F", true],
-	["B_Heli_Light_01_dynamicLoadout_F", true],
-	["B_CTRG_Heli_Transport_01_sand_F", true],
-	["B_CTRG_Heli_Transport_01_tropic_F", true],
-	["B_Heli_Transport_01_F", true],
-	["B_Heli_Light_01_F", true],
-	//Socom Helis
-	["RHS_MELB_*", true],
-	//RHS US Army Helis
-	["RHS_CH_47F_10", true],
-	["RHS_CH_47F_light", true],
-	["RHS_UH60*", true],
-	//RHS USMC helis
-	["RHS_UH1Y_UNARMED_d", true],
-	["RHS_UH1Y_d", true],
-	["RHS_UH1Y_FFAR_d", true],
-	["rhsusf_CH53E_USMC_D", true],
-	//Horizon Islands Defence Force Helis
-	["rhs_uh1h_hidf", true],
-	["rhs_uh1h_hidf_unarmed", true],
-	["rhs_uh1h_hidf_gunship", true],
-	// Iraqi Armed Forces Helis
-	["LOP_IA_UH1Y_UN", true],
-	//Format
-	["All", false]
-];
-
-// Special operations aircraft
-TypeFilter_SpecialOperationsAircraft =
-[
-	["ParachuteBase", false],
-	["RHS_AH64D", true],
-	["B_Heli_Attack_01_dynamicLoadout_F", true],
-	["RHS_AH1Z", true],
-	["RHS_AH64D", true],
-	["RHS_AH64D", true],
-	["ParachuteBase", false],
-	["RHS_MELB_MH6M", true],
-	["B_Heli_Light_01_F", true],
-	["rhs_uh1h_hidf", true],
-	["All", false]
-];
-
 // Ground attack aircraft
 TypeFilter_GroundAttackAircraft =
 [
 	["ParachuteBase", false],
-	["Plane_CAS_01_base_F", true],
-	["FIR_F16C_Blank", true],
-	["B_Plane_Fighter_01_F", true],
-	["B_Plane_Fighter_01_Stealth_F", true],
-	["FIR_F151%", true],
-	["rhsusf_f22", true],
-	["FIR_A10C", true],
-	["B_Plane_CAS_01_dynamicLoadout_F", true],
-	["FIR_A10A_1%", true],
-	["RHS_A10", true],
-	["B_T_VTOL%1", true],
+	["B_Plane_*", true],
+	["FIR_*", true],
+	["rhsusf_f22*", true],
+	["RHS_A10*", true],
+	["B_T_VTOL_01_armed_F", true],
 	["All", false]
 ];
 
-TypeFilter_TransportFixedWing =
-[
-	["RHS_C130J", true],
-	["B_T_VTOL_01_vehicle_F", true],
-	["All", false]
-];
 
-// Crewed ground attack aircraft
-TypeFilter_GroundAttackAircraft_Crewed =
-[
-	["Heli_Attack_01_base_F", true],
-	["VTOL_01_armed_base_F", true],
-	["All", false]
-];
-
-// Combat air patrol
-TypeFilter_CombatAirPatrolAircraft =
-[
-	["Plane_Fighter_01_base_F", true],
-	["Plane_Fighter_02_Base_F", true],
-	["Plane_Fighter_03_base_F", true],
-	["Plane_Fighter_04_base_F", true],
-	["All", false]
-];
-
-TypeFilter_Sabre =
-[
-	["rhsusf_m1a2sep1tuskiiwd_usarmy", true],
-	["rhsusf_m1a2sep1tuskiid_usarmy", true],
-	["B_MBT_01_TUSK_F", true],
-	["All", false]
-];
 // Armored vehicles
 TypeFilter_ArmoredVehicles =
 [
-	["I_LT_01_scout_F", false],
-	["B_APC_Tracked_01_CRV_F", false],
-	["B_T_APC_Tracked_01_CRV_F", false],
-	["B_T_APC_Tracked_01_AA_F", false],
-	["B_MBT_01_arty_F", false],
-	["B_APC_Tracked_01_rcws_F", false],
-	["B_APC_Wheeled_01_cannon_F", false],
-	["Wheeled_APC_F", true],
-	["Car", false],
-	["Tank", true],
-	["All", false]
-];
-
-// Reconnaissance vehicles
-TypeFilter_ReconnaissanceVehicles =
-[
-	["I_LT_01_scout_F", true],
+	["MBT_03_base_F", true], // Leopard 2
+	["MBT_01_base_F", true], // Most other western tanks (Abrams, Merkava)
+	["RHS_M2A3*", true], // Add Bradleys here too so Manual Drive works for all
+	["B_AFV_Wheeled_01_cannon_F", true], // Rookiat tank destoryer
 	["All", false]
 ];
 
 // Base service vehicles
 TypeFilter_BaseServiceVehicles =
 [
-	["rhsusf_M977A4_AMMO_usarmy_wd", true],
-	["rhsusf_M977A4_REPAIR_BKIT_usarmy_wd", true],
-	["rhsusf_M978A4_usarmy_wd", true],
-	["All", false]
-];
-
-TypeFilter_Mortars =
-[
-	["StaticMortar", true],
-	["All", false]
-];
-
-TypeFilter_MedicalVehicles =
-[
-	["B_Truck_01_medical_F", true],
-	["rhsusf_M1230a1_*", true],
-	["rhsusf_M1085A1P2_*", true],
-	["C_IDAP_Van_02_medevac_F", true],
+	["rhsusf_M97*", true], // Big slow logi vics
 	["All", false]
 ];
 
 TypeFilter_LogisticsVehicles =
 [
-	["B_Truck_01_box_F", true],
-	["B_Truck_01_mover_F", true],
-	["rhsusf_M977A4_*", true],
-	["rhsusf_M978A4_*", true],
-	["rhsusf_M1078A1P2_*", true],
-	["All", false]
-];
-
-TypeFilter_EODVehicles =
-[
-	["B_T_APC_Tracked_01_CRV_F", true],
+	["B_Truck_*", true],
+	["C_IDAP_Van_02_medevac_F", true],
+	["rhsusf_M108*", true], // CP SOV + more logi trucks
+	["rhsusf_M107*", true], // Rearm SOV + more logi trucks
+	["rhsusf_M1230A1*", true], // Medical MRAP
+	["rhsusf_M109*", true], // SPG
+	["rhsusf_m113_usarmy_medical", true], //Medical M113
+	["B_APC_Tracked_01*", true], //Bobcat
 	["All", false]
 ];
 
 TypeFilter_InfantryVehicles =
 [
-	["O_APC_Wheeled_02_*", false], // Marid
-	["I_APC_Wheeled_03_*", false], // Gorgon
-	["B_AFV_Wheeled_01_*", false], // Rhino
+	// Disable logistics vics since we wildcard them below
+	["rhsusf_M108*", false],
+	["rhsusf_M107*", false],
+	["rhsusf_M97*", false],
+	["rhsusf_M1230A1*", false], // Medical MRAP
 	["B_Truck_01_medical_F", false], // Medical HEMTTs
 	["C_IDAP_Van_02_medevac_F", false], // Ambulance
+	["rhsusf_m113_usarmy_medical", false], // Medical M113
+	["B_APC_Tracked_01_CRV_F", false], // Bobcat
+	
+	//Static weapoons
+	["StaticWeapon", true],
 
-	// logistics vics
-	["B_Truck_01_box_F", false],
-	["B_Truck_01_mover_F", false],
-	["rhsusf_M977A4_*", false],
-	["rhsusf_M978A4_*", false],
-	["rhsusf_M1078A1P2_*", false],
+	//Available Ao vehicles
+	["LOP_US_UAZ_DshKM",true],
+	["LOP_US_Ural",true],
+	["LOP_US_UAZ_AGS",true],
+	["LOP_US_UAZ_SPG",true],
+	
+	// Enable all MRAPs except medical MRAP
+	["rhsusf_M1220_*", true], // MRAPs
+	["rhsusf_M1230_*", true], // MRAPs
+	["rhsusf_M1232_*", true], // MRAPs
 
-	// Medical vics
-	["rhsusf_M1230a1*", false],
-	["rhsusf_M1085A1P2_*", false],
+	//M113 varients (Not Medical)
+	["rhsusf_m113_usarmy_unarmed", true],
+	["rhsusf_m113_usarmy_MK19_90", true],
+	["rhsusf_m113_usarmy_MK19", true],
+	["rhsusf_m113_usarmy_M240", true],
+	["rhsusf_m113_usarmy_M2_90", true],
+	["rhsusf_m113_usarmy", true],
+	["rhsusf_m113_usarmy_supply", true],
 
 	["Car", true],
-	["B_HMG_01_*", true],
 	["O_HMG_01_*", true],
 	["I_HMG_01_*", true],
 	["Ship", true],
-	["RHS_M2A3_BUSKIII_wd", true],
-	["RHS_M2A3_BUSKIII_d", true],
-	["B_MRAP_01_F", true],
-	["rhsusf_m998_w_2dr_fulltop", true],
-	["rhsusf_M1230_M2_usarmy_wd", true],
-	["rhsusf_m1025_w_mk19", true],
-	["rhsusf_m1045_w", true],
-	["rhsusf_m998_d_2dr_fulltop", true],
-	["rhsusf_M1230_M2_usarmy_d", true],
-	["rhsusf_m1025_d_mk19", true],
-	["rhsusf_m1045_d", true],
+	["RHS_M2A3*", true], // Bradleys
+	["LT_01_base_F", true], // Wiesel
+	["I_APC_tracked_03_base_F", true], // Warrior AFV
+	["B_APC_Wheeled_01_cannon_F", true], // NATO Vanilla APC (Badger IFV)
+	["B_MRAP_01_F", true], // MATV
+	["rhsusf_m998*", true], // Soft top HMMWV
+	["rhsusf_m102*", true], //HMMWV
+	["rhsusf_m104*", true], //HMMWV
+	["rhsusf_mrzr*", true], // MRZR
 	["All", false]
 ];
 
 // Gear restrictions for various classes
-
-GR_WeaponPermissionDeniedMessage = "In your role of %1, you may not use the %2.";
-
-GR_FinalPermissions =
-[
-	["Default", false, GR_WeaponPermissionDeniedMessage]
-];
-
-GR_ServiceWeaponPermissions =
-[
-	["hgun*", true, ""],
-	["SMG*", true, ""],
-	["Binocula*", true, ""], // Use pattern format to get only Binocular here
-	["Rangefinder", true, ""]
-];
-
-GR_InfantryWeaponPermissions =
-[
-	["hgun*", true, ""],
-	["SMG*", true, ""],
-	["arifle_Katiba_GL*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_Mk20_GL*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_AK12_GL*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_CTAR_GL_*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_MX_GL*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_TRG21_GL*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_SPAR_01_GL*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle_SPAR_02*", false, GR_WeaponPermissionDeniedMessage],
-	["arifle*", true, ""],
-	["srifle_EBR_F*", true, ""],
-	["Binocula*", true, ""], // Use pattern format to get only Binocular here
-	["Rangefinder", true, ""]
-];
-
-GR_LaserDesignatorWeaponPermissions =
-[
-	["LaserDesignator*", true, ""]
-];
-
-GR_MAAWSWeaponPermissions =
-[
-	["launch_RPG32*", true, ""],
-	["launch_MRAWS_green_F", true, ""],
-	["launch_MRAWS_olive_F", true, ""],
-	["launch_MRAWS_sand_F", true, ""]
-];
-
-GR_RPG7WeaponPermissions =
-[
-	["launch_RPG7*", true, ""]
-];
-
-GR_AutoriflemanWeaponPermissions =
-[
-	["LMG*", true, ""],
-	["arifle_MX_SW*", true, ""],
-	["arifle_CTARS*", true, ""],
-	["arifle_SPAR_02*", true, ""]
-];
-
-GR_HeavyGunnerWeaponPermissions =
-[
-	["MMG*", true, ""]
-];
-
-GR_MarksmanWeaponPermissions =
-[
-	["arifle_MXM*", true, ""],
-	["arifle_SPAR_03*", true, ""],
-	["srifle_DMR*", true, ""]
-];
-
-GR_SniperWeaponPermissions =
-[
-	["srifle_GM6*", true, ""], // Lynx 12.7mm
-	["srifle_LRR*", true, ""], // M320 LRR .408
-	["srifle_DMR_02*", true, ""], // MAR-10 .338
-	["srifle_DMR_05*", true, ""] // Cyrus 9.3mm
-];
-
-GR_GrenadierWeaponPermissions =
-[
-	["arifle_Katiba_GL*", true, ""],
-	["arifle_Mk20_GL*", true, ""],
-	["arifle_AK12_GL*", true, ""],
-	["arifle_CTAR_GL_*", true, ""],
-	["arifle_MX_GL*", true, ""],
-	["arifle_TRG21_GL*", true, ""],
-	["arifle_SPAR_01_GL*", true, ""]
-];
-
-GR_UAVOperatorRestrictions =
-[
-	"B_UavTerminal"
-];
-
-GR_ThermalOpticsOperatorRestrictions =
-[
-	"optic_tws*",
-	"optic_Nightstalker",
-	"NVGogglesB*",
-	"Rangefinder",
-	"H_HelmetO_ViperSP*"
-];
-
-GR_SniperOpticsOperatorRestrictions =
-[
-	"optic_LRPS*",
-	"optic_SOS*"
-];
-
-GR_EODOperatorRestrictions =
-[
-	"MineDetector",
-	"DemoCharge_Remote_Mag",
-	"IEDUrbanSmall_Remote_Mag",
-	"IEDLandSmall_Remote_Mag",
-	"SatchelCharge_Remote_Mag",
-	"IEDUrbanBig_Remote_Mag",
-	"IEDLandBig_Remote_Mag",
-	"ATMine_Range_Mag",
-//	"ClaymoreDirectionalMine_Remote_Mag",
-//	"APERSMine_Range_Mag",
-//	"APERSBoundingMine_Range_Mag",
-	"SLAMDirectionalMine_Wire_Mag",
-//	"APERSTripMine_Wire_Mag",
-	"APERSMineDispenser_Mag",
-	"TrainingMine_Mag"
-];
-
-GR_JTACMagazineRestrictions =
-[
-	"1Rnd_HE_Grenade_shell",
-	"3Rnd_HE_Grenade_shell"
-];
-
-GR_LaserDesignatorOperatorRestrictions =
-[
-	"LaserDesignator*",
-	"ACE_MX2A"
-];
-
-GR_Rotory =
-[
-	"U_I_PilotCoveralls",		//Fixed-wing
-	"U_B_PilotCoveralls",
-	"U_O_PilotCoveralls",
-	"H_PilotHelmetFighter*",
-	"U_O*",						//Basics
-	"launch_O*",
-	"launch_B*",
-	"launch_I*",
-	"H_HelmetO*",
-	"arifle_ARX*",
-	"NVGogglesB*"
-];
-
-GR_Fixed =
-[
-	"H_Pilot*",					//Rotory
-	"H_CrewHelmetHeli*",
-	"rhsusf_hgu*",
-	"rhsusf_ihadss",
-	"U_O*",						//Basics
-	"launch_O*",
-	"launch_B*",
-	"launch_I*",
-	"H_HelmetO*",
-	"arifle_ARX*",
-	"NVGogglesB*"
-];
-
 GR_All =
 [
 	["All", true, ""]
@@ -571,8 +252,10 @@ CLIENT_SetInfantryVehiclePermissions =
 
 	private _permissions = [];
 
+	// We disallow infantry to ride in the vehicle transport chinook
 	_permissions = [];
-	_permissions pushBack [TypeFilter_All, [VPC_UnlessLogisticsDriving], {}];
+	_permissions pushBack [TypeFilter_All, [], {}];
+	_permissions pushBack [TypeFilter_LogisticsVehicles, [], {}];
 	_player setVariable ["VP_Cargo", _permissions];
 
 	_permissions = [];
@@ -581,33 +264,25 @@ CLIENT_SetInfantryVehiclePermissions =
 
 	_permissions = [];
 	_permissions pushBack [TypeFilter_InfantryVehicles, [], {}];
-	_permissions pushBack [TypeFilter_All, [VPC_UnlessArmed, VPC_UnlessLogisticsDriving], {}];
+	_permissions pushBack [TypeFilter_LogisticsVehicles, [], {}];
+	_permissions pushBack [TypeFilter_All, [VPC_UnlessArmed], {}];
 	_player setVariable ["VP_Gunner", _permissions];
 
 	_permissions = [];
 	_permissions pushBack [TypeFilter_InfantryVehicles, [], {}];
-	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed, VPC_UnlessLogisticsDriving], {}];
+	_permissions pushBack [TypeFilter_LogisticsVehicles, [], {}];
+	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed], {}];
 	_player setVariable ["VP_Commander", _permissions];
 
 	_permissions = [];
-	_permissions pushBack [TypeFilter_TransportAircraft, [], {}];
+	_permissions pushBack [TypeFilter_LogisticsVehicles, [], {}];
 	_permissions pushBack [TypeFilter_InfantryVehicles, [], {}];
-	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed, VPC_UnlessLogisticsDriving], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot false } }];
+	_permissions pushBack [TypeFilter_TransportRotory, [], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot false } }];
+	_permissions pushBack [TypeFilter_All, [VPC_UnlessTurretArmed], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot false } }];
 	_player setVariable ["VP_Turret", _permissions];
 
 	_player setVariable ["VP_Pilot", []];
-};
-
-CLIENT_SetEODVehiclePermissions =
-{
-	params ["_player"];
-
-	[_player] call CLIENT_SetInfantryVehiclePermissions;
-
-	// Add to the infantry permissions
-	{
-		player setVariable [_x, [[TypeFilter_EODVehicles, [], {}]] + (player getVariable _x)];
-	} forEach ["VP_Driver", "VP_Gunner", "VP_Commander", "VP_Turret"];
+	[TypeFilter_ArmoredVehicles] call JB_fnc_manualDriveInitPlayer;
 };
 
 CLIENT_SetArmorCrewVehiclePermissions =
@@ -620,19 +295,6 @@ CLIENT_SetArmorCrewVehiclePermissions =
 	{
 		player setVariable [_x, [[TypeFilter_ArmoredVehicles, [VPC_UnlessLogisticsDriving], {}]] + (player getVariable _x)];
 	} forEach ["VP_Driver", "VP_Gunner", "VP_Commander", "VP_Turret"];
-};
-
-CLIENT_SetSpecialOperationsVehiclePermissions =
-{
-	params ["_player"];
-
-	[_player] call CLIENT_SetInfantryVehiclePermissions;
-
-	// Allow use of the door guns on the special operations Ghosthawk
-	_recon1 = [["B_CTRG_Heli_Transport_01_tropic_F", true],	["All", false]];
-	{
-		player setVariable [_x, [[_recon1, [], { if (player in [(_this select 0) turretUnit [0]]) then { (_this select 0) enableCopilot false } }]] + (player getVariable _x)];
-	} forEach ["VP_Turret"];
 };
 
 Repair_DefaultGetRepairProfile =
@@ -777,18 +439,8 @@ BobcatService_SetupClient =
 	if (not hasInterface) exitWith {};
 
 	_vehicle addAction ["<t color='#FFFF99'>Repair/refuel aircraft</t>", { [vehicle (_this select 1), [["repair", 60, 0.0], ["refuel", 60, 1.0]]] call JB_fnc_serviceVehicle }, nil, 15, false, true, "", '((vehicle _this) isKindOf "Air") && { not ((vehicle _this) isKindOf "ParachuteBase") }'];
-};
 
-CLIENT_Supply_RestockFromSupplyCondition =
-{
-	params ["_container", "_supplyType", "_distance"];
-
-	private _supply = objNull;
-	{
-		if (_x getVariable "SupplyType" == _supplyType) exitWith { _supply = _x };
-	} forEach (_container nearObjects _distance);
-
-	not isNull _supply
+	[_vehicle] call Bobcat_SetupClient;
 };
 
 Billboard_ShowMessage =
@@ -855,7 +507,8 @@ Billboard_ShowRule =
 
 	if (_ruleText == "") exitWith {};
 
-	_ruleText = _ruleText + "<br/><br/><t color='#FFFFFF'>Press ESC to dismiss this window</t>";
+	_ruleText = _ruleText + "<br/>
+<br/><t color='#FFFFFF'>Press ESC to dismiss this window</t>";
 
 	[safeZoneW * 0.95, safeZoneH * 0.95, parseText _ruleText] call Billboard_ShowMessage;
 };
@@ -873,15 +526,39 @@ CLIENT_CombatTeleportCondition =
 	_permitTeleport
 };
 
-CLIENT_ScrollMenuHandlers = [];
+CLIENT_DisableActionMenuLevel = 0;
 
-CLIENT_ScrollMenuHandler =
+CLIENT_DisableActionMenu =
 {
+	CLIENT_DisableActionMenuLevel = CLIENT_DisableActionMenuLevel + 1;
+};
+
+CLIENT_EnableActionMenu =
+{
+	CLIENT_DisableActionMenuLevel = CLIENT_DisableActionMenuLevel - 1;
+};
+
+CLIENT_ActionMenuNextHandler =
+{
+	CLIENT_DisableActionMenuLevel > 0
+};
+
+CLIENT_ActionMenuPrevHandler =
+{
+	CLIENT_DisableActionMenuLevel > 0
+};
+
+CLIENT_ActionMenuActionHandlers = [];
+
+CLIENT_ActionMenuActionHandler =
+{
+	if (CLIENT_DisableActionMenuLevel > 0) exitWith { true };
+
 	private _override = false;
 
 	{
 		_override = _override || (_this call _x);
-	} forEach CLIENT_ScrollMenuHandlers;
+	} forEach CLIENT_ActionMenuActionHandlers;
 
 	_override
 };
@@ -897,7 +574,7 @@ CLIENT_OverrideActionHandler =
 	_this call (CLIENT_OverriddenActions select _index select 1)
 };
 
-CLIENT_ScrollMenuHandlers pushBack CLIENT_OverrideActionHandler;
+CLIENT_ActionMenuActionHandlers pushBack CLIENT_OverrideActionHandler;
 
 [] spawn
 {
@@ -947,7 +624,7 @@ Go to the fuel source, use the 'Get fuel line' scroll wheel action, move to the 
 the fuel line will drop away from the vehicle and retract.  The fuel HEMTT and Taru fuel pods have an indicator on their exterior to indicate how much fuel remains onboard.<br/>";
 
 DOC_ArmorTransport = "<font size='16'>Reaching an operation</font><br/>
-You can either drive your vehicle to an operation (which is visible on the map as concentric green and red rings) or you can request a 'heavy lift' from
+You can either drive your vehicle to an operation (which is visible on the map as a crossed-swords task icon) or you can request a 'heavy lift' from
 one of two Taru transport helicopters, call signs Grizzly 2 and 3.  When being lifted by helicopter, it is important that the driver is not in the driver's
 seat at any time during the lift procedure.  Ideally, the driver connects the lift lines to your vehicle, then rides in the back of the vehicle during the
 lift.  Once on the ground, the driver can transfer back to the driver's seat.  When at base, move your vehicle to the Heavy Lift Area for pickup.<br/>";
@@ -968,25 +645,37 @@ circular pads.<br/>";
 DOC_ZeusBindings = "
 <font face='EtelkaMonospacePro' size='10'>CTRL+SHIFT+L</font> Toggles a daylight mode visible only to you while in Zeus.<br/>";
 
-DOC_Gamemaster = "<font size='16'>Gamemaster</font><br/>
-As a mission gamemaster, you have full access to Zeus as well as some additional keyboard bindings and text commands.  Note that all commands keywords can be abbreviated to as few as three letters.  For example, the command '&amp;gm advance stop' can be shortened to '&amp;gm adv sto'.<br/>";
+DOC_MissionController = "<font size='16'>Mission Controller</font><br/>
+As a mission controller, you have full access to Zeus as well as some additional keyboard bindings and text commands.  Note that all commands keywords can be abbreviated to as few as three letters.  For example, the command 'mc advance stop' can be shortened to 'mc adv sto'.<br/>";
 
-DOC_GamemasterCommands = "
-<font face='EtelkaMonospacePro' size='10'>gm operation stop</font><br/><br/>
+DOC_MissionControllerCommands = "
+<font face='EtelkaMonospacePro' size='10'>mc loyalty cavbucks (amount) (playername)</font><br/><br/>
+Adds CavBucks to a player. MCC leaders should usually get 1, or 2 if it was a difficult job.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc loyalty points (amount) (playername)</font><br/><br/>
+Adds loyalty points to a player. For MCC rewards, use CavBucks instead.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc loyalty cooldown (length) (playername)</font><br/><br/>
+Sets the loyalty cooldown spawn for a player, in minutes, since their last vehicle spawn.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc weather true/false</font><br/><br/>
+Enables or disables automatic weather and time acceleration.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc missionend get</font><br/><br/>
+Returns the number of minutes until the map rolls over.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc missionend add (minutes)</font><br/><br/>
+Adds extra minutes to the mission end timer. If given a negative value, it will reduce the time.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc fortify points (amount)</font><br/><br/>
+Adds (or removes, if negative) an amount of points from the FOB fortify budget.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc diceroll (sides)</font><br/><br/>
+Roll an n-sided die.<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc operation stop</font><br/><br/>
 Stops the selected operation.  To select an operation, go to the Zeus map and CTRL+SHIFT+MB1 on the operation.<br/><br/>
-<font face='EtelkaMonospacePro' size='10'>gm advance stop</font><br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc advance stop</font><br/><br/>
 Stops the advance system.<br/><br/>
-<font face='EtelkaMonospacePro' size='10'>gm advance start</font><br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc advance start</font><br/><br/>
 Starts the advance system.  If suspended, the next operation in the advance is started.  If stopped, a new advance is created.<br/><br/>
-<font face='EtelkaMonospacePro' size='10'>gm advance suspend</font><br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc advance suspend</font><br/><br/>
 Stops the current operation of the advance with a 'no verdict' result.  If the advance is later started, activities begin with the next operation in the advance.<br/><br/>
-<font face='EtelkaMonospacePro' size='10'>gm advance show</font><br/><br/>
-Shows the current operational advance.  A CSAT flag is placed on the map at the center of each operation in the advance.  This is private map information.<br/><br/>
-<font face='EtelkaMonospacePro' size='10'>gm advance hide</font><br/><br/>
-Hides the current operational advance.  Any CSAT flags showing an operational advance are removed from the map.<br/>
-<font face='EtelkaMonospacePro' size='10'>gm specops stop</font><br/><br/>
-Stop the current special operation sequence.  To stop only the current mission, CTRL+SHIFT+MB1 on it on the map and issue the command 'gm operation stop'<br/><br/>
-<font face='EtelkaMonospacePro' size='10'>gm curate all</font><br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc specops stop</font><br/><br/>
+Stop the current special operation sequence.  To stop only the current mission, CTRL+SHIFT+MB1 on it on the map and issue the command 'mc operation stop'<br/><br/>
+<font face='EtelkaMonospacePro' size='10'>mc curate all</font><br/><br/>
 Curates all active units and all vehicles for Zeus users.  This is provided both to deal with scripters who introduce such units and vehicles, and also to deal with the occasional missed curation by ARMA.<br/><br/>";
 
 DOC_MilitaryPolice = "<font size='16'>Military Police</font><br/>
@@ -1077,9 +766,16 @@ start area, marked 'HALO Chopper' on the map.  Once in, you will see a message s
 the edge of the main operation, 2000 meters in the air.  Note that infantry in the same group will jump together, regardless of when they entered the aircraft.  The farther an operation is from
 base, the longer the countdown.<br/>";
 
+CLIENT_IsCarrying =
+{
+	if (count (([player, "blockThrow"] call ace_common_fnc_statusEffect_get) select 1) == 0) exitWith { false };
+	(([player, "blockThrow"] call ace_common_fnc_statusEffect_get) select 1) select 0 == "ace_dragging"
+};
+
 CLIENT_ForceDryFireCondition =
 {
 	if (not ([] call CLIENT_DryFireIsForced)) exitWith { false };
+	if ([] call CLIENT_IsCarrying) exitWith { false };
 
 	if ([[player] call SPM_Util_CurrentWeapon] call JB_fnc_isOffensiveWeapon) exitWith { true };
 
@@ -1088,7 +784,7 @@ CLIENT_ForceDryFireCondition =
 
 CLIENT_ForceDryFire =
 {
-	[[] call CLIENT_DryFireMessage, 0.5, true] call JB_fnc_showBlackScreenMessage;
+	titleText [[] call CLIENT_DryFireMessage, "plain down", 0.1];
 
 	private _sound = (getArray (configFile >> "CfgWeapons" >> ([player] call SPM_Util_CurrentWeapon) >> "drysound")) select 0;
 
@@ -1101,7 +797,7 @@ CLIENT_ForceDryFire =
 // Prevent placing anything
 CLIENT_ForceDryFireFiredHandler =
 {
-	if ([] call CLIENT_DryFireIsForced) then
+	if ([] call CLIENT_DryFireIsForced && { [_this select 1] call JB_fnc_isOffensiveWeapon }) then
 	{
 		deleteVehicle (_this select 6);
 		[[] call CLIENT_DryFireMessage, 0.5, true] call JB_fnc_showBlackScreenMessage;
@@ -1149,7 +845,7 @@ CLIENT_DryFireMessage  =
 
 CLIENT_DryFireIsForced =
 {
-	CLIENT_CuratorType != "GM" && { count (player getVariable ["CLIENT_ForceDryFire", []]) > 0 }
+	CLIENT_CuratorType != "MC" && { count (player getVariable ["CLIENT_ForceDryFire", []]) > 0 }
 };
 
 CLIENT_StartForceDryFire =
@@ -1275,7 +971,7 @@ CLIENT_MonitorEnemyControlledAreas =
 {
 	[] spawn
 	{
-		scriptName "spawnCLIENT_MonitorEnemyControlledAreas";
+		scriptName "CLIENT_MonitorEnemyControlledAreas";
 
 		private _notifyTime = 0;
 
@@ -1400,10 +1096,10 @@ Bobcat_PlowAction =
 	_vehicle animate ["moveplow", if (_vehicle animationPhase "moveplow" > 0.5) then { 0.0 } else { 1.0 }];
 };
 
-Bobcat_AddActions =
+Bobcat_SetupClient =
 {
 	params ["_vehicle"];
-
+	
 	if (not hasInterface) exitWith {};
 
 	private _action = _vehicle addAction ["", { [_this select 0] call Bobcat_PlowAction }, nil, 0, false, true, "", '[_target] call Bobcat_PlowActionCondition'];
@@ -1411,44 +1107,190 @@ Bobcat_AddActions =
 	_vehicle setVariable ["Bobcat_Actions", [_action]];
 };
 
+Marshall_Fortify_GetLocationCondition =
+{
+	params ["_vehicle"];
+
+	if (vehicle player != _vehicle) exitWith { false };
+
+	if (not (lifeState player in ["HEALTHY", "INJURED"])) exitWith { false };
+
+	true
+};
+
+Marshall_Fortify_GetMarker =
+{
+	format ["_USER_DEFINED Marshall_Fortify/0/%1", currentChannel];
+};
+
+Marshall_Fortify_GetLocation =
+{
+	params ["_vehicle"];
+
+	private _depot = (allMissionObjects "Land_RepairDepot_01_base_F") select { "RepairDepot0" in (_x getVariable ["JB_PO_Object", []]) };
+
+	if (count _depot == 0) exitWith { systemchat "The fortification tool is not deployed" };
+
+	private _position = getPos (_depot select 0);
+
+	private _marker = call Marshall_Fortify_GetMarker;
+	deleteMarker _marker;
+
+	private _marker = createMarkerLocal [_marker, _position];
+	_marker setMarkerType "hd_flag";
+	_marker setMarkerText "Fortification";
+
+	systemchat format ["The fortification tool has been marked at %1, %2", floor ((_position select 0) / 100), floor ((_position select 1) / 100)];
+};
+
+Marshall_Fortify_SetupClient =
+{
+	params ["_vehicle"];
+
+	_vehicle addAction ["Mark location of fortification tool", { _this call Marshall_Fortify_GetLocation }, nil, 0, false, true, "", "[_target] call Marshall_Fortify_GetLocationCondition"];
+};
+
+CLIENT_NearSupply =
+{
+	params ["_container", "_supplyType", "_distance"];
+
+	// 40 meters is the distance between two large object centers
+	private _supplies = (_container nearObjects 40) select { _x getVariable ["SupplyType", ""] == _supplyType };
+
+	if (count _supplies == 0) exitWith { objNull };
+
+	_supplies = _supplies apply { [[_container, _x] call JB_fnc_distanceBetweenBoundingBoxes, _x] };
+	_supplies sort true;
+
+	if (_supplies select 0 select 0 > _distance) exitWith { objNull };
+
+	_supplies select 0 select 1
+};
+
+CLIENT_ClearVehicleInventory =
+{
+	[] spawn
+	{
+		private _itemCount = 0; { _itemCount = _itemCount + _x } forEach ((getItemCargo vehicle player select 1) + (getWeaponCargo vehicle player select 1) + (getBackpackCargo vehicle player select 1) + (getMagazineCargo vehicle player select 1));
+		private _message = format ["Clear inventory on %1? (%2 items)", [typeOf vehicle player, "CfgVehicles"] call JB_fnc_displayName, _itemCount];
+		if ([_message, "CLEAR VEHICLE INVENTORY", true, true, findDisplay 46] call BIS_fnc_guiMessage) then { [vehicle player] call JB_fnc_containerClear };
+	};
+};
+
+CLIENT_ClearVehicleInventoryCondition =
+{
+	if (vehicle player == player) exitWith { false };
+
+	if (player != driver vehicle player && { player != commander vehicle player } && { player != gunner vehicle player }) exitWith { false };
+
+	true
+};
+
+CLIENT_EC_ActionContinue =
+{
+	params ["_container", "_object"];
+
+	if (isNil "_object") then { _object = _container getVariable ["CLIENT_EC_ParentObject", _container] };
+
+	if (vehicle player != player) exitWith { false };
+	
+	if (not (lifeState player in ["HEALTHY", "INJURED"])) exitWith { false };
+
+	if (isNull ([_object, "arsenal", 5] call CLIENT_NearSupply)) exitWith { false };
+
+	private _contact = [ASLtoAGL eyePos player, _object] call JB_fnc_distanceToObjectSurface;
+	if (_contact select 2 < 0 || _contact select 2 > 2) exitWith { false };
+
+	true
+};
+
+CLIENT_EC_GetContainer =
+{
+	params ["_container"];
+
+	if (_container isKindOf "GroundWeaponHolder") then
+	{
+		private _innerContainers = everyContainer _container;
+		
+		_container = if (count _innerContainers == 0) then { objNull } else { _innerContainers select 0 select 1 };
+	};
+
+	_container
+};
+
+CLIENT_EC_ActionCondition =
+{
+	params ["_container", "_object"];
+
+	if (_container == _object && { getCursorObjectParams select 2 > 2 }) exitWith { false };
+
+	if (_container != _object && { ASLtoAGL eyePos player distance _object > 2 }) exitWith { false };
+
+	if (not alive _container) exitWith { false };
+
+	if (not ([_container] call JB_fnc_containerIsContainer)) exitWith { false };
+
+	if ([_container] call JB_fnc_containerIsLocked) exitWith { false };
+
+	if (not ([_container, _object] call CLIENT_EC_ActionContinue)) exitWith { false };
+
+	private _actionID = player getVariable ["CLIENT_EC_ActionID", -1];
+	if (_actionID != -1) then
+	{
+		player setUserActionText [_actionID, format ["Edit inventory of %1", getText (configFile >> "CfgVehicles" >> typeOf _container >> "displayName")]];
+	};
+
+	true
+};
+
+CLIENT_EC_Action =
+{
+	params ["_container", "_object"];
+
+	if (_object != _container) then { _container setVariable ["CLIENT_EC_ParentObject", _object] };
+
+	[_container, { _this call CLIENT_EC_ActionContinue }] call JB_fnc_containerEdit;
+};
+
+CLIENT_EC_PlayerInit =
+{
+	private _actionID = player addAction ["Edit inventory of container", { [[cursorObject] call CLIENT_EC_GetContainer, cursorObject] call CLIENT_EC_Action }, nil, 5, false, true, '', '[[cursorObject] call CLIENT_EC_GetContainer, cursorObject] call CLIENT_EC_ActionCondition'];
+	player setVariable ["CLIENT_EC_ActionID", _actionID];
+};
+
 Base_Supply_Drop_Ammo_C_SetupActions =
 {
 	params ["_container"];
 
-	_container addAction ["Restock ammunition from VAS", { [_this select 0] remoteExec ["Base_Supply_Drop_Ammo_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "vas", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
-	_container addAction ["Restock ammunition from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Ammo_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "arsenal", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
+	_container addAction ["Restock ammunition from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Ammo_StockContainer", _this select 0] }, nil, 5, false, true, '', 'not isNull ([_target, "arsenal", 5] call CLIENT_NearSupply)', 2];
 };
 
 Base_Supply_Drop_Items_C_SetupActions =
 {
 	params ["_container"];
 
-	_container addAction ["Restock miscellaneous items from VAS", { [_this select 0] remoteExec ["Base_Supply_Drop_Items_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "vas", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
-	_container addAction ["Restock miscellaneous items from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Items_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "arsenal", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
+	_container addAction ["Restock miscellaneous items from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Items_StockContainer", _this select 0] }, nil, 5, false, true, '', 'not isNull ([_target, "arsenal", 5] call CLIENT_NearSupply)', 2];
 };
 
 Base_Supply_Drop_Mortars_C_SetupActions =
 {
 	params ["_container"];
 
-	_container addAction ["Restock mortars from VAS", { [_this select 0] remoteExec ["Base_Supply_Drop_Mortars_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "vas", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
-	_container addAction ["Restock mortars from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Mortars_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "arsenal", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
+	_container addAction ["Restock mortars from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Mortars_StockContainer", _this select 0] }, nil, 5, false, true, '', 'not isNull ([_target, "arsenal", 5] call CLIENT_NearSupply)', 2];
 };
 
 Base_Supply_Drop_StaticWeapons_C_SetupActions =
 {
 	params ["_container"];
 
-	_container addAction ["Restock static weapons from VAS", { [_this select 0] remoteExec ["Base_Supply_Drop_StaticWeapons_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "vas", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
-	_container addAction ["Restock static weapons from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_StaticWeapons_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "arsenal", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
+	_container addAction ["Restock static weapons from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_StaticWeapons_StockContainer", _this select 0] }, nil, 5, false, true, '', 'not isNull ([_target, "arsenal", 5] call CLIENT_NearSupply)', 2];
 };
 
 Base_Supply_Drop_Weapons_C_SetupActions =
 {
 	params ["_container"];
 
-	_container addAction ["Restock weapons from VAS", { [_this select 0] remoteExec ["Base_Supply_Drop_Weapons_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "vas", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
-	_container addAction ["Restock weapons from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Weapons_StockContainer", 2] }, nil, 5, false, true, '', '[_target, "arsenal", 10] call CLIENT_Supply_RestockFromSupplyCondition', 2];
+	_container addAction ["Restock weapons from Arsenal", { [_this select 0] remoteExec ["Base_Supply_Drop_Weapons_StockContainer", _this select 0] }, nil, 5, false, true, '', 'not isNull ([_target, "arsenal", 5] call CLIENT_NearSupply)', 2];
 };
 
 // Rubble searching callback
@@ -1479,6 +1321,238 @@ CLIENT_EOD_RevealSpottedMine =
 	if (player distance cursorObject > 3.0) exitWith {};
 
 	if (not (cursorObject in allMines)) exitWith {};
-
+	
 	playerSide revealMine cursorObject;
+};
+
+Logistics_PlaceDepot =
+{
+	params ["_source", "_depot", "_parameters"];
+
+	_parameters params ["_depotType", "_fuelBladderType"];
+
+	_depot setRepairCargo 0;
+
+	_depot allowDamage false;
+	[_depot] call JB_fnc_containerClear;
+	[_depot] call JB_fnc_containerLock;
+	_depot setVariable ["ASL_DONOTSLING", true, true]; //JIP
+
+	// Dampen velocity as depot tries to jump out of the terrain
+	_depot spawn
+	{
+		private _endMonitorTime = diag_tickTime + 5;
+		while { diag_tickTime < _endMonitorTime } do
+		{
+			_this setVelocity [0,0,0];
+			sleep 0.1;
+		};
+	};
+
+	if ([_depot] call JB_PO_IsTemporaryObject) exitWith {}; // Don't process the local/temporary object
+
+	_source setMass (getMass _source - 20000);
+
+	private _typeNames = ["HBarrier1", "HBarrier5", "HBarrierWall4", "HBarrierWall_corner", "HBarrierTower", "BagFence_Long", "BagBunker_Small", "BagBunker_Large", "CncBarrierMedium", "HelipadCircle", "PortableLight", _fuelBladderType];
+	[_depot, 40, 800, _typeNames] call JB_fnc_placeObjectInitializeSource;
+
+	private _result = [[_depotType], "Logistics_GetSourceResources", 2] call JB_fnc_remoteCall;
+	if (_result select 0 == JBRC_COMPLETE) then
+	{
+		private _resources = _result select 1;
+		if (count _resources > 0) then { [_depot, _resources] call JB_PO_SetSourceResources };
+	};
+};
+
+Logistics_StoreDepot =
+{
+	params ["_source", "_depot", "_parameters"];
+
+	if ([_depot] call JB_PO_IsTemporaryObject) exitWith {}; // Don't process the local/temporary object
+
+	_source setMass (getMass _source + 20000);
+
+	_parameters params ["_depotType"];
+
+	private _resources = [_depot] call JB_PO_GetSourceResources;
+	[_depotType, _resources] remoteExec ["Logistics_SetSourceResources", 2];
+};
+
+Logistics_PlaceFuelBladder =
+{
+	params ["_source", "_bladder", "_parameters"];
+
+	_bladder setFuelCargo 0;
+
+	if ([_bladder] call JB_PO_IsTemporaryObject) exitWith {}; // Don't process the local/temporary object
+
+	_parameters params ["_bladderType"];
+
+	private _fuel = 5000;
+
+	private _result = [[_bladderType], "Logistics_GetSourceResources", 2] call JB_fnc_remoteCall;
+	if (_result select 0 == JBRC_COMPLETE) then
+	{
+		private _resources = _result select 1;
+		if (count _resources > 0) then { _fuel = _resources select 0 };
+	};
+
+	[_bladder, [[-3.36914,2.49219,0.468579]], _fuel, 60] remoteExec ["JB_fnc_fuelInitSupply", 2];
+};
+
+Logistics_StoreFuelBladder =
+{
+	params ["_source", "_bladder", "_parameters"];
+
+	if ([_bladder] call JB_PO_IsTemporaryObject) exitWith {}; // Don't process the local/temporary object
+
+	_parameters params ["_bladderType"];
+
+	private _resources = [_bladder getVariable "JBF_SupplyRemaining"]; //TODO: Need a function in JB fuel stuff to get the remaining supply
+	[_bladderType, _resources] remoteExec ["Logistics_SetSourceResources", 2];
+};
+
+Logistics_PlaceHelipad =
+{
+	params ["_source", "_proxy", "_parameters"];
+
+	_parameters params ["_helipadType"];
+
+	(_helipadType createVehicle (getPos _proxy)) attachTo [_proxy, [0,0,0]];
+
+	// When placed, make sure simulation is off for the proxy.  Otherwise, it can be moved around,
+	// dragging the helipad with it - or flipping over, hiding the helipad.
+
+	if ([_proxy] call JB_PO_IsTemporaryObject) exitWith {};
+
+	[_proxy] spawn
+	{
+		params ["_proxy"];
+
+		sleep 0.5; // Immediate change messes with display of helipad
+		[_proxy, false] remoteExec ["enableSimulationGlobal", 2];
+	};
+};
+
+Logistics_StoreHelipad =
+{
+	params ["_source", "_proxy", "_parameters"];
+
+	{ deleteVehicle _x } forEach attachedObjects _proxy;
+};
+
+CLIENT_GetVisibleObjects =
+{
+	params ["_class"];
+
+	private _withinLimits =
+	{
+		params ["_position"];
+
+		(_position select 0) >= safeZoneX && { (_position select 0) <= safeZoneX + safeZoneW } && { (_position select 1) >= safeZoneY } && { (_position select 1) <= safeZoneY + safeZoneH }
+	};
+
+	private _positionASL = [];
+	if (not (getPosASL curatorCamera isEqualTo [0,0,0])) then
+	{
+		_positionASL = terrainIntersectAtASL [getPosASL curatorCamera, getPosASL curatorCamera vectoradd (vectorDir curatorCamera vectorMultiply 1e10)];
+	}
+	else
+	{
+		_positionASL = terrainIntersectAtASL [eyePos player, eyePos player vectoradd (eyeDirection player vectorMultiply 1e10)];
+	};
+
+	private _objects = [];
+	if (not (_positionASL isEqualTo [0,0,0])) then
+	{
+		_objects = ((ASLtoAGL _positionASL) nearObjects [_class, 1000]) select { [worldToScreen getPosATL _x] call _withinLimits };
+	};
+
+	_objects
+};
+
+B_Soldier_Repair_F_GetRepairProfile =
+{
+	private _engineer = param [0, objNull, [objNull]];
+	private _vehicle = param [1, objNull, [objNull]];
+	private _systemName = param [2, "", [""]];
+
+	if (not ((toLower _systemName) find "wheel" >= 0) && { (not ("ToolKit" in (backpackItems player))) }) exitWith
+	{
+		[true, 0, 0, format ["%1 repairs require a Toolkit", _systemName], false]
+	};
+
+	private _repairPPS = 1.0;
+	private _targetPC = 0.4;
+	private _message = "";
+
+	if (_vehicle isKindOf "Air") then
+	{
+		_repairPPS = 0.7;
+	}
+	else
+	{
+		if (_vehicle isKindOf "Ship") then
+		{
+			_repairPPS = 0.4;
+		};
+	};
+
+	{
+		switch (_x getVariable ["REPAIR_ServiceLevel", 0]) do
+		{
+			case 1:
+			{
+				if (_targetPC > 0.2) then
+				{
+					_targetPC = 0.2;
+					_message = format ["Using repair facilities of %1", [typeOf _x, "CfgVehicles"] call JB_fnc_displayName];
+				};
+			};
+			case 2:
+			{
+				if (_targetPC > 0.0) then
+				{
+					_targetPC = 0.0;
+					_message = format ["Using repair facilities of %1", [typeOf _x, "CfgVehicles"] call JB_fnc_displayName];
+				};
+			};
+		};
+
+	} forEach (nearestObjects [_engineer, ["All"], 15]);
+
+	[true, _repairPPS, _targetPC, _message, true]
+};
+
+B_Soldier_Repair_F_CanRepairVehicle =
+{
+	private _engineer = param [0, objNull, [objNull]];
+	private _vehicle = param [1, objNull, [objNull]];
+
+	(_vehicle isKindOf "Car" || _vehicle isKindOf "Tank" || _vehicle isKindOf "Air" || _vehicle isKindOf "Ship")
+};
+
+CLIENT_RestrictMovement =
+{
+	_this spawn
+	{
+		params ["_player", "_trigger"];
+
+		private _respawn = _player getVariable ["CLIENT_PlayerPosition", []];
+
+		while { alive _player } do
+		{
+			if (not ([_trigger, _player] call BIS_fnc_inTrigger)) then
+			{
+				moveOut _player;
+				waitUntil { vehicle _player == _player };
+				player setVelocity [0,0,0];
+				player setPosASL (_respawn select 0);
+				player setDir (_respawn select 1);
+				player switchMove "";
+			};
+
+			sleep 3;
+		}
+	};
 };

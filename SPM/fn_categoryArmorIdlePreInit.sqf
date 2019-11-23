@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -27,26 +27,26 @@ OO_TRACE_DECL(SPM_ArmorIdle_GetInHandler) =
 
 OO_TRACE_DECL(SPM_ArmorIdle_WS_Park) =
 {
-	params ["_leader", "_units", "_armorUnit"];
+	params ["_leader", "_units", "_forceUnit"];
 
-	private _vehicle = OO_GET(_armorUnit,ForceUnit,Vehicle);
+	private _vehicle = OO_GET(_forceUnit,ForceUnit,Vehicle);
 
 	[_vehicle, "AI", "UNLOCKED"] call TRACE_SetObjectString;
 	private _getInHandler = _vehicle addEventHandler ["GetIn", SPM_ArmorIdle_GetInHandler];
-	_vehicle setVariable ["SPM_ArmorIdle", [_armorUnit, _getInHandler]];
+	_vehicle setVariable ["SPM_ArmorIdle", [_forceUnit, _getInHandler]];
 	_vehicle setVehicleLock "unlocked";
 	[_vehicle, -1] call JB_fnc_limitSpeed;
 
-	{
-		{ unassignVehicle _x } forEach units _x;
-		units _x orderGetIn false;
-		units _x allowGetIn false;
+	private _group = [] call OO_METHOD(_forceUnit,ForceUnit,GetGroup);
 
-		_x setSpeedMode "limited";
+	{ unassignVehicle _x } forEach units _group;
+	units _group orderGetIn false;
+	units _group allowGetIn false;
 
-		private _waypoint = [_x, getPos _vehicle] call SPM_AddPatrolWaypoint;
-		_waypoint setWaypointType "hold";
-	} forEach ([] call OO_METHOD(_armorUnit,ForceUnit,GetGroups));
+	_group setSpeedMode "limited";
+
+	private _waypoint = [_group, getPos _vehicle] call SPM_AddPatrolWaypoint;
+	_waypoint setWaypointType "hold";
 };
 
 OO_TRACE_DECL(SPM_ArmorIdle_Update) =
@@ -56,11 +56,11 @@ OO_TRACE_DECL(SPM_ArmorIdle_Update) =
 	[] call OO_METHOD_PARENT(_category,Category,Update,ForceCategory);
 
 	private _armor = OO_GET(_category,ArmorIdleCategory,_Armor);
-	private _armorUnit = [] call OO_METHOD(_armor,ArmorCategory,BeginTemporaryDuty);
-	if (not isNull OO_GET(_armorUnit,ForceUnit,Vehicle)) then
+	private _forceUnit = [] call OO_METHOD(_armor,ArmorCategory,BeginTemporaryDuty);
+	if (not isNull OO_GET(_forceUnit,ForceUnit,Vehicle)) then
 	{
 		private _idleUnits = OO_GET(_category,ArmorIdleCategory,_IdleUnits);
-		_idleUnits pushBack _armorUnit;
+		_idleUnits pushBack _forceUnit;
 		
 		private _area = OO_GET(_armor,ForceCategory,Area);
 		private _center = OO_GET(_area,StrongpointArea,Position);
@@ -68,10 +68,9 @@ OO_TRACE_DECL(SPM_ArmorIdle_Update) =
 
 		if (count _parkingPosition == 0) then { _parkingPosition = [_center, random 360] };
 
-		{
-			private _waypoint = [_x, _parkingPosition select 0] call SPM_AddPatrolWaypoint;
-			[_waypoint, SPM_ArmorIdle_WS_Park, _armorUnit] call SPM_AddPatrolWaypointStatements;
-		} forEach ([] call OO_METHOD(_armorUnit,ForceUnit,GetGroups));
+		private _group = [] call OO_METHOD(_forceUnit,ForceUnit,GetGroup);
+		private _waypoint = [_group, _parkingPosition select 0] call SPM_AddPatrolWaypoint;
+		[_waypoint, SPM_ArmorIdle_WS_Park, _forceUnit] call SPM_AddPatrolWaypointStatements;
 
 		private _number = OO_GET(_category,ArmorIdleCategory,_Number);
 		if (count _idleUnits == _number) then

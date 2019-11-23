@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -64,6 +64,17 @@ OO_TRACE_DECL(SPM_ObjectiveCompound_Create) =
 	params ["_compound", "_compoundDescription"];
 
 	OO_SET(_compound,ObjectiveCompound,ObjectiveDescription,_compoundDescription);
+};
+
+OO_TRACE_DECL(SPM_ObjectiveCompound_Delete) =
+{
+	params ["_compound"];
+
+	{
+		[] call OO_DELETE(_x);
+	} forEach OO_GET(_compound,ObjectiveCompound,Objectives);
+
+	[] call OO_METHOD_PARENT(_compound,Root,Delete,MissionObjective);
 };
 
 OO_TRACE_DECL(SPM_ObjectiveCompound_Update) =
@@ -140,6 +151,7 @@ private _objectiveDescription = ["",""];
 
 OO_BEGIN_SUBCLASS(ObjectiveCompound,MissionObjective);
 	OO_OVERRIDE_METHOD(ObjectiveCompound,Root,Create,SPM_ObjectiveCompound_Create);
+	OO_OVERRIDE_METHOD(ObjectiveCompound,Root,Delete,SPM_ObjectiveCompound_Delete);
 	OO_OVERRIDE_METHOD(ObjectiveCompound,Category,Update,SPM_ObjectiveCompound_Update);
 	OO_OVERRIDE_METHOD(ObjectiveCompound,Category,SendNotification,SPM_ObjectiveCompound_SendNotification);
 	OO_OVERRIDE_METHOD(ObjectiveCompound,MissionObjective,GetDescription,SPM_ObjectiveCompound_GetDescription);
@@ -166,7 +178,7 @@ OO_TRACE_DECL(SPM_ObjectiveCompoundAny_ObjectiveHasSucceeded) =
 {
 	params ["_compound"];
 
-	private _objectives = OO_GET(_mission,Mission,Objectives) select { OO_GET(_x,MissionObjective,State) in OO_GET(_x,MissionObjective,CompletionStates) };
+	private _objectives = OO_GET(_compound,ObjectiveCompound,Objectives) select { OO_GET(_x,MissionObjective,State) in OO_GET(_x,MissionObjective,CompletionStates) };
 
 	count _objectives >= OO_GET(_compound,ObjectiveCompoundAny,MinimumRequiredCompleted)
 };
