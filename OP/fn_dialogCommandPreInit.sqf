@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -92,7 +92,7 @@ OO_TRACE_DECL(OP_Command_ShowDialog) =
 	[OP_Command_AppendOutputMessage] call SPM_Util_PushMessageReceiver;
 };
 
-#define PREFIX "gm operation "
+#define PREFIX "mc operation "
 
 OO_TRACE_DECL(OP_Command_AppendOutputMessage) =
 {

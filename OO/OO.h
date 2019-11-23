@@ -322,3 +322,9 @@ method##_Actual
 #else
 #define OO_TRACE_DECL(method) method
 #endif
+
+#ifdef OO_TRACE
+#define OO_TRACE_SYMBOL(symbol) diag_log format [#symbol + ": %1", symbol]
+#else
+#define OO_TRACE_SYMBOL(symbol)
+#endif

@@ -102,7 +102,7 @@ SA_Simulate_Towing_Speed = {
 		_newMaxSpeed = _maxVehicleSpeed / (1 max ((_totalCargoMass /  _vehicleMass) * 2));
 		_newMaxSpeed = (_maxVehicleSpeed * 0.75) min _newMaxSpeed;
 
-		if (not (_vehicle isKindOf "Ship")) then { _newMaxSpeed = _newMaxSpeed min 20 }; //JB
+		//if (not (_vehicle isKindOf "Ship")) then { _newMaxSpeed = _newMaxSpeed min 20 }; //JB
 		
 		// Prevent vehicle from moving if trying to move more cargo than pre-defined max
 		if(_totalCargoCount > _maxTowedCargo) then {
@@ -662,6 +662,7 @@ SA_Can_Pickup_Tow_Ropes = {
 
 SA_TOW_SUPPORTED_VEHICLES =
 [
+	["UGV_02_Base_F", false],
 	["Car", true],
 	["Tank", true],
 	["B_Boat_Armed_01_minigun_F", true]

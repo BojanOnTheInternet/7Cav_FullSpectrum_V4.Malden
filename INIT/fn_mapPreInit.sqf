@@ -371,10 +371,10 @@ MAP_InitializeGeneral =
 {
 	[] spawn
 	{
-		[[["Land_NavigLight", false], ["Land_LandMark_F", false], ["HouseBase", true], ["HBarrier_base_F", true], ["Land_Razorwire_F", true], ["All", false]]] call MAP_CreateMissionObjectRectangles;
+		[[["Land_NavigLight", false], ["Land_LandMark_F", false], ["HouseBase", true], ["Camping_base_F", true], ["HBarrier_base_F", true], ["Land_Razorwire_F", true], ["All", false]]] call MAP_CreateMissionObjectRectangles;
 	};
 
-	[{ [_this select 0, ["MapSenseEnemyRange"] call Params_GetParamValue, -1, ["MapType"] call Params_GetParamValue] call MAP_DrawMap_General }, { [_this select 0, 0, 300, ["MapType"] call Params_GetParamValue] call MAP_DrawMap_General }] call JBMAP_InitializeOverlay;
+	[{ [_this select 0, ["MapSenseEnemyRange"] call JB_MP_GetParamValue, -1, ["MapType"] call JB_MP_GetParamValue] call MAP_DrawMap_General }, { [_this select 0, 0, 300, ["MapType"] call JB_MP_GetParamValue] call MAP_DrawMap_General }] call JBMAP_InitializeOverlay;
 };
 
 MAP_DrawMap_ATC =
@@ -402,7 +402,7 @@ MAP_InitializeATC =
 
 	[] spawn
 	{
-		[[["Land_NavigLight", false], ["Land_LandMark_F", false], ["HouseBase", true], ["HBarrier_base_F", true], ["Land_Razorwire_F", true], ["All", false]]] call MAP_CreateMissionObjectRectangles;
+		[[["Land_NavigLight", false], ["Land_LandMark_F", false], ["HouseBase", true], ["Camping_base_F", true], ["HBarrier_base_F", true], ["Land_Razorwire_F", true], ["All", false]]] call MAP_CreateMissionObjectRectangles;
 	};
 
 	[{ [_this select 0] call MAP_DrawMap_ATC }, { [_this select 0, 0, 300, "individual"] call MAP_DrawMap_General }] call JBMAP_InitializeOverlay;

@@ -1,43 +1,40 @@
 #include "..\OO\oo.h"
 
 // Distance bodies are moved from a destroyed vehicle
-#define DISTANCE_FROM_DESTROYED_VEHICLE 10
+JBM_DISTANCE_FROM_DESTROYED_VEHICLE = 10;
 // Frequency of medic monitor basic updates (seconds)
-#define MONITOR_POLL_INTERVAL 0.5
+JBM_MONITOR_POLL_INTERVAL = 0.5;
 // Frequency of medic monitor full updates (seconds)
-#define MONITOR_FULL_INTERVAL 3.0
+JBM_MONITOR_FULL_INTERVAL = 3.0;
 // Distance monitor will detect medics (meters)
-#define MONITOR_RANGE 500
+JBM_MONITOR_RANGE = 500;
 // Number of medics monitor will list (count) - must be matched against UI design
-#define MONITOR_NUMBER_MEDICS 5
+JBM_MONITOR_NUMBER_MEDICS = 5;
 // Maximum time to bleedout after being incapacitated (seconds)
-#define MAX_BLEEDOUT_TIME 600
+JBM_MAX_BLEEDOUT_TIME = 600;
 // Frequency of updates to the player's damage-based bleedout time (seconds)
-#define BLEEDOUT_UPDATE_INTERVAL 3.0
+JBM_BLEEDOUT_UPDATE_INTERVAL = 3.0;
 // Distance at which medical assistance can be performed
-#define MEDICAL_ACTION_DISTANCE 2
+JBM_MEDICAL_ACTION_DISTANCE = 3;
 // The bleedout pace of an unstabilized wound
-#define UNSTABILIZED_BLEEDOUT_PACE 1
+JBM_UNSTABILIZED_BLEEDOUT_PACE = 1;
 // The bleedout pace of a stabilized wound
-#define STABILIZED_BLEEDOUT_PACE 0.01
+JBM_STABILIZED_BLEEDOUT_PACE = 0.01;
 // The minimum time that an ambulance revive can take
-#define MINIMUM_AMBULANCE_REVIVE_TIME 4
+JBM_MINIMUM_AMBULANCE_REVIVE_TIME = 4;
 // The time it takes for an ambulance to stabilize a patient
-#define AMBULANCE_STABILIZE_TIME 3
+JBM_AMBULANCE_STABILIZE_TIME = 3;
 
 // The speed at which the "roll over" animation should run when revived
-#define REVIVE_ANIMATION_ACCELERATION 1.6
-
-// The distance at which medics are considered 'nearby' for self-revives
-#define SELF_REVIVE_RANGE 200
+JBM_REVIVE_ANIMATION_ACCELERATION = 1.6;
 
 // The range of player numbers used to ramp the self-revive delay
-#define START_REVIVE_SELF_COUNT 1
-#define END_REVIVE_SELF_COUNT 30
+JBM_START_REVIVE_SELF_COUNT = 1;
+JBM_END_REVIVE_SELF_COUNT = 30;
 
 // The range of times (in seconds) used to ramp the self-revive delay
-#define START_REVIVE_SELF_TIME 5
-#define END_REVIVE_SELF_TIME 90
+JBM_START_REVIVE_SELF_TIME = 5;
+JBM_END_REVIVE_SELF_TIME = 90;
 
 // Acts_CivilInjured* is a great series of downed animations specific to body parts
 // Acts_Injured*Rifle01
@@ -93,7 +90,7 @@ JBM_WeaponDescription =
 
 	if (_vehicle isKindOf "Man") then
 	{
-		_magazineWeapon = [_ammo, weapons _vehicle + ["Throw", "Put"]] call JBM_AmmoMagazineWeapon;
+		_magazineWeapon = [_ammo, weapons _vehicle + ["Put", "Throw"]] call JBM_AmmoMagazineWeapon;
 	}
 	else
 	{
@@ -107,7 +104,7 @@ JBM_WeaponDescription =
 			// If _gunnerCrew select 0 select 4 is true, then it's a person shooting from a vehicle
 			if (_gunnerCrew select 0 select 1 == "Turret" && (_gunnerCrew select 0 select 4)) then
 			{
-				_magazineWeapon = [_ammo, weapons (_gunnerCrew select 0 select 0) + ["Throw", "Put"]] call JBM_AmmoMagazineWeapon;
+				_magazineWeapon = [_ammo, weapons (_gunnerCrew select 0 select 0) + ["Put", "Throw"]] call JBM_AmmoMagazineWeapon;
 			}
 			else
 			{
@@ -117,7 +114,7 @@ JBM_WeaponDescription =
 		};
 	};
 
-	if (_magazineWeapon select 1 in ["Throw", "Put"]) exitWith { _magazineWeapon select 0 };
+	if (_magazineWeapon select 1 in ["Put", "Throw"]) exitWith { _magazineWeapon select 0 };
 
 	(_magazineWeapon select 1) + " (loaded with " + (_magazineWeapon select 0) + ")";
 };
@@ -225,7 +222,7 @@ JBM_HandleDamage =
 		_wounded setVariable ["JBM_Stabilized", nil, true];
 		_wounded setVariable ["JBM_Rewounded", true];
 
-		private _friendlyFire = isPlayer _instigator && { side _source == side _wounded } && { _instigator != _wounded };
+		private _friendlyFire = isPlayer _instigator && { side _instigator == side _wounded } && { _instigator != _wounded };
 
 		if (_friendlyFire) then
 		{
@@ -269,7 +266,7 @@ JBM_HandleDamage =
 					{
 						params ["_wounded", "_selection", "_source", "_projectile", "_instigator"];
 
-						scriptName "spawnJBM_HandleDamage";
+						scriptName "JBM_HandleDamage";
 
 						if (_source == _wounded) then
 						{
@@ -492,31 +489,31 @@ JBM_UpdateMedicMonitor =
 
 	_bleedoutDisplay ctrlSetText ([round (_bleedoutTime max 0), "MM:SS"] call BIS_fnc_secondsToString);
 
-	if ((round time) mod MONITOR_FULL_INTERVAL == 0) then
+	if ((round time) mod JBM_MONITOR_FULL_INTERVAL == 0) then
 	{
 		lbClear _medicList;
 
-		private _medics = [_wounded, MONITOR_RANGE] call JBM_NearbyMedics;
+		private _medics = [_wounded, JBM_MONITOR_RANGE] call JBM_NearbyMedics;
 		{
 			_medicList lnbAddRow [name _x, format ["%1m", round (_wounded distance _x)], format ["%1", lifeState _x]];
-		} forEach (_medics select [0, MONITOR_NUMBER_MEDICS]);
+		} forEach (_medics select [0, JBM_MONITOR_NUMBER_MEDICS]);
 
 		private _message = "";
 
 		if (count _medics == 0) then
 		{
-			_message = format ["No medics within %1 meters", MONITOR_RANGE];
+			_message = format ["No medics within %1 meters", JBM_MONITOR_RANGE];
 		}
 		else
 		{
-			private _extraMedics = count _medics - MONITOR_NUMBER_MEDICS;
+			private _extraMedics = count _medics - JBM_MONITOR_NUMBER_MEDICS;
 			if (_extraMedics > 0) then
 			{
 				_message = format ["%1 other medics not listed", _extraMedics];
 			};
 		};
 
-		if ((["ReviveSelf"] call Params_GetParamValue) == 1) then
+		if ((["ReviveSelf"] call JB_MP_GetParamValue) == 1) then
 		{
 			if (diag_tickTime > JBM_ReviveSelfTime) then
 			{
@@ -537,7 +534,7 @@ JBM_ComputeBleedoutTime =
 	params ["_wounded"];
 
 	private _selections = (getAllHitPointsDamage _wounded) select 2;
-	private _timePerSelection = MAX_BLEEDOUT_TIME / (count _selections);
+	private _timePerSelection = JBM_MAX_BLEEDOUT_TIME / (count _selections);
 	private _bleedoutTime = 0;
 	{
 		_bleedoutTime = _bleedoutTime + ((0.92 - _x) * _timePerSelection);
@@ -548,14 +545,6 @@ JBM_ComputeBleedoutTime =
 
 JBM_ReviveSelf =
 {
-#ifdef MEDIC_BLOCKS_SELF_REVIVE
-	// If a medic, and a medic is active nearby, disallow (let medic do his job)
-	if (player getUnitTrait "medic" && { { lifeState _x in ["HEALTHY", "INJURED"] } count ([player, SELF_REVIVE_RANGE] call JBM_NearbyMedics) > 0 }) exitWith { [format ["'Revive self' is not available when a medic is active within %1 meters", SELF_REVIVE_RANGE], 1] call JB_fnc_showBlackScreenMessage };
-
-	// If not a medic and a medic exists nearby, disallow (let medic self-revive)
-	if (not (player getUnitTrait "medic") && { count ([player, SELF_REVIVE_RANGE] call JBM_NearbyMedics) > 0 }) exitWith { [format ["'Revive self' is not available when a medic is within %1 meters", SELF_REVIVE_RANGE], 1] call JB_fnc_showBlackScreenMessage };
-#endif
-
 	if (not ([player] call JBM_FirstAidKitAvailable)) exitWith { ["'Revive self' requires a first aid kit", 1] call JB_fnc_showBlackScreenMessage };
 
 	if (not ([player] call JBM_ReviveWoundedPossible)) exitWith { ["'Revive self' is not available while in a vehicle or while being moved", 1] call JB_fnc_showBlackScreenMessage };
@@ -573,13 +562,13 @@ JBM_MedicMonitor =
 	JBM_MedicMonitorFields = [];
 	if (not isNil "JBM_MedicMonitorAction") then { diag_log "JBM_MedicMonitor: a non-nil JBM_MedicMonitorAction value is being overwritten." };
 	JBM_MedicMonitorAction = _wounded addAction ["Toggle medic list", { [_this select 0] call JBM_ToggleMedicMonitor }, nil, 0, false, true, "", "", -1, true];
-	private _respawnAction = _wounded addAction ["Respawn", { (_this select 0) setDamage 1 }, nil, 0, false, true, "", "", -1, true];
+	private _respawnAction = _wounded addAction ["Respawn", { if (["Do you really want to respawn?", "RESPAWN", true, true, findDisplay 46] call BIS_fnc_guiMessage) then { (_this select 0) setDamage 1 } }, nil, 0, false, true, "", "", -1, true];
 
 	private _reviveDelay = 1e30;
 	private _reviveAction = -1;
-	if ((["ReviveSelf"] call Params_GetParamValue) == 1) then
+	if ((["ReviveSelf"] call JB_MP_GetParamValue) == 1) then
 	{
-		_reviveDelay = linearConversion [START_REVIVE_SELF_COUNT, END_REVIVE_SELF_COUNT, (count (allPlayers select { not (_x isKindOf "HeadlessClient_F") })), START_REVIVE_SELF_TIME, END_REVIVE_SELF_TIME, true];
+		_reviveDelay = linearConversion [JBM_START_REVIVE_SELF_COUNT, JBM_END_REVIVE_SELF_COUNT, (count (allPlayers select { not (_x isKindOf "HeadlessClient_F") })), JBM_START_REVIVE_SELF_TIME, JBM_END_REVIVE_SELF_TIME, true];
 		if (not (_wounded getUnitTrait "medic")) then { _reviveDelay = _reviveDelay * 1.2 };
 		JBM_ReviveSelfTime = diag_tickTime + _reviveDelay;
 		_reviveAction = _wounded addAction ["Revive self", { [] call JBM_ReviveSelf }, nil, 0, false, true, "", "diag_tickTime > JBM_ReviveSelfTime", -1, true];
@@ -619,11 +608,11 @@ JBM_MedicMonitor =
 			[_wounded, _bleedoutCountdown] call JBM_UpdateMedicMonitor;
 		};
 
-		sleep MONITOR_POLL_INTERVAL;
+		sleep JBM_MONITOR_POLL_INTERVAL;
 
 		// Advance the bleedout timer
-		private _pace = if (_wounded getVariable ["JBM_Stabilized", false]) then { STABILIZED_BLEEDOUT_PACE } else { UNSTABILIZED_BLEEDOUT_PACE };
-		_bleedoutCountdown = _bleedoutCountdown - MONITOR_POLL_INTERVAL * _pace;
+		private _pace = if (_wounded getVariable ["JBM_Stabilized", false]) then { JBM_STABILIZED_BLEEDOUT_PACE } else { JBM_UNSTABILIZED_BLEEDOUT_PACE };
+		_bleedoutCountdown = _bleedoutCountdown - JBM_MONITOR_POLL_INTERVAL * _pace;
 
 		_wounded setVariable ["JBM_BleedoutCountdown", _bleedoutCountdown];
 	};
@@ -644,7 +633,7 @@ JBM_MortalityQuotes =
 [
 	["No one can say that death found in me a willing comrade, or that I went easily.", "Cassandra Clare, Clockwork Princess"],
 	["On a long enough time line, the survival rate for everyone drops to zero.", "Chuck Palahniuk, Fight Club"],
-	["Yes, man is mortal, but that would be only half the trouble. The worst of it is that he's sometimes unexpectedly mortal—there's the trick!", "Mikhail Bulgakov, The Master and Margarita"],
+	["Yes, man is mortal, but that would be only half the trouble. The worst of it is that he's sometimes unexpectedly mortalï¿½there's the trick!", "Mikhail Bulgakov, The Master and Margarita"],
 	["Man is mortal, and as the professor so rightly said mortality can come so suddenly", "Mikhail Bulgakov, The Master and Margarita"],
 	["Your days are numbered. Use them to throw open the windows of your soul to the sun. If you do not, the sun will soon set, and you with it.", "Marcus Aurelius, The Emperor's Handbook"],
 	["Time is a great teacher, but unfortunately it kills all its students.", "Hector Berlioz"],
@@ -660,7 +649,7 @@ JBM_MortalityQuotes =
 	["When mortality is the equation, we are but pawns in a game.", "Dianna Hardy, Reign Of The Wolf"],
 	["You need to be greedy or ignorant to truly want to live forever.", "Mokokoma Mokhonoana"],
 	["Embrace death, dance with it a while, and finally fall prey to it.", "Darren Shan, Bec"],
-	["To die trying is the proudest human thing.", "Robert A. Heinlein, Have Space Suit—Will Travel"],
+	["To die trying is the proudest human thing.", "Robert A. Heinlein, Have Space Suitï¿½Will Travel"],
 	["There are some fights none of us can win.", "Amy Rae Durreson, Reawakening"],
 	["It is the way of mortals. They fling themselves at life and emerge broken.", "Patricia Briggs, Fair Game"],
 	["Mortality is one of the greatest gifts ever bestowed. After a long and fruitful life, we are able to rest.", "Nancy Straight, Blood Debt"]
@@ -670,7 +659,7 @@ JBM_GetMortalityQuote =
 {
 	private _quote = selectRandom JBM_MortalityQuotes;
 
-	format ["<t size='1.4'>“%1”</t><br/><br/><t color='#AAAAAA'>--%2</t>", _quote select 0, _quote select 1]
+	format ["<t size='1.4'>ï¿½%1ï¿½</t><br/><br/><t color='#AAAAAA'>--%2</t>", _quote select 0, _quote select 1]
 };
 
 JBM_MedicalCleanup =
@@ -767,23 +756,23 @@ JBM_AmbulanceRevive =
 	private _bleedoutCountdown = _wounded getVariable "JBM_BleedoutCountdown";
 	if (isNil "_bleedoutCountdown") exitWith {};
 
-	_reviveTime = (_reviveTime * (1 - (_bleedoutCountdown / MAX_BLEEDOUT_TIME))) max MINIMUM_AMBULANCE_REVIVE_TIME;
+	_reviveTime = (_reviveTime * (1 - (_bleedoutCountdown / JBM_MAX_BLEEDOUT_TIME))) max JBM_MINIMUM_AMBULANCE_REVIVE_TIME;
 
-	if (_bleedoutCountdown < AMBULANCE_STABILIZE_TIME min _reviveTime) exitWith
+	if (_bleedoutCountdown < JBM_AMBULANCE_STABILIZE_TIME min _reviveTime) exitWith
 	{
-		[["Your condition is too serious.  There's nothing that can be done.", 2], { _this call JB_fnc_showBlackScreenMessage }] remoteExec ["call", _wounded];
+		["Your condition is too serious.  There's nothing that can be done.", 2] remoteExec ["JB_fnc_showBlackScreenMessage", _wounded];
 	};
 
-	if (AMBULANCE_STABILIZE_TIME < _reviveTime && _bleedoutCountdown < _reviveTime && not (player getVariable ["JBM_Stabilized", false])) then
+	if (JBM_AMBULANCE_STABILIZE_TIME < _reviveTime && _bleedoutCountdown < _reviveTime && not (player getVariable ["JBM_Stabilized", false])) then
 	{
 		_usedAmbulanceFirstAidKit = [_ambulance] call JBM_ConsumeAmbulanceFirstAidKit;
 		if (not _usedAmbulanceFirstAidKit && not ([player] call JBM_FirstAidKitAvailable)) exitWith
 		{
-			[["You cannot be stabilized because neither you nor the vehicle has a first aid kit.", 1], { _this call JB_fnc_showBlackScreenMessage }] remoteExec ["call", _wounded];
+			["You cannot be stabilized because neither you nor the vehicle has a first aid kit.", 1] remoteExec ["JB_fnc_showBlackScreenMessage", _wounded];
 		};
 
 		[["Stabilizing critically-wounded patient...", "plain down", 0.5]] remoteExec ["titleText", _wounded];
-		sleep AMBULANCE_STABILIZE_TIME;
+		sleep JBM_AMBULANCE_STABILIZE_TIME;
 		if (alive _ambulance && vehicle _wounded == _ambulance && lifeState _wounded == "INCAPACITATED") then
 		{
 			[_ambulance, _usedAmbulanceFirstAidKit] remoteExec ["JBM_R_HaveBeenStabilized", _wounded];
@@ -795,7 +784,7 @@ JBM_AmbulanceRevive =
 	_usedAmbulanceFirstAidKit = [_ambulance] call JBM_ConsumeAmbulanceFirstAidKit;
 	if (not _usedAmbulanceFirstAidKit && not ([player] call JBM_FirstAidKitAvailable)) exitWith
 	{
-		[["You cannot be revived because neither you nor the vehicle has a first aid kit.", 1], { _this call JB_fnc_showBlackScreenMessage }] remoteExec ["call", _wounded];
+		["You cannot be revived because neither you nor the vehicle has a first aid kit.", 1] remoteExec ["JB_fnc_showBlackScreenMessage", _wounded];
 	};
 
 	[["Reviving wounded patient...", "plain down", 0.5]] remoteExec ["titleText", _wounded];
@@ -878,16 +867,18 @@ JBM_R_HaveBeenRevived =
 	{
 		params ["_medic", "_usedMedicFirstAidKit", ["_health", 1.0]];
 
-		scriptName "spawnJBM_R_HaveBeenRevived";
+		scriptName "JBM_R_HaveBeenRevived";
 
 		if (lifeState player != "INCAPACITATED") exitWith { };
 
 		// Speed up the revive animation.  Spawn the code that resets the animation speed to normal so that if ANYTHING goes wrong, we're sure to get that done
-		player setAnimSpeedCoef REVIVE_ANIMATION_ACCELERATION;
-		[] spawn
+
+		private _animSpeedCoef = getAnimSpeedCoef player;
+		player setAnimSpeedCoef (_animSpeedCoef * JBM_REVIVE_ANIMATION_ACCELERATION);
+		[_animSpeedCoef] spawn
 		{
 			waitUntil { animationstate player find "amov" == 0 && animationstate player find "_" == -1 };
-			player setAnimSpeedCoef 1.0;
+			player setAnimSpeedCoef (_this select 0);
 		};
 
 		[player, _health] call JBM_Heal;
@@ -912,11 +903,13 @@ JBM_ReviveWoundedPossible =
 
 	if (lifeState _wounded != "INCAPACITATED") exitWith { false };
 
+	if (_wounded != player && { not (lifeState player in ["HEALTHY", "INJURED"]) }) exitWith { false };
+
 	if (vehicle player != player) exitWith { false };
 
 	if (not isPlayer _wounded) exitWith { false };
 
-	if (player distance _wounded > MEDICAL_ACTION_DISTANCE) exitWith { false };
+	if (player distance _wounded > JBM_MEDICAL_ACTION_DISTANCE) exitWith { false };
 
 	if (not isNull attachedTo _wounded) exitWith { false };
 
@@ -975,6 +968,13 @@ JBM_ReviveWoundedHoldActionInterval =
 
 	if (([JB_HA_STATE] call JB_fnc_holdActionGetValue) == "keyup") exitWith
 	{
+		[] call JB_fnc_holdActionStop;
+		[_passthrough select 1] call JBM_ReviveWoundedInterrupted;
+	};
+
+	if (not ([_passthrough select 0] call JBM_ReviveWoundedPossible)) exitWith
+	{
+		[] call JB_fnc_holdActionStop;
 		[_passthrough select 1] call JBM_ReviveWoundedInterrupted;
 	};
 
@@ -1023,7 +1023,7 @@ JBM_R_HaveBeenStabilized =
 	{
 		params ["_medic", "_usedMedicFirstAidKit"];
 
-		scriptName "spawnJBM_R_HaveBeenStabilized";
+		scriptName "JBM_R_HaveBeenStabilized";
 
 		if (lifeState player != "INCAPACITATED") exitWith { };
 
@@ -1042,13 +1042,15 @@ JBM_StabilizeWoundedPossible =
 
 	if (lifeState _wounded != "INCAPACITATED") exitWith { false };
 
+	if (not (lifeState player in ["HEALTHY", "INJURED"])) exitWith { false };
+
 	if ((_wounded getVariable ["JBM_Stabilized", false])) exitWith { false };
 
 	if (vehicle player != player) exitWith { false };
 
 	if (not isPlayer _wounded) exitWith { false };
 
-	if (player distance _wounded > MEDICAL_ACTION_DISTANCE) exitWith { false };
+	if (player distance _wounded > JBM_MEDICAL_ACTION_DISTANCE) exitWith { false };
 
 	if (not isNull attachedTo _wounded) exitWith { false };
 
@@ -1089,6 +1091,13 @@ JBM_StabilizeWoundedHoldActionInterval =
 
 	if (([JB_HA_STATE] call JB_fnc_holdActionGetValue) == "keyup") exitWith
 	{
+		[] call JB_fnc_holdActionStop;
+		[_passthrough select 1] call JBM_StabilizeWoundedInterrupted;
+	};
+
+	if (not ([_passthrough select 0] call JBM_StabilizeWoundedPossible)) exitWith
+	{
+		[] call JB_fnc_holdActionStop;
 		[_passthrough select 1] call JBM_StabilizeWoundedInterrupted;
 	};
 
@@ -1113,7 +1122,7 @@ JBM_StabilizeWoundedHoldAction =
 {
 	params ["_wounded", "_action"];
 
-	if (not ([player] call JBM_FirstAidKitAvailable) && { not ([_wounded] call JBM_FirstAidKitAvailable) }) exitWith { ["A first aid kit is required to revive wounded soldiers", 1] call JB_fnc_showBlackScreenMessage };
+	if (not ([player] call JBM_FirstAidKitAvailable) && { not ([_wounded] call JBM_FirstAidKitAvailable) }) exitWith { ["A first aid kit is required to stabilize wounded soldiers", 1] call JB_fnc_showBlackScreenMessage };
 
 	[actionKeys "action", 8.0, 1.0, JBM_StabilizeWoundedHoldActionInterval, [_wounded, animationState player]] call JB_fnc_holdActionStart;
 	[JB_HA_LABEL, str parseText ((player actionParams _action) select 0)] call JB_fnc_holdActionSetValue;
@@ -1200,8 +1209,6 @@ JBM_MoveWoundedCondition =
 
 	if ([animationState player, "cin"] call JB_fnc_matchAnimationState) exitWith { false };
 
-	if ((player distance _wounded) > MEDICAL_ACTION_DISTANCE) exitWith { false };
-
 	if (vehicle player != player) exitWith { false };
 
 	if (lifeState _wounded != "INCAPACITATED") exitWith { false };
@@ -1255,11 +1262,11 @@ JBM_DragWounded =
 	{
 		params ["_wounded"];
 
-		if (lifeState _wounded != "INCAPACITATED") exitWith {}; // Use of cursorTarget sometimes feeds different values to the condition and the action
+		if (lifeState _wounded != "INCAPACITATED") exitWith {};
 
 		private _medic = player;
 
-		scriptName "spawnJBM_DragWounded";
+		scriptName "JBM_DragWounded";
 
 		_wounded setVariable ["JBM_ManuallyLoadedIntoVehicle", nil, true];
 
@@ -1607,7 +1614,7 @@ JBM_R_StartCarry =
 	{
 		params ["_medic", "_wounded", "_medicAnimation"];
 
-		scriptName "spawnJBM_R_StartCarry";
+		scriptName "JBM_R_StartCarry";
 
 		if (not local _wounded) then
 		{
@@ -1633,7 +1640,7 @@ JBM_R_StopCarry =
 	{
 		params ["_medic", "_wounded", "_medicAnimation"];
 
-		scriptName "spawnJBM_R_StopCarry";
+		scriptName "JBM_R_StopCarry";
 
 		if (local _wounded) then
 		{
@@ -1697,9 +1704,9 @@ JBM_CarryWounded =
 	{
 		params ["_wounded"];
 
-		if (lifeState _wounded != "INCAPACITATED") exitWith {}; // Use of cursorTarget sometimes feeds different values to the condition and the action
+		if (lifeState _wounded != "INCAPACITATED") exitWith {};
 
-		scriptName "spawnJBM_CarryWounded";
+		scriptName "JBM_CarryWounded";
 
 		private _medic = player;
 
@@ -1782,10 +1789,10 @@ JBM_SetupActions =
 	private _action = 0;
 	private _actions = [];
 
-	_action = _player addAction ["<t color=""#ED2744"">Drag wounded</t>", { [cursorTarget] call JBM_DragWounded }, nil, 20, false, true, "", "[cursorTarget] call JBM_DragWoundedCondition"];
+	_action = _player addAction ["<t color=""#ED2744"">Drag wounded</t>", { [cursorObject] call JBM_DragWounded }, nil, 20, false, true, "", "(player distance cursorObject) <= JBM_MEDICAL_ACTION_DISTANCE && { [cursorObject] call JBM_DragWoundedCondition }"];
 	_actions pushBack _action; // 0
 
-	_action = _player addAction ["<t color=""#ED2744"">Carry wounded</t>", { [cursorTarget] call JBM_CarryWounded }, nil, 20, false, true, "", "[cursorTarget] call JBM_CarryWoundedCondition"];
+	_action = _player addAction ["<t color=""#ED2744"">Carry wounded</t>", { [cursorObject] call JBM_CarryWounded }, nil, 20, false, true, "", "(player distance cursorObject) <= JBM_MEDICAL_ACTION_DISTANCE && { [cursorObject] call JBM_CarryWoundedCondition }"];
 	_actions pushBack _action; // 1
 
 	_action = _player addAction ["<t color=""#ED2744"">Set down wounded</t>", { [] call JBM_SetDownWounded }, nil, 20, true, false, "", "[] call JBM_SetDownWoundedCondition"];
@@ -1795,14 +1802,14 @@ JBM_SetupActions =
 
 	if (_player getUnitTrait "medic") then
 	{
-		_action = _player addAction ["<t color=""#ED2744"">Revive wounded</t>", { [cursorTarget, _this select 2] call JBM_ReviveWoundedHoldAction }, nil, 20, true, true, "", "[cursorTarget] call JBM_ReviveWoundedCondition"];
+		_action = _player addAction ["<t color=""#ED2744"">Revive wounded</t>", { [cursorObject, _this select 2] call JBM_ReviveWoundedHoldAction }, nil, 20, true, true, "", "(player distance cursorObject) <= JBM_MEDICAL_ACTION_DISTANCE && { [cursorObject] call JBM_ReviveWoundedCondition }"];
 		_actions pushBack _action; // 3
 
 		[_player, _action, "\a3\ui_f\data\IGUI\Cfg\HoldActions\holdAction_reviveMedic_ca.paa"] call JB_fnc_holdActionSetText;
 	}
 	else
 	{
-		_action = _player addAction ["<t color=""#ED2744"">Stabilize wounded</t>", { [cursorTarget, _this select 2] call JBM_StabilizeWoundedHoldAction }, nil, 20, true, true, "", "[cursorTarget] call JBM_StabilizeWoundedCondition"];
+		_action = _player addAction ["<t color=""#ED2744"">Stabilize wounded</t>", { [cursorObject, _this select 2] call JBM_StabilizeWoundedHoldAction }, nil, 20, true, true, "", "(player distance cursorObject) <= JBM_MEDICAL_ACTION_DISTANCE && { [cursorObject] call JBM_StabilizeWoundedCondition }"];
 		_actions pushBack _action; // 4
 
 		[_player, _action, "\a3\ui_f\data\IGUI\Cfg\HoldActions\holdAction_reviveMedic_ca.paa"] call JB_fnc_holdActionSetText;

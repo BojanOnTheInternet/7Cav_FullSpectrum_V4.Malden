@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -28,7 +28,7 @@ SPM_CivilianVehiclesCategory_CreateVehicle =
 
 	private _vehicleType = selectRandom SPM_CivilianVehiclesCategory_VehicleTypes;
 
-	private _vehicle = [_vehicleType, _position, _direction, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _vehicle = [_vehicleType, _position, _direction] call SPM_fnc_spawnVehicle;
 	_vehicle lock 3;
 
 	_vehicle

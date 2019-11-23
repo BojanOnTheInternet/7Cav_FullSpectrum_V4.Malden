@@ -12,6 +12,14 @@ if(!isMultiplayer) exitWith {};
 	waitUntil {!(isNull (findDisplay 46))};
 	waitUntil {isPlayer player};
 
+	// Set splint handler for JIP players
 	["simple_splint_init_evh", { _this call simple_splint_fnc_addSplintOptionLocal }] call CBA_fnc_addEventHandler;
-	["simple_splint_init_evh", [player]] call CBA_fnc_globalEventJIP;
+
+	// Set splint from player to all other players
+	{
+		_x call simple_splint_fnc_addSplintOptionLocal;
+	} forEach allPlayers;
+
+	// Set splint from all other players to player
+	["simple_splint_init_evh", [player]] call CBA_fnc_remoteEvent;
 };

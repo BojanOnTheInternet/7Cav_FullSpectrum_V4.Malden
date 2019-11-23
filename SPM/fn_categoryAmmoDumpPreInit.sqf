@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -18,7 +18,7 @@ OO_TRACE_DECL(SPM_AmmoDumpCategory_DetonateExplosives) =
 	{
 		params ["_positions", "_duration"];
 
-		scriptName "spawnSPM_AmmoDumpCategory_DetonateExplosives";
+		scriptName "SPM_AmmoDumpCategory_DetonateExplosives";
 
 		private _explosives = [] call JB_fnc_detonateGetExplosives;
 		private _major = _explosives select 0;
@@ -108,27 +108,27 @@ OO_TRACE_DECL(SPM_AmmoDumpCategory_CreateAmmoDumpObjects) =
 
 	//TODO: Walls should be simple objects
 	_objectPosition = _position vectorAdd ([[2,3.7,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 	
 	_objectPosition = _position vectorAdd ([[2,-3.7,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	_objectPosition = _position vectorAdd ([[4.1,0,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction + 90, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction + 90] call SPM_fnc_spawnVehicle);
 
 	_objectPosition = _position vectorAdd ([[-5,0,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction + 90, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["Land_HBarrier_5_F", _objectPosition, _direction + 90] call SPM_fnc_spawnVehicle);
 
 
 	_objectPosition = _position vectorAdd ([[-1.7,2.8,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["Land_HBarrier_3_F", _objectPosition, _direction + 90, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["Land_HBarrier_3_F", _objectPosition, _direction + 90] call SPM_fnc_spawnVehicle);
 
 	_objectPosition = _position vectorAdd ([[-1.7,-2.8,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["Land_HBarrier_3_F", _objectPosition, _direction + 90, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["Land_HBarrier_3_F", _objectPosition, _direction + 90] call SPM_fnc_spawnVehicle);
 
 
 	_objectPosition = _position vectorAdd ([[0.0,0.0,0], _direction] call SPM_Util_RotatePosition2D);
-	_enclosureObjects pushBack (["CamoNet_INDP_big_F", _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_enclosureObjects pushBack (["CamoNet_INDP_big_F", _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	{ _x enableSimulationGlobal false } forEach _enclosureObjects;
 
@@ -137,25 +137,25 @@ OO_TRACE_DECL(SPM_AmmoDumpCategory_CreateAmmoDumpObjects) =
 	private _boxTypes = ["Land_PaperBox_closed_F", "Land_PaperBox_open_full_F", "Land_PaperBox_open_empty_F", "Land_Pallet_MilBoxes_F"];
 
 	_objectPosition = _position vectorAdd ([[2.5,2.1,0], _direction] call SPM_Util_RotatePosition2D);
-	_explosivesObjects pushBack (["Land_PaperBox_closed_F", _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_explosivesObjects pushBack (["Land_PaperBox_closed_F", _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	_boxType = selectRandom _boxTypes;
 	_objectPosition = _position vectorAdd ([[0.9,2.1,0], _direction] call SPM_Util_RotatePosition2D);
-	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	_boxType = selectRandom _boxTypes;
 	_objectPosition = _position vectorAdd ([[0.9,0.6,0], _direction] call SPM_Util_RotatePosition2D);
-	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	_boxType = selectRandom _boxTypes;
 	_objectPosition = _position vectorAdd ([[0.9,-2.1,0], _direction] call SPM_Util_RotatePosition2D);
-	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	{ _x enableSimulationGlobal false } forEach _explosivesObjects;
 
 	_boxType = "CargoNet_01_box_F";
 	_objectPosition = _position vectorAdd ([[2.5,0.6,0], _direction] call SPM_Util_RotatePosition2D);
-	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	private _container = _explosivesObjects select (count _explosivesObjects - 1);
 	private _capacity = getNumber (configFile >> "CfgVehicles" >> typeOf _container >> "maximumLoad");
@@ -164,14 +164,14 @@ OO_TRACE_DECL(SPM_AmmoDumpCategory_CreateAmmoDumpObjects) =
 
 	_boxType = "CargoNet_01_box_F";
 	_objectPosition = _position vectorAdd ([[2.5,-2.1,0], _direction] call SPM_Util_RotatePosition2D);
-	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_explosivesObjects pushBack ([_boxType, _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	private _container = _explosivesObjects select (count _explosivesObjects - 1);
 	private _capacity = getNumber (configFile >> "CfgVehicles" >> typeOf _container >> "maximumLoad");
 	[_container, _capacity, true] call SERVER_Supply_StockExplosivesContainer;
 
 	_objectPosition = _position vectorAdd ([[2.5,-0.8,0], _direction] call SPM_Util_RotatePosition2D);
-	_triggerObjects pushBack (["Land_MetalBarrel_F", _objectPosition, _direction, "can_collide"] call SPM_fnc_spawnVehicle);
+	_triggerObjects pushBack (["Land_MetalBarrel_F", _objectPosition, _direction] call SPM_fnc_spawnVehicle);
 
 	[_triggerObjects select (count _triggerObjects - 1), "CAD", "AMMO DUMP"] call TRACE_SetObjectString;
 };
@@ -223,6 +223,7 @@ OO_TRACE_DECL(SPM_AmmoDumpCategory_CreateAmmoDump) =
 	private _triggerObject = _triggerObjects select 0;
 	_triggerObject setVariable ["SPM_AmmoDumpCategory_Category", _category];
 	_triggerObject addEventHandler ["Killed", SPM_AmmoDumpCategory_BarrelKilled];
+	[_category, _triggerObject] call OO_GET(_category,Category,InitializeObject);
 
 	OO_SET(_category,AmmoDumpCategory,TriggerObject,_triggerObject);
 };

@@ -6,7 +6,7 @@ private _scanInterval = param [2, 5, [0]];
 {
 	params ["_unit", "_scanForTargets", "_scanInterval"];
 
-	scriptName "spawnJB_fnc_restrictedTargeting";
+	scriptName "JB_fnc_restrictedTargeting";
 
 	private _gunner = gunner _unit;
 

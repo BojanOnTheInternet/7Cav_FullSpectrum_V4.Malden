@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -280,13 +280,13 @@ OO_TRACE_DECL(SPM_TransportRequestGround_SalvageOnArrive) =
 
 	[_request] call OO_GET(_request,TransportRequest,OnSalvage);
 
-	{
-		[_category, _x] call SPM_Force_SalvageForceUnit;
-	} forEach ([] call OO_METHOD(_forceUnit,ForceUnit,GetGroups));
+	private _forceUnit = OO_GET(_request,TransportRequest,ForceUnit);
+
+	private _group = [] call OO_METHOD(_forceUnit,ForceUnit,GetGroup);
+	[_category, _group] call SPM_Force_SalvageForceUnit;
 
 	OO_SET(_request,TransportRequest,State,"complete");
 
-	private _forceUnit = OO_GET(_request,TransportRequest,ForceUnit);
 	private _transportVehicle = OO_GET(_forceUnit,ForceUnit,Vehicle);
 	[_transportVehicle, "TRG", "Salvage"] call TRACE_SetObjectString;
 };
@@ -480,7 +480,7 @@ OO_TRACE_DECL(SPM_TransportRequestGround_CreateUnit) =
 		_transportCallup = selectRandom _callups;
 	};
 
-	private _transportVehicle = [_transportCallup select 0, _position, _direction] call SPM_fnc_spawnVehicle;
+	private _transportVehicle = [_transportCallup select 0, _position, _direction, ""] call SPM_fnc_spawnVehicle;
 	_transportVehicle setVehicleTIPars [1.0, 0.5, 0.0]; // Start vehicle hot so it shows on thermals
 	[_transportVehicle] call (_transportCallup select 1 select 3);
 

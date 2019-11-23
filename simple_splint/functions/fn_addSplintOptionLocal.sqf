@@ -56,12 +56,13 @@ private _can_splint = {
 	false
 };
 
+// The selection numbers array refer to ACE medical body parts numbered 1-6
 private _splint_legs = {
-	["HitLegs", _player, _target] call simple_splint_fnc_splintLimb;
+	["HitLegs", [4,5], _player, _target] call simple_splint_fnc_splintLimb;
 };
 
 private _splint_arms = {
-	["HitHands", _player, _target] call simple_splint_fnc_splintLimb;
+	["HitHands", [2,3], _player, _target] call simple_splint_fnc_splintLimb;
 };
 
 private _action = ["SplintParent", "Apply SAM Splint", "simple_splint\ui\splint_action.paa", {true}, _can_splint] call ace_interact_menu_fnc_createAction;

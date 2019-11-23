@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -28,6 +28,11 @@ OO_TRACE_DECL(SPM_GuardObject_WS_GuardArrived) =
 	{
 		[_leader] join _guardGroup;
 		deleteGroup _group;
+	}
+	else
+	{
+		private _waypoint = [_guardGroup, getPos _leader] call SPM_AddPatrolWaypoint;
+		_waypoint setWaypointType "hold";
 	};
 };
 
@@ -72,12 +77,14 @@ OO_TRACE_DECL(SPM_GuardObject_Update) =
 	OO_SET(_category,GuardObjectCategory,_Guards,units _group);
 
 	// Quick and dirty version of "building occupy" at spots around the objective
+	//TODO: Allow the occupy stuff to work with a completely-manufactured concept of a building with building positions (like we do with campfires)
 
 	private _strongpoint = OO_GETREF(_category,Category,Strongpoint);
 	private _guardGroup = grpNull; // The group that all of the guards will join when they arrive
 
 	{
 		private _soloGroup = createGroup (side _x);
+
 		[_x] join _soloGroup;
 		_x setBehaviour "safe";
 		_x setCombatMode "green";

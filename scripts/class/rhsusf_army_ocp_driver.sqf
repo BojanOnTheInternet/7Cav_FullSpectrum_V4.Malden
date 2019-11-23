@@ -7,13 +7,11 @@ if (_state == "init") then
 	[] call HUD_Armor_Initialize;
 
 	player setVariable ["SPM_BranchOfService", "armor"];
-
+	player setvariable ["ACE_IsEngineer", 2];
 	[player] call CLIENT_SetArmorCrewVehiclePermissions;
 };
 
 if (_state == "respawn") then
 {
-	private _restrictions = [];
-    _restrictions pushBack { [GR_All + GR_FinalPermissions] call GR_All};
-    [_restrictions] call CLIENT_fnc_monitorGear;
+	
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -71,7 +71,7 @@ OO_TRACE_DECL(SPM_ParkedVehicles_Update) =
 
 		if (count _parking > 0) then
 		{
-			private _vehicle = [_types select (_i - 1), _parking select 0, _parking select 1, "can_collide"] call SPM_SpawnVehicle;
+			private _vehicle = [_types select (_i - 1), _parking select 0, _parking select 1] call SPM_fnc_spawnVehicle;
 			[_category, _vehicle] call OO_GET(_category,Category,InitializeObject);
 			_vehicles pushBack _vehicle;
 		};

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -59,15 +59,12 @@ OO_TRACE_DECL(SPM_MissionRescueHostages_Create) =
 {
 	params ["_mission", "_missionPosition", "_hostageRadius", "_hostageClasses", "_syndikatRadius", "_syndikatCount"];
 
-	[_missionPosition, _syndikatRadius + 100, _syndikatRadius + 200] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
+	[_missionPosition, _syndikatRadius + 100, _syndikatRadius + 200, 2] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
 
 	OO_SET(_mission,Strongpoint,Name,"Special Operation");
-	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeObject);
+	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeCategoryObject);
 
-	OO_SET(_mission,Mission,ParticipantFilter,SERVER_IsSpecOpsMember);
-
-	private _buildings = [_missionPosition, 0, _syndikatRadius, 2] call SPM_Util_HabitableBuildings;
-	OO_SET(_mission,Mission,Buildings,_buildings);
+	OO_SET(_mission,Mission,ParticipantFilter,BOTH_IsSpecOpsMember);
 
 	private _category = OO_NULL;
 	private _categories = [];
@@ -87,7 +84,9 @@ OO_TRACE_DECL(SPM_MissionRescueHostages_Create) =
 	_area = [_missionPosition, 0, _syndikatRadius] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
 	["Name", "Garrison"] call OO_METHOD(_category,Category,SetTagValue);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
 	OO_SET(_category,ForceCategory,SideEast,independent);
+	OO_SET(_category,ForceCategory,SkillLevel,0.35);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsSyndikat);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsSyndikat);
 	OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_InitialCallupsSyndikat);
@@ -137,6 +136,7 @@ OO_TRACE_DECL(SPM_MissionRescueHostages_Create) =
 	_area = [_missionPosition, _syndikatRadius, _syndikatRadius + 100] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(ArmorCategory);
 	["Name", "PatrolVehicles"] call OO_METHOD(_category,Category,SetTagValue);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_Armor_RatingsWestAPCs+SPM_Armor_RatingsWestTanks);
 	OO_SET(_category,ForceCategory,SideEast,independent);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_MissionRescueHostages_Armor_RatingsSyndikat);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_MissionRescueHostages_Armor_CallupsSyndikat);

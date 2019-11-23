@@ -16,15 +16,15 @@
 #define CHANNEL_CUSTOM9 14
 #define CHANNEL_CUSTOM10 15
 
-setCurrentChannel CHANNEL_GROUP;
-
 CHANNEL_GLOBAL enableChannel false;
 CHANNEL_SIDE enableChannel [true, false];
 CHANNEL_COMMAND enableChannel [true, true];
 
+setCurrentChannel CHANNEL_GROUP;
+
 [] spawn
 {
-	scriptName "spawnChannelControlInit";
+	scriptName "ChannelControlInit";
 
 	while { true } do
 	{

@@ -260,7 +260,7 @@ OO_TRACE_DECL(JBA_MonitorAmmoSources) =
 {
 	_this spawn
 	{
-		scriptName "spawnJBA_MonitorAmmoSources";
+		scriptName "JBA_MonitorAmmoSources";
 
 		params ["_unit"];
 
@@ -335,22 +335,24 @@ OO_TRACE_DECL(JBA_MonitorAmmoSources) =
 
 JBA_ShowAmmoListCondition =
 {
+	params ["_vehicle"];
+
 	if (not isNull (findDisplay TRANSFER_DISPLAY)) exitWith { false };
 
 	// Player must be on foot
 	if (vehicle player != player) exitWith { false };
 
 	// Source must be either the player's side or civilian (no stealing from enemies)
-	if (not (side cursorObject in [side player, civilian])) exitWith { false };
+	if (not (side _vehicle in [side player, civilian])) exitWith { false };
 
 	// Source cannot be attached to a person (no stealing from people)
-	if (not isNull attachedTo cursorObject && { attachedTo cursorObject isKindOf "Man" } ) exitWith { false };
+	if (not isNull attachedTo _vehicle && { attachedTo _vehicle isKindOf "Man" } ) exitWith { false };
 
 	// Source must be capable either of transporting ammo or of using it
 	// (the simpler "magazines" command is not used because it returns [] if all magazines are empty)
-	if (isNil { cursorObject getVariable "JBA_TransportCapacity" } && { count (magazinesAllTurrets cursorObject) == 0 }) exitWith { false };
+	if (isNil { _vehicle getVariable "JBA_TransportCapacity" } && { count (magazinesAllTurrets _vehicle) == 0 }) exitWith { false };
 
-	(getCursorObjectParams select 2) < 2.0
+	true
 };
 
 OO_TRACE_DECL(JBA_ShowAmmoList) =
@@ -359,6 +361,8 @@ OO_TRACE_DECL(JBA_ShowAmmoList) =
 
 	(findDisplay 46) createDisplay "JBA_Transfer";
 	waitUntil { not isNull (findDisplay TRANSFER_DISPLAY) };
+
+	call CLIENT_DisableActionMenu;
 
 	[_unit] call JBA_SetFromUnit;
 	[objNull] call JBA_SetToUnit;
@@ -649,6 +653,8 @@ OO_TRACE_DECL(JBA_TransferUnload) =
 
 	// The transfer may have not involved the player's ammo box and we want to delete it if it's empty
 	[[] call JBA_PlayerAmmoBox] call JBA_DeleteEmptyAmmoBox;
+
+	call CLIENT_EnableActionMenu;
 };
 
 OO_TRACE_DECL(JBA_TransferDoneAction) =

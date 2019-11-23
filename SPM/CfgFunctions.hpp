@@ -14,6 +14,7 @@ class SPM
 		class categoryAmmoCachesPreInit { preInit = 1; };
 		class categoryAmmoDumpPreInit { preInit = 1; };
 		class categoryRadioTowerPreInit { preInit = 1; };
+		class categorySAMPreInit { preInit = 1; };
 		class categoryTransportPreInit { preInit = 1; };
 		class transportRequestGroundPreInit { preInit = 1; };
 		class transportRequestAirPreInit { preInit = 1; };
@@ -68,6 +69,7 @@ class SPM
 		class objectiveMarkAmmoDumpPreInit { preInit = 1; };
 		class objectiveMarkRadioTowerPreInit { preInit = 1; };
 		class objectiveProtectCiviliansPreInit { preInit = 1; };
+		class objectiveDestroySAMPreInit { preInit = 1; };
 		class occupyEnterBuilding {};
 		class occupyPreInit { preInit = 1;  };
 		class patrolBuildings {};

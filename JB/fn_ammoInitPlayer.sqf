@@ -1,6 +1,6 @@
 JBAP_AddActions =
 {
-	player addAction ["<t color='#FFFF99'>Transfer ammo</t>", { [cursorTarget] call JBA_ShowAmmoList }, nil, 10, false, true, "", "[] call JBA_ShowAmmoListCondition"];
+	player addAction ["<t color='#FFFF99'>Transfer ammo</t>", { [cursorObject] call JBA_ShowAmmoList }, nil, 0, false, true, "", "getCursorObjectParams select 2 <= 2 && { [cursorObject] call JBA_ShowAmmoListCondition }"];
 };
 
 [] call JBAP_AddActions;

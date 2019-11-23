@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -29,42 +29,10 @@ if (not isServer && hasInterface) exitWith {};
 
 #define UPDATE_INTERVAL 10
 
-// The pad between infantry area and the edge of the strongpoint area
-#define STRONGPOINT_BORDERWIDTH 500
-// The size of the area beyond the garrison area that is controlled by the enemy if the mission fails
-#define CONTROL_BORDERWIDTH 100
+// The pad between control area and the edge of the strongpoint area (where spawned units appear and enter the action)
+#define ACTIVITY_BORDERWIDTH 500
 
 #define PLAYERS_USE_AAA
-
-SPM_MissionAdvance_Patrol_CallupsEast =
-[
-	["LOP_US_UAZ_DshKM",
-		[10, 2, 1.0, {}]],
-	["LOP_US_UAZ_AGS",
-		[15, 3, 1.0,{}]]
-];
-
-SPM_MissionAdvance_Patrol_RatingsEast = SPM_MissionAdvance_Patrol_CallupsEast apply { [_x select 0, (_x select 1) select [0, 2]] };
-
-SPM_MissionAdvance_Patrol_CallupsSyndikat =
-[
-	["I_C_Offroad_02_LMG_F",
-		[10, 2, 1.0, {}]],
-	["I_C_Offroad_02_AT_F", [20, 3, 1.0, {}]]
-];
-
-SPM_MissionAdvance_Patrol_RatingsSyndikat = SPM_MissionAdvance_Patrol_CallupsSyndikat apply { [_x select 0, (_x select 1) select [0, 2]] };
-
-SPM_MissionAdvance_Patrol_RatingsWest =
-[
-	["LOP_US_Infantry_MG", [10, 1]],
-	["LOP_US_Infantry_AT_Asst", [10, 1]],
-	["LOP_US_Infantry_Rifleman", [10, 1]],
-	["LOP_US_Infantry_TL", [10, 1]],
-	["LOP_US_Infantry_GL", [15, 1]],
-	["LOP_US_Infantry_Corpsman", [15, 1]],
-	["LOP_US_Infantry_AT", [30, 1]]
-];
 
 SPM_MissionAdvance_ObjectiveStateToTaskState =
 [
@@ -75,32 +43,43 @@ SPM_MissionAdvance_ObjectiveStateToTaskState =
 	["error", "canceled"]
 ];
 
-SPM_MissionAdvance_ObjectiveTaskIdentifier =
+OO_TRACE_DECL(SPM_MissionAdvance_MissionTaskIdentifier) =
+{
+	params ["_mission"];
+
+	private _position = OO_GET(_mission,Strongpoint,Position);
+
+	[floor ((_position select 0) / 100), floor ((_position select 1) / 100)]
+};
+
+OO_TRACE_DECL(SPM_MissionAdvance_ObjectiveTaskIdentifier) =
 {
 	params ["_objective"];
 
+	if (OO_ISNULL(_objective)) exitWith { [] };
+
 	private _identifier = [];
-	private _next = _objective;
-	while { not OO_ISNULL(_next) } do
+	private _lastDefined = OO_NULL;
+
+	while { not OO_ISNULL(_objective) } do
 	{
-		_identifier = OO_REFERENCE(_next) + _identifier;
-		_next = OO_GETREF(_next,MissionObjective,ObjectiveParent);
+		_lastDefined = _objective;
+		_identifier = OO_REFERENCE(_objective) + _identifier;
+		_objective = OO_GETREF(_objective,MissionObjective,ObjectiveParent);
 	};
-	private _mission = OO_GETREF(_objective,Category,Strongpoint);
-	_identifier = OO_REFERENCE(_mission) + _identifier;
+	_identifier = ([OO_GETREF(_lastDefined,Category,Strongpoint)] call SPM_MissionAdvance_MissionTaskIdentifier) + _identifier;
 
 	_identifier
 };
 
-SPM_MissionAdvance_ObjectiveParentTaskIdentifier =
+OO_TRACE_DECL(SPM_MissionAdvance_ObjectiveParentTaskIdentifier) =
 {
 	params ["_objective"];
 
 	private _parent = OO_GETREF(_objective,MissionObjective,ObjectiveParent);
 	if (not OO_ISNULL(_parent)) exitWith { [_parent] call SPM_MissionAdvance_ObjectiveTaskIdentifier };
 
-	private _mission = OO_GETREF(_objective,Category,Strongpoint);
-	OO_REFERENCE(_mission)
+	[OO_GETREF(_objective,Category,Strongpoint)] call SPM_MissionAdvance_MissionTaskIdentifier
 };
 
 OO_TRACE_DECL(SPM_MissionAdvance_SendNotification) =
@@ -113,15 +92,14 @@ OO_TRACE_DECL(SPM_MissionAdvance_SendNotification) =
 
 	private _filter = OO_GET(_mission,Mission,ParticipantFilter);
 	private _notificationType = "NotificationGeneric";
-	private _messageTypes = ["notification"];
-
+	
 	switch (_type) do
 	{
 		case "mission-description":
 		{
 			_notificationType = "NotificationMissionDescription";
 
-			[_filter, OO_REFERENCE(_mission), [], OO_GET(_mission,Strongpoint,Position), [_message select 1, _message select 0, ""], "attack", true] call SPM_Task_Create;
+			[_filter, [_mission] call SPM_MissionAdvance_MissionTaskIdentifier, [], OO_GET(_mission,Strongpoint,Position), [_message select 1, _message select 0, ""], "attack", true] call SPM_Task_Create;
 
 			if (_filter isEqualType {}) then { [_filter] remoteExec ["SPM_MissionAdvance_C_SeeTasksMessage", 0] } else { [] remoteExec ["SPM_MissionAdvance_C_SeeTasksMessage", _filter] };
 		};
@@ -149,7 +127,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_SendNotification) =
 			_notificationType = "NotificationEvent";
 		};
 	};
-
+	
 	if (_notificationType != "") then { [[_notificationType] + [_message select 0], ["notification"], _filter] call SPM_Mission_Message };
 
 	// Replay any notifications that we held up at the start of the mission
@@ -161,22 +139,16 @@ OO_TRACE_DECL(SPM_MissionAdvance_SendNotification) =
 
 OO_TRACE_DECL(SPM_MissionAdvance_Create) =
 {
-	params ["_mission", "_operationName", "_operationPosition", "_garrisonRadius"];
+	params ["_mission", "_operationName", "_operationPosition", "_controlRadius"];
 
 	private _strongpointName = format ["Advance Operation (%1)", _operationName];
 	OO_SET(_mission,Strongpoint,Name,_strongpointName);
-	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeObject);
+	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeCategoryObject);
 	OO_SET(_mission,Strongpoint,SendNotification,SPM_MissionAdvance_SendNotification);
 	OO_SET(_mission,Mission,Name,_operationName);
-	OO_SET(_mission,Strongpoint,ControlRadius,_garrisonRadius+CONTROL_BORDERWIDTH);
+	OO_SET(_mission,Strongpoint,ControlRadius,_controlRadius);
 
-	private _activityRadius = _garrisonRadius + STRONGPOINT_BORDERWIDTH;
-	private _controlRadius = _garrisonRadius + CONTROL_BORDERWIDTH;
-
-	[_operationPosition, _controlRadius, _activityRadius] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
-
-	private _buildings = [_operationPosition, 0, _garrisonRadius, 2] call SPM_Util_HabitableBuildings;
-	OO_SET(_mission,Mission,Buildings,_buildings);
+	[_operationPosition, _controlRadius, _controlRadius + ACTIVITY_BORDERWIDTH, 2] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
 
 	private _isUrbanEnvironment = false;
 	if (locationPosition nearestLocation [_operationPosition, "NameCity"] distance _operationPosition < 200) then { _isUrbanEnvironment = true };
@@ -260,7 +232,8 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 	params ["_mission", "_garrisonCount", "_garrisonCountInitial", "_garrisonCountReserve", "_factionPriority"];
 
 	private _operationPosition = OO_GET(_mission,Strongpoint,Position);
-	private _operationRadius = OO_GET(_mission,Strongpoint,ActivityRadius);
+	private _activityRadius = OO_GET(_mission,Strongpoint,ActivityRadius);
+	private _controlRadius = OO_GET(_mission,Strongpoint,ControlRadius);
 	private _isUrbanEnvironment = OO_GET(_mission,MissionAdvance,IsUrbanEnvironment);
 
 	private _garrisonRatingsEast = SPM_InfantryGarrison_RatingsEast;
@@ -281,7 +254,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 	private _isBivouackedGarrison = (_garrisonCountInitial > 0 && { _garrisonCountReserve == 0 });
 	private _isCounterattack = (_garrisonCountInitial == 0 && { _garrisonCountReserve > 0 });
 
-	private _garrisonRadius = _operationRadius - STRONGPOINT_BORDERWIDTH;
+	private _garrisonRadius = _controlRadius;
 
 	private _area = OO_NULL;
 	private _category = OO_NULL;
@@ -300,6 +273,9 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 	{
 		_category = [] call OO_CREATE(TransportCategory);
 		["Name", "Novorossiya Armed Forces Transport"] call OO_METHOD(_category,Category,SetTagValue);
+		OO_SET(_category,TransportCategory,SeaTransports,SPM_Transport_CallupsEastSpeedboat);
+		OO_SET(_category,TransportCategory,GroundTransports,SPM_Transport_CallupsEastMarid);
+		OO_SET(_category,TransportCategory,AirTransports,SPM_Transport_CallupsEastMohawk);
 		_forceCategories pushBack _category;
 		_headquartersCommanded pushBack _category;
 
@@ -309,27 +285,32 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 	// If the csat have at least a 50% role in the operation, give them support units
 	if (_factionPriority >= 0.5) then
 	{
-		_area = [_operationPosition, 0, _operationRadius] call OO_CREATE(StrongpointArea);
+		_area = [_operationPosition, 0, _activityRadius] call OO_CREATE(StrongpointArea);
 		_category = [_area] call OO_CREATE(AirDefenseCategory);
 		["Name", "EastAirDefense"] call OO_METHOD(_category,Category,SetTagValue);
+		OO_SET(_category,ForceCategory,RatingsWest,SPM_AirDefense_RatingsWest);
+		OO_SET(_category,ForceCategory,RatingsEast,SPM_AirDefense_RatingsEast);
+		OO_SET(_category,ForceCategory,CallupsEast,SPM_AirDefense_CallupsEast);
 		OO_SET(_category,ForceCategory,RangeWest,10000);
 		_forceCategories pushBack _category;
 		_headquartersCommanded pushBack _category;
 
 		// Armor for armor
-		_area = [_operationPosition, _garrisonRadius, _operationRadius] call OO_CREATE(StrongpointArea);
+		_area = [_operationPosition, _garrisonRadius, _activityRadius] call OO_CREATE(StrongpointArea);
 		_category = [_area] call OO_CREATE(ArmorCategory);
 		["Name", "EastVersusArmor"] call OO_METHOD(_category,Category,SetTagValue);
 		OO_SET(_category,ArmorCategory,PatrolType,"target");
+		OO_SET(_category,ForceCategory,RatingsWest,SPM_Armor_RatingsWestAPCs+SPM_Armor_RatingsWestTanks);
 		OO_SET(_category,ForceCategory,RatingsEast,SPM_Armor_RatingsEastAPCs+SPM_Armor_RatingsEastTanks+SPM_Armor_RatingsEastAir);
 		OO_SET(_category,ForceCategory,CallupsEast,SPM_Armor_CallupsEastAPCs+SPM_Armor_CallupsEastTanks+SPM_Armor_CallupsEastAir);
 		OO_SET(_category,ForceCategory,RangeWest,1500);
 		OO_SET(_category,ForceCategory,UnitsCanRetire,true);
+		OO_SET(_category,ForceCategory,SkillLevel,1.0);
 		_forceCategories pushBack _category;
 		_headquartersCommanded pushBack _category;
 
 		// Armor for attack aircraft
-		_area = [_operationPosition, _garrisonRadius, _operationRadius] call OO_CREATE(StrongpointArea);
+		_area = [_operationPosition, _garrisonRadius, _activityRadius] call OO_CREATE(StrongpointArea);
 		_category = [_area] call OO_CREATE(ArmorCategory);
 		["Name", "EastVersusCAS"] call OO_METHOD(_category,Category,SetTagValue);
 		OO_SET(_category,ForceCategory,RatingsWest,SPM_Armor_RatingsWestAir);
@@ -342,7 +323,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 
 #ifdef PLAYERS_USE_AAA
 		// Attack aircraft for air defense armor
-		_area = [_operationPosition, _garrisonRadius, _operationRadius] call OO_CREATE(StrongpointArea);
+		_area = [_operationPosition, _garrisonRadius, _activityRadius] call OO_CREATE(StrongpointArea);
 		_category = [_area] call OO_CREATE(ArmorCategory);
 		["Name", "EastVersusAirDefense"] call OO_METHOD(_category,Category,SetTagValue);
 		OO_SET(_category,ArmorCategory,PatrolType,"target");
@@ -363,14 +344,16 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 	OO_SET(_category,ForceCategory,RatingsWest,SPM_MissionAdvance_Patrol_RatingsWest);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_MissionAdvance_Patrol_RatingsEast);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_MissionAdvance_Patrol_CallupsEast);
+	OO_SET(_category,ForceCategory,RangeWest,5000);
 
 	private _ifritRating = -1; { if (_x select 0 == "LOP_US_UAZ_DshKM") exitWith { _ifritRating = (_x select 1 select 0) * (_x select 1 select 1) } } forEach SPM_MissionAdvance_Patrol_RatingsEast;
 	private _armorReserves = _ifritRating * round (_garrisonCountInitial / 16); // An Ifrit as support for every two squads in the initial garrison
+	_armorReserves = _armorReserves * (["AdvancePatrolVehicleStrength"] call JB_MP_GetParamValue);
 
 	OO_SET(_category,ForceCategory,Reserves,_armorReserves);
 
-	private _minimumWestForce = [_armorReserves, _ifritRating] call SPM_ForceRating_CreateForce;
-	OO_SET(_category,ForceCategory,InitialMinimumWestForce,_minimumWestForce);
+//	private _minimumWestForce = [_armorReserves, _ifritRating] call SPM_ForceRating_CreateForce;
+//	OO_SET(_category,ForceCategory,InitialMinimumWestForce,_minimumWestForce);
 
 	_forceCategories pushBack _category;
 	_headquartersCommanded pushBack _category;
@@ -382,6 +365,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 	["Name", "Novorossiya Armed Forces Garrison"] call OO_METHOD(_category,Category,SetTagValue);
 	OO_SET(_category,ForceCategory,RangeWest,500);
 	if (not OO_ISNULL(_transport)) then { OO_SET(_category,InfantryGarrisonCategory,Transport,_transport) };
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
 	OO_SET(_category,ForceCategory,RatingsEast,_garrisonRatingsEast);
 	OO_SET(_category,ForceCategory,CallupsEast,_garrisonCallupsEast);
 	OO_SET(_category,InfantryGarrisonCategory,ActivityBorder,200);
@@ -452,7 +436,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 			OO_SETREF(_headquarters,HeadquartersCategory,Garrison,_garrison);
 			_headquartersCommanded = _headquartersCommanded apply { OO_REFERENCE(_x) };
 			OO_SET(_headquarters,HeadquartersCategory,Commanded,_headquartersCommanded);
-			OO_SET(_headquarters,HeadquartersBivouackedCategory,SurrenderRating,_garrisonCountInitial*0.20*_soldierRatingEast);
+			OO_SET(_headquarters,HeadquartersBivouackedCategory,SurrenderRating,8*_soldierRatingEast);
 			private _description =
 			[
 				"Destroy bivouacked Novorossiya Armed Forces garrison",
@@ -465,8 +449,8 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 
 		case _isReinforcedGarrison:
 		{
-			// Send in reinforcements when we hit a quarter of the garrison population
-			private _garrisonCountReact = _garrisonCount * 0.25;
+			// Send in reinforcements when the garrison is significantly understrength
+			private _garrisonCountReact = _garrisonCount * 0.50;
 			// Reserves become available over a period of time (3-8 minutes)
 			private _mobilizationTime = (3*60) + random (5*60);
 
@@ -502,7 +486,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 			_objectives pushBack _headquarters;
 
 			// Set the minimum west force on the garrison so it will always try to match that from its reserves
-			private _minimumWestForce = [_garrisonCountInitial * _soldierRatingEast, _soldierRatingWest] call SPM_ForceRating_CreateForce;
+			private _minimumWestForce = [_garrisonCount * _soldierRatingEast, _soldierRatingWest] call SPM_ForceRating_CreateForce;
 			OO_SET(_garrison,ForceCategory,MinimumWestForce,_minimumWestForce);
 
 			// Create the mine fields
@@ -529,6 +513,33 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 
 		OO_GET(_garrison,InfantryGarrisonCategory,Mortars) pushBack _category;
 	};
+
+	// SAM site
+
+	if ((_isReinforcedGarrison || _isBivouackedGarrison) && { random 1 < (_garrisonCountInitial * 0.005) }) then
+	{
+		assignedToDuty = _availableForDuty min 4.0;
+		_availableForDuty = _availableForDuty - _assignedToDuty;
+
+		private _area = OO_GET(_garrison,ForceCategory,Area);
+		private _center = OO_GET(_area,StrongpointArea,Position);
+		private _outerRadius = OO_GET(_area,StrongpointArea,OuterRadius);
+
+		private _position = [0,0,0];
+		while { not ([_position] call OO_METHOD(_area,StrongpointArea,PositionInArea)) || { surfaceIsWater _position } } do
+		{
+			_position = _center vectorAdd [-(_outerRadius / 2) + random _outerRadius, -(_outerRadius / 2) + random _outerRadius, 0];
+		};
+
+		// Create a 500 meter radius area in which the SAM site can be placed, giving it some room to look for a good spot
+		_area = [_position, 0, 500] call OO_CREATE(StrongpointArea);
+		private _samSite = [_area] call OO_CREATE(SAMCategory);
+		_forceSupportCategories pushBack _samSite;
+		
+		private _objective = [_samSite] call OO_CREATE(ObjectiveDestroySAM);
+		_objectives pushBack _objective;
+	};
+
 
 	// Ammo dump
 
@@ -573,6 +584,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 		_assignedToDuty = _availableForDuty min floor (_garrisonCountInitial * 0.12); // 12 guys for garrison of 100, 3 guys per checkpoint = 4 checkpoints
 		_availableForDuty = _availableForDuty - _assignedToDuty;
 
+		//TODO: Find players within 5km and average their positions.  Create the checkpoints on that side of the mission (Coverage property)
 		private _area = OO_GET(_garrison,ForceCategory,Area);
 		_category = [_area, _garrison, _assignedToDuty] call OO_CREATE(CheckpointsCategory);
 
@@ -634,7 +646,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionCSAT) =
 				{
 					if (OO_ISNULL(_innerPatrols)) then
 					{
-						_area = [_operationPosition, _garrisonRadius * 0.50, _garrisonRadius * 1.00] call OO_CREATE(StrongpointArea);
+						_area = [_operationPosition, _garrisonRadius * 0.25, _garrisonRadius * 0.75] call OO_CREATE(StrongpointArea);
 						_innerPatrols = [_area, _garrison] call OO_CREATE(PerimeterPatrolCategory);
 						["Name", "NovorossiyaArmedForcesInnerPerimeterPatrol"] call OO_METHOD(_innerPatrols,Category,SetTagValue);
 						OO_SET(_innerPatrols,InfantryPatrolCategory,OnStartPatrol,SERVER_Infantry_OnStartPatrol);
@@ -699,7 +711,8 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionSyndikat) =
 {
 	params ["_mission", "_garrisonCount", "_garrisonCountInitial", "_garrisonCountReserve", "_factionPriority"];
 
-	private _operationRadius = OO_GET(_mission,Strongpoint,ActivityRadius);
+	private _activityRadius = OO_GET(_mission,Strongpoint,ActivityRadius);
+	private _controlRadius = OO_GET(_mission,Strongpoint,ControlRadius);
 	private _operationPosition = OO_GET(_mission,Strongpoint,Position);
 
 	private _garrisonRatingsEast = SPM_InfantryGarrison_RatingsSyndikat;
@@ -723,7 +736,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionSyndikat) =
 	// Syndikat isn't involved in counterattacks
 	if (_isCounterattack) exitWith {};
 
-	private _garrisonRadius = _operationRadius - STRONGPOINT_BORDERWIDTH;
+	private _garrisonRadius = _controlRadius;
 
 	private _area = OO_NULL;
 	private _category = OO_NULL;
@@ -738,7 +751,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionSyndikat) =
 
 	// If the garrison has an effective reserve, create a transport category so they can come in
 	private _transport = OO_NULL;
-	if (_isReinforcedGarrison && false) then//TEST turn off transport to get them going in on foot
+	if (_isReinforcedGarrison && false) then // Vehicle transport is currently disabled
 	{
 		_category = [] call OO_CREATE(TransportCategory);
 		["Name", "PMCTransport"] call OO_METHOD(_category,Category,SetTagValue);
@@ -760,14 +773,16 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionSyndikat) =
 	OO_SET(_category,ForceCategory,RatingsWest,SPM_MissionAdvance_Patrol_RatingsWest);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_MissionAdvance_Patrol_RatingsSyndikat);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_MissionAdvance_Patrol_CallupsSyndikat);
+	OO_SET(_category,ForceCategory,RangeWest,5000);
 
 	private _offroadRating = -1; { if (_x select 0 == "LOP_US_UAZ_DshKM") exitWith { _offroadRating = (_x select 1 select 0) * (_x select 1 select 1) } } forEach SPM_MissionAdvance_Patrol_RatingsSyndikat;
 	private _armorReserves = _offroadRating * round (_garrisonCountInitial / 16); // An offroad as support for every two squads in the initial garrison
+	_armorReserves = _armorReserves * (["AdvancePatrolVehicleStrength"] call JB_MP_GetParamValue);
 
 	OO_SET(_category,ForceCategory,Reserves,_armorReserves);
 
-	private _minimumWestForce = [_armorReserves, _offroadRating] call SPM_ForceRating_CreateForce;
-	OO_SET(_category,ForceCategory,InitialMinimumWestForce,_minimumWestForce);
+//	private _minimumWestForce = [_armorReserves, _offroadRating] call SPM_ForceRating_CreateForce;
+//	OO_SET(_category,ForceCategory,InitialMinimumWestForce,_minimumWestForce);
 
 	_forceCategories pushBack _category;
 	_headquartersCommanded pushBack _category;
@@ -779,9 +794,11 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionSyndikat) =
 	["Name", "PMCGarrison"] call OO_METHOD(_category,Category,SetTagValue);
 	OO_SET(_category,ForceCategory,RangeWest,500);
 	if (not OO_ISNULL(_transport)) then { OO_SET(_category,InfantryGarrisonCategory,Transport,_transport) };
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
 	OO_SET(_category,ForceCategory,SideEast,independent);
 	OO_SET(_category,ForceCategory,RatingsEast,_garrisonRatingsEast);
 	OO_SET(_category,ForceCategory,CallupsEast,_garrisonCallupsEast);
+	OO_SET(_category,ForceCategory,SkillLevel,0.4);
 	OO_SET(_category,InfantryGarrisonCategory,ActivityBorder,200);
 	OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,_garrisonInitialCallupsEast);
 
@@ -805,7 +822,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_AddFactionSyndikat) =
 
 	private _garrison = _category;
 
-	private _availableForDuty = _garrisonCountInitial * 1;
+	private _availableForDuty = _garrisonCountInitial * 0.8;
 	private _assignedToDuty = 0;
 
 	// Create the communications center
@@ -978,7 +995,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_Complete) =
 {
 	params ["_mission"];
 
-	[OO_GET(_mission,Mission,ParticipantFilter), OO_REFERENCE(_mission)] call SPM_Task_Delete;
+	[OO_GET(_mission,Mission,ParticipantFilter), ([_mission] call SPM_MissionAdvance_MissionTaskIdentifier)] call SPM_Task_Delete;
 
 	// Save some transports for the players to use
 	private _parkedVehicles = OO_GET(_mission,Strongpoint,Categories) select { OO_INSTANCE_ISOFCLASS(_x,ParkedVehiclesCategory) };
@@ -1012,7 +1029,7 @@ OO_TRACE_DECL(SPM_MissionAdvance_Delete) =
 {
 	params ["_mission"];
 
-	[OO_GET(_mission,Mission,ParticipantFilter), OO_REFERENCE(_mission)] call SPM_Task_Delete;
+	[OO_GET(_mission,Mission,ParticipantFilter), [_mission] call SPM_MissionAdvance_MissionTaskIdentifier] call SPM_Task_Delete;
 
 	[] call OO_METHOD_PARENT(_mission,Root,Delete,Strongpoint);
 };

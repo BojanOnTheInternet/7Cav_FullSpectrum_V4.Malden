@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -185,7 +185,7 @@ OO_TRACE_DECL(SPM_SOC_MissionInterceptConvoy) =
 	private _normalSpacing = [] call OO_CREATE(ConvoySpacing);
 	private _wideSpacing = [50^2, 60^2, 80^2, 100^2, 150^2] call OO_CREATE(ConvoySpacing);
 
-	private _teamDescriptor = [(configFile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfTeam")] call SPM_fnc_groupFromConfig;
+	private _teamDescriptor = [(configfile >> "CfgGroups" >> "East" >> "LOP_US" >> "Infantry" >> "LOP_US_FT_section")] call SPM_fnc_groupFromConfig;
 
 	private _convoyDescription = [];
 
@@ -193,40 +193,26 @@ OO_TRACE_DECL(SPM_SOC_MissionInterceptConvoy) =
 	{
 		case 1:
 		{
-			_convoyDescription pushBack (["O_MRAP_02_hmg_F", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_APC_Wheeled_02_rcws_F", [{},[0]], [_teamDescriptor, _teamDescriptor], _wideSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_Truck_03_covered_F", [{},[0]], [_teamDescriptor, _teamDescriptor, _teamDescriptor, _teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_MRAP_02_F", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_DshKM", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["rhs_tigr_m_vdv", [{},[0]], [_teamDescriptor, _teamDescriptor], _wideSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_DshKM", [{},[0]], [_teamDescriptor, _teamDescriptor, _teamDescriptor, _teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_AGS", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
 		};
 
 		case 2:
 		{
-			_convoyDescription pushBack (["O_LSV_02_armed_F", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_APC_Wheeled_02_rcws_F",
-				[
-					{
-						[_this select 0] call SPM_Transport_RemoveWeapons;
-
-						(_this select 0) addMagazine "500Rnd_65x39_Belt_Tracer_Green_Splash";
-						(_this select 0) addWeapon "LMG_RCWS";
-					},[0]], [_teamDescriptor, _teamDescriptor], _wideSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_APC_Wheeled_02_rcws_F",
-				[
-					{
-						[_this select 0] call SPM_Transport_RemoveWeapons;
-
-						(_this select 0) addMagazine "500Rnd_65x39_Belt_Tracer_Green_Splash";
-						(_this select 0) addWeapon "LMG_RCWS";
-					},[0]], [_teamDescriptor, _teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_LSV_02_unarmed_F", [{},[0]], [_teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_DshKM", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["rhs_tigr_m_vdv", [{},[0]], [_teamDescriptor, _teamDescriptor], _wideSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["rhs_tigr_m_vdv", [{},[0]], [_teamDescriptor, _teamDescriptor, _teamDescriptor, _teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_AGS", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
 		};
 
 		case 3:
 		{
-			_convoyDescription pushBack (["O_LSV_02_armed_F", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_LSV_02_unarmed_F", [{},[0]], [_teamDescriptor], _wideSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_Truck_03_transport_F", [{},[0]], [_teamDescriptor, _teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
-			_convoyDescription pushBack (["O_LSV_02_unarmed_F", [{},[0]], [_teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_DshKM", [{},[0]], [], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_BMP2D", [{},[0]], [_teamDescriptor], _wideSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_Ural", [{},[0]], [_teamDescriptor, _teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
+			_convoyDescription pushBack (["LOP_US_UAZ_AGS", [{},[0]], [_teamDescriptor], _normalSpacing] call OO_CREATE(ConvoyVehicle));
 		};
 
 		case 4:
@@ -364,7 +350,7 @@ OO_TRACE_DECL(SPM_SOC_MissionCaptureOfficer) =
 
 	private _unitProvider = _category;
 
-	private _specopsTest = { [player] call SERVER_IsSpecOpsMember };
+	private _specopsTest = { [player] call BOTH_IsSpecOpsMember };
 
 	private _objective = [_unitProvider] call OO_CREATE(ObjectiveCaptureMan);
 	OO_SET(_objective,ObjectiveCaptureMan,ClientActionTest,_specopsTest);
@@ -454,7 +440,7 @@ OO_TRACE_DECL(SPM_SOC_MissionRescueSoldier) =
 	private _category = [_guardableObject, _infantryGarrison, 4] call OO_CREATE(GuardObjectCategory);
 	[_category] call OO_METHOD(_mission,Strongpoint,AddCategory);
 
-	private _specopsTest = { [player] call SERVER_IsSpecOpsMember };
+	private _specopsTest = { [player] call BOTH_IsSpecOpsMember };
 
 	private _debriefingArea = [0, getPos SpecOpsHQ] + triggerArea SpecOpsHQ;
 	private _objective = [_unitProvider, _debriefingArea, "SpecOps headquarters"] call OO_CREATE(ObjectiveDebriefMan);
@@ -730,7 +716,7 @@ OO_TRACE_DECL(SPM_SOC_MissionInterceptCourier) =
 	OO_SET(_objective,ObjectiveInteractObject,InteractionDescription,"Search vehicle for intel");
 	OO_SET(_objective,ObjectiveInteractObject,InteractionCondition,{_this call SPM_MissionInterceptCourier_InteractionCondition});
 	OO_SET(_objective,ObjectiveInteractObject,Interaction,{_this call SPM_MissionInterceptCourier_Interaction});
-	OO_SET(_objective,ObjectiveInteractObject,InteractionFilter,SERVER_IsSpecOpsMember);
+	OO_SET(_objective,ObjectiveInteractObject,InteractionFilter,BOTH_IsSpecOpsMember);
 	OO_SET(_objective,ObjectiveInteractObject,ActionHold,5.0);
 
 	[_objective] call OO_METHOD(_mission,Mission,AddObjective);
@@ -778,7 +764,7 @@ OO_TRACE_DECL(SPM_SOC_RunMissionSequence) =
 		else
 		{
 			OO_SET(_soc,SpecialOperationsCommand,RunningMission,_mission);
-			private _script = [_mission] spawn { params ["_mission"]; scriptName "spawnSPM_SOC_RunMissionSequence"; [] call OO_METHOD(_mission,Strongpoint,Run) }; // Cannot spawn OO_METHODs
+			private _script = [_mission] spawn { params ["_mission"]; scriptName "SPM_SOC_RunMissionSequence"; [] call OO_METHOD(_mission,Strongpoint,Run) }; // Cannot spawn OO_METHODs
 			OO_SET(_soc,SpecialOperationsCommand,RunningMissionScript,_script);
 
 			while { OO_GET(_mission,Mission,MissionState) == "unresolved" && not (OO_GET(_mission,Strongpoint,RunState) in ["stopped", "deleted"]) } do
@@ -806,8 +792,8 @@ OO_TRACE_DECL(SPM_SOC_RunMissionSequence) =
 			case "internal-error";
 			case "completed-error":
 			{
-				[["It looks like we received some bad intel", "Mission aborted", ""], ["printout"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
-				[["Mission aborted due to error"], ["log-specops"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
+				[["It looks like we received some bad intel", "Mission aborted", ""], ["printout"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
+				[["Mission aborted due to error"], ["log-specops"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
 				_reviewDelay = 0;
 			};
 
@@ -822,7 +808,7 @@ OO_TRACE_DECL(SPM_SOC_RunMissionSequence) =
 
 			case "command-terminated":
 			{
-				[["Mission stopped by command", ""], ["printout", "log-specops"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
+				[["Mission stopped by command", ""], ["printout", "log-specops"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
 				_reviewDelay = 0;
 			};
 		};
@@ -831,21 +817,21 @@ OO_TRACE_DECL(SPM_SOC_RunMissionSequence) =
 		{
 			case (OO_GET(_soc,SpecialOperationsCommand,CommandState) != "running"):
 			{
-				[["Mission sequence ends (stopped by command)", ""], ["printout", "log-specops"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
+				[["Mission sequence ends (stopped by command)", ""], ["printout", "log-specops"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
 			};
 
 			case (_missionNumber == count _missionSequence):
 			{
 				if (_missionState == "completed-success") then
 				{
-					[["Mission sequence completed successfully", "Well done", ""], ["printout", "log-specops"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
+					[["Mission sequence completed successfully", "Well done", ""], ["printout", "log-specops"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
 				};
-				[["Mission sequence ends", ""], ["printout", "log-specops"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
+				[["Mission sequence ends", ""], ["printout", "log-specops"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
 			};
 
 			default
 			{
-				[["Mission sequence continues", "Stand by", ""], ["printout"], SERVER_IsSpecOpsMember] call SPM_Mission_Message;
+				[["Mission sequence continues", "Stand by", ""], ["printout"], BOTH_IsSpecOpsMember] call SPM_Mission_Message;
 			};
 		};
 
@@ -865,9 +851,14 @@ OO_TRACE_DECL(SPM_SOC_RequestMission) =
 
 	if (isNull _player) exitWith {};
 
-	if (not ([_player] call SERVER_IsSpecOpsMember)) exitWith
+	if (not ([_player] call BOTH_IsSpecOpsMember)) exitWith
 	{
 		[ "This device is restricted for use by the special operations team", 1] remoteExec ["JB_fnc_showBlackScreenMessage", _player];
+	};
+
+	if (count allPlayers >= SpecialOperations_MaxPlayers) exitWith
+	{
+		[ format ["Special operations is disabled while there are more than %1 players online", count allPlayers], 3] remoteExec ["JB_fnc_showBlackScreenMessage", _player];
 	};
 
 	private _cs = OO_GET(_soc,SpecialOperationsCommand,CriticalSection);
@@ -948,7 +939,7 @@ OO_TRACE_DECL(SPM_SOC_NotifyPlayer) =
 {
 	params ["_soc", "_player"];
 
-	if (not ([_player] call SERVER_IsSpecOpsMember)) exitWith {};
+	if (not ([_player] call BOTH_IsSpecOpsMember)) exitWith {};
 
 	private _mission = OO_GET(_soc,SpecialOperationsCommand,RunningMission);
 	[_player] call OO_METHOD(_mission,MissionSpecialOperations,NotifyPlayer);

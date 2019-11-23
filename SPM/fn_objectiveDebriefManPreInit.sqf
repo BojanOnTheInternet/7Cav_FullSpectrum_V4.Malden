@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -101,7 +101,11 @@ OO_TRACE_DECL(SPM_ObjectiveDebriefMan_Update) =
 			private _unitProvider = OO_GET(_objective,ObjectiveDebriefMan,UnitProvider);
 			private _unit = OO_GET(_unitProvider,UnitProvider,Unit);
 			
-			if (not alive _unit) exitWith { OO_SET(_objective,MissionObjective,State,"failed") };
+			if (not alive _unit) exitWith
+			{
+				OO_SET(_objective,MissionObjective,State,"failed");
+				[_objective, ["Debrief failed.  Target has been killed", ""], "event"] call OO_METHOD(_objective,Category,SendNotification);
+			};
 
 			if (_unit getVariable ["ODM_S_State", false]) then
 			{
@@ -110,7 +114,7 @@ OO_TRACE_DECL(SPM_ObjectiveDebriefMan_Update) =
 					params ["_unit"];
 
 					// Salute the highest-rated specops player within interaction distance
-					private _men = (_unit nearEntities ["Man", INTERACTION_DISTANCE]) select { [_x] call SERVER_IsSpecOpsMember };
+					private _men = (_unit nearEntities ["Man", INTERACTION_DISTANCE]) select { [_x] call BOTH_IsSpecOpsMember };
 
 					if (count _men > 0) then
 					{
@@ -123,7 +127,9 @@ OO_TRACE_DECL(SPM_ObjectiveDebriefMan_Update) =
 						sleep 1;
 						_unit action ["salute"];
 
-						[_unit] join createGroup [civilian, true];
+						private _group = createGroup [civilian, true];
+						[_unit] join _group;
+
 						doStop _unit;
 					};
 				};

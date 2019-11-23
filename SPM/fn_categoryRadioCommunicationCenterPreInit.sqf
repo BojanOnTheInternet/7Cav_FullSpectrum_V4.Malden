@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -24,7 +24,7 @@ SPM_RadioCommunicationCenter_HandleDamage_Urban =
 		// Thrown grenades and launched smoke grenades
 		case (_projectile isKindOf "Grenade"): { _damage = damage _object + (getNumber (configFile >> "CfgAmmo" >> _projectile >> "indirectHit")) * 0.04 };
 		// Launched HE grenades
-		case (_projectile isKindOf "GrenadeCore"): { _damage = damage _object + (getNumber (configFile >> "CfgAmmo" >> _projectile >> "indirectHit")) * 0.01 };
+		case (_projectile isKindOf "GrenadeCore"): { _damage = damage _object + (getNumber (configFile >> "CfgAmmo" >> _projectile >> "indirectHit")) * 0.04 };
 		// Explosives and rockets do normal damage
 		case (_projectile isKindOf "TimeBombCore" || _projectile isKindOf "RocketBase"): { _damage = _damage };
 		// Everything else does normal damage
@@ -61,8 +61,11 @@ OO_TRACE_DECL(SPM_RadioCommunicationCenter_CreateUrbanCenter) =
 
 	private _direction = [_position, 0] call SPM_Util_EnvironmentAlignedDirection;
 
-	private _building = ["Land_TBox_F", _position, _direction, "can_collide"] call SPM_fnc_spawnVehicle;
-	private _tower = ["Land_TTowerSmall_1_F", _building modelToWorld [2.32,-0.58,0.0], _direction, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _building = ["Land_TBox_F", _position, _direction] call SPM_fnc_spawnVehicle;
+	[_category, _building] call OO_GET(_category,Category,InitializeObject);
+
+	private _tower = ["Land_TTowerSmall_1_F", _building modelToWorld [2.32,-0.58,0.0], _direction] call SPM_fnc_spawnVehicle;
+	[_category, _tower] call OO_GET(_category,Category,InitializeObject);
 
 	_building addEventHandler ["HandleDamage", SPM_RadioCommunicationCenter_HandleDamage_Urban];
 	_building addEventHandler ["Killed", SPM_RadioCommunicationCenter_Killed_Urban];
@@ -78,7 +81,7 @@ OO_TRACE_DECL(SPM_RadioCommunicationCenter_CreateUrbanCenter) =
 	{
 		params ["_category", "_building"];
 
-		scriptName "spawnSPM_RadioCommunicationCenter_CreateUrbanCenter";
+		scriptName "SPM_RadioCommunicationCenter_CreateUrbanCenter";
 
 		private _buildingPosition = getPos _building;
 
@@ -137,8 +140,8 @@ OO_TRACE_DECL(SPM_RadioCommunicationCenter_CreateFieldCenter) =
 
 	private _direction = [_position, random 360] call SPM_Util_EnvironmentAlignedDirection;
 
-	private _vehicle = ["I_C_Van_02_vehicle_F", _position, _direction, "can_collide"] call SPM_fnc_spawnVehicle;
-	_vehicle setVehicleLock "lockedplayer";
+	private _vehicle = ["I_C_Van_02_vehicle_F", _position, _direction] call SPM_fnc_spawnVehicle;
+	_vehicle setVehicleLock "locked";
 
 	_vehicle animateDoor ["door_3_source", 1]; 
 	_vehicle animateDoor ["door_4_source", 1]; 
@@ -148,9 +151,10 @@ OO_TRACE_DECL(SPM_RadioCommunicationCenter_CreateFieldCenter) =
 	_vehicle animate ["rearsteps_hide", 0]; 
 	_vehicle animate ["front_protective_frame_hide", 0]; 
 
-	private _generator = ["Land_PortableGenerator_01_F", call SPM_Util_RandomSpawnPosition, 0, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _generator = ["Land_PortableGenerator_01_F", call SPM_Util_RandomSpawnPosition, 0] call SPM_fnc_spawnVehicle;
 	_generator attachto [_vehicle, [0,0,-0.55], ""];
 	_generator setdir 270;
+	[_category, _generator] call OO_GET(_category,Category,InitializeObject);
 
 	[_generator, "CRCC", "RADIO"] call TRACE_SetObjectString;
 
@@ -159,18 +163,18 @@ OO_TRACE_DECL(SPM_RadioCommunicationCenter_CreateFieldCenter) =
 	_vehicle addEventHandler ["Killed", SPM_RadioCommunicationCenter_Killed_Field_Vehicle];
 	_vehicle addEventHandler ["Deleted", SPM_RadioCommunicationCenter_Killed_Field_Vehicle];
 
-	private _battery1 = ["Land_CarBattery_01_F", call SPM_Util_RandomSpawnPosition, 0, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _battery1 = ["Land_CarBattery_01_F", call SPM_Util_RandomSpawnPosition, 0, ""] call SPM_fnc_spawnVehicle;
 	_battery1 attachto [_vehicle, [0.8,-2.6,-0.85], ""];
 	_battery1 setdir 275;
-	private _battery2 = ["Land_CarBattery_01_F", call SPM_Util_RandomSpawnPosition, 0, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _battery2 = ["Land_CarBattery_01_F", call SPM_Util_RandomSpawnPosition, 0, ""] call SPM_fnc_spawnVehicle;
 	_battery2 attachto [_vehicle, [0.5,-2.55,-0.85], ""];
 	_battery2 setdir 265;
 
-	private _toolkit = ["Item_ToolKit", call SPM_Util_RandomSpawnPosition, 0, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _toolkit = ["Item_ToolKit", call SPM_Util_RandomSpawnPosition, 0, ""] call SPM_fnc_spawnVehicle;
 	_toolkit attachto [_vehicle, [0.8,-2.63,-0.4], ""];
 	_toolkit setvectordirandup [vectorNormalized [0,1,1], vectorNormalized [0,0,1]];
 
-	private _crate = ["Land_WoodenCrate_01_F", call SPM_Util_RandomSpawnPosition, 0, "can_collide"] call SPM_fnc_spawnVehicle;
+	private _crate = ["Land_WoodenCrate_01_F", call SPM_Util_RandomSpawnPosition, 0, ""] call SPM_fnc_spawnVehicle;
 	_crate attachto [_vehicle, [-0.27,-2.3,-0.6], ""];
 	_crate setDir 10;
 
@@ -178,7 +182,7 @@ OO_TRACE_DECL(SPM_RadioCommunicationCenter_CreateFieldCenter) =
 	{
 		params ["_category", "_generator"];
 
-		scriptName "spawnSPM_RadioCommunicationCenter_CreateFieldCenter";
+		scriptName "SPM_RadioCommunicationCenter_CreateFieldCenter";
 
 		// Run comms chatter
 		[_generator, false] remoteExec ["SPM_CommunicationCenter_CommunicationChatter", 0, true];//JIP

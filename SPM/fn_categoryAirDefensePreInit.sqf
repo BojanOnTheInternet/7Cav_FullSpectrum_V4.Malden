@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -11,52 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 if (not isServer && hasInterface) exitWith {};
 
 #include "strongpoint.h"
-
-SPM_AirDefense_RatingsWest =
-[
-	["B_Heli_Attack_01_F", [50, 2]],
-	["B_Heli_Attack_01_dynamicLoadout_F", [50, 2]],
-	["B_Heli_Light_01_armed_F", [20, 2]],
-	["B_Heli_Light_01_dynamicLoadout_F", [20, 2]],
-	["B_Plane_CAS_01_F", [120, 1]],
-	["B_Plane_CAS_01_dynamicLoadout_F", [240, 1]],
-//	["B_Plane_Fighter_01_F", [75, 1]],
-//	["B_Plane_Fighter_01_Stealth_F", [75, 1]],
-	["B_T_VTOL_01_armed_F", [60, 3]],
-
-	["O_Heli_Attack_02_F", [50, 2]],
-	["O_Heli_Attack_02_dynamicLoadout_F", [50, 2]],
-	["O_Heli_Light_02_F", [20, 2]],
-	["O_Heli_Light_02_dynamicLoadout_F", [20, 2]],
-	["O_Plane_CAS_02_F", [120, 1]],
-	["O_Plane_CAS_02_dynamicLoadout_F", [240, 1]],
-//	["O_Plane_Fighter_02_F", [75, 1]],
-//	["O_Plane_Fighter_02_Stealth_F", [75, 1]],
-
-	["I_Heli_light_03_F", [20, 2]],
-	["I_Heli_light_03_dynamicLoadout_F", [20, 2]],
-//	["I_Plane_Fighter_03_CAS_F", [75, 1]],
-//	["I_Plane_Fighter_03_AA_F", [75, 1]],
-//	["I_Plane_Fighter_03_dynamicLoadout_F", [75, 1]],
-//	["I_Plane_Fighter_04_F", [75, 1]]
-
-	["RHS_AH64D", [60, 2]],
-	["FIR_A10C", [120, 1]],
-	["FIR_F16C", [120, 1]]
-];
-
-SPM_AirDefense_CallupsEast =
-[
-	["LOP_US_ZSU234", [40, 3, 1.0,
-		{
-			params ["_unit"];
-
-			_unit engineOn true;
-
-		}]]
-];
-
-SPM_AirDefense_RatingsEast = SPM_AirDefense_CallupsEast apply { [_x select 0, (_x select 1) select [0, 2]] };
 
 OO_TRACE_DECL(SPM_AirDefense_Reload) =
 {
@@ -70,7 +24,7 @@ OO_TRACE_DECL(SPM_AirDefense_Reload) =
 			{
 				params ["_vehicle", "_magazineType", "_reloadDelay"];
 
-				scriptName "spawnSPM_AirDefense_Reload";
+				scriptName "SPM_AirDefense_Reload";
 
 				sleep _reloadDelay;
 
@@ -149,7 +103,7 @@ OO_TRACE_DECL(SPM_AirDefense_CreateUnit) =
 	if (_index == -1) exitWith {};
 	private _vehicleDescriptor = OO_GET(_category,ForceCategory,CallupsEast) select _index select 1;
 
-	private _unitVehicle = [_type, _position, _direction] call SPM_fnc_spawnVehicle;
+	private _unitVehicle = [_type, _position, _direction, ""] call SPM_fnc_spawnVehicle;
 	_unitVehicle setVehicleTIPars [1.0, 0.5, 0.0]; // Start vehicle hot so it shows on thermals
 
 	private _crew = [_unitVehicle] call SPM_fnc_groupFromVehicleCrew;
@@ -215,10 +169,6 @@ OO_TRACE_DECL(SPM_AirDefense_Create) =
 	params ["_category", "_area"];
 
 	OO_SET(_category,ForceCategory,Area,_area);
-
-	OO_SET(_category,ForceCategory,RatingsWest,SPM_AirDefense_RatingsWest);
-	OO_SET(_category,ForceCategory,RatingsEast,SPM_AirDefense_RatingsEast);
-	OO_SET(_category,ForceCategory,CallupsEast,SPM_AirDefense_CallupsEast);
 };
 
 OO_TRACE_DECL(SPM_AirDefense_Update) =

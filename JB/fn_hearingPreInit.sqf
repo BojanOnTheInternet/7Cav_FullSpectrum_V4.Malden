@@ -26,8 +26,6 @@ JB_HF_Monitor =
 {
 	while { true } do
 	{
-		scriptName "spawnJB_HF_Monitor";
-
 		waitUntil { sleep 0.1; count JB_HF_Changes > 0 };
 
 		private _changes = JB_HF_Changes;
@@ -92,4 +90,4 @@ JB_HF_Monitor =
 	};
 };
 
-[] spawn JB_HF_Monitor;
+[] spawn { 	scriptName "JB_HF_Monitor"; _this call JB_HF_Monitor };

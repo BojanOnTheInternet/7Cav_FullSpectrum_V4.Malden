@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -51,15 +51,12 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	private _faction1Count = floor (_meetingCount / 2);
 	private _faction2Count = _meetingCount - _faction1Count;
 
-	[_missionPosition, _meetingRadius + 100, _missionRadius] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
+	[_missionPosition, _meetingRadius + 100, _missionRadius, _faction1Count max _faction2Count] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
 
 	OO_SET(_mission,Strongpoint,Name,"Special Operation");
-	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeObject);
+	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeCategoryObject);
 
-	OO_SET(_mission,Mission,ParticipantFilter,SERVER_IsSpecOpsMember);
-
-	private _buildings = [_missionPosition, 0, _meetingRadius, _faction1Count max _faction2Count] call SPM_Util_HabitableBuildings;
-	OO_SET(_mission,Mission,Buildings,_buildings);
+	OO_SET(_mission,Mission,ParticipantFilter,BOTH_IsSpecOpsMember);
 
 	private _area = [];
 	private _category = OO_NULL;
@@ -69,7 +66,10 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	_area = [_missionPosition, 0, _meetingRadius] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
 	["Name", "Faction1"] call OO_METHOD(_category,Category,SetTagValue);
-	OO_SET(_category,InfantryGarrisonCategory,HousingPreference,0.0);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
+	OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsEast);
+	OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsEast);
+	OO_SET(_category,InfantryGarrisonCategory,HousingDistribution,0.0);
 
 	private _garrisonRatingEast = 0;
 	{ _garrisonRatingEast = _garrisonRatingEast + (_x select 1 select 0) } forEach OO_GET(_category,ForceCategory,RatingsEast);
@@ -89,10 +89,12 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
 	["Name", "Faction2"] call OO_METHOD(_category,Category,SetTagValue);
 	OO_SET(_category,ForceCategory,SideEast,independent);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsSyndikat);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsSyndikat);
+	OO_SET(_category,ForceCategory,SkillLevel,0.35);
 	OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_InitialCallupsSyndikat);
-	OO_SET(_category,InfantryGarrisonCategory,HousingPreference,0.0);
+	OO_SET(_category,InfantryGarrisonCategory,HousingDistribution,0.0);
 
 	private _garrisonRatingEast = 0;
 	{ _garrisonRatingEast = _garrisonRatingEast + (_x select 1 select 0) } forEach OO_GET(_category,ForceCategory,RatingsEast);
@@ -122,6 +124,9 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	_area = [_missionPosition, _meetingRadius, _guardRadius] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
 	["Name", "Guards"] call OO_METHOD(_category,Category,SetTagValue);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
+	OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsEast);
+	OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsEast);
 
 	private _garrisonRatingEast = 0;
 	{ _garrisonRatingEast = _garrisonRatingEast + (_x select 1 select 0) } forEach OO_GET(_category,ForceCategory,RatingsEast);
@@ -135,6 +140,7 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	if (random 1 < 0.5) then
 	{
 		OO_SET(_category,ForceCategory,SideEast,independent);
+		OO_SET(_category,ForceCategory,SkillLevel,0.35);
 		OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsSyndikat);
 		OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsSyndikat);
 		OO_SET(_category,InfantryGarrisonCategory,InitialCallupsEast,SPM_InfantryGarrison_InitialCallupsSyndikat);
@@ -231,6 +237,7 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 		_area = [_missionPosition, _guardRadius + 25, (_guardRadius + 200) min _missionRadius] call OO_CREATE(StrongpointArea);
 		_category = [_area] call OO_CREATE(InfantryGarrisonCategory);
 		["Name", "Civilians"] call OO_METHOD(_category,Category,SetTagValue);
+		OO_SET(_category,ForceCategory,RatingsWest,SPM_InfantryGarrison_RatingsWest);
 		OO_SET(_category,ForceCategory,SideEast,civilian);
 		OO_SET(_category,ForceCategory,RatingsEast,SPM_InfantryGarrison_RatingsCivilian);
 		OO_SET(_category,ForceCategory,CallupsEast,SPM_InfantryGarrison_CallupsCivilian);
@@ -251,6 +258,7 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	_area = [_missionPosition, _meetingRadius, _guardRadius] call OO_CREATE(StrongpointArea);
 	_category = [_area] call OO_CREATE(ArmorCategory);
 	["Name", "PatrolVehicles"] call OO_METHOD(_category,Category,SetTagValue);
+	OO_SET(_category,ForceCategory,RatingsWest,SPM_Armor_RatingsWestAPCs+SPM_Armor_RatingsWestTanks);
 	OO_SET(_category,ForceCategory,RatingsEast,SPM_MissionRaidTown_Armor_RatingsEast);
 	OO_SET(_category,ForceCategory,CallupsEast,SPM_MissionRaidTown_Armor_CallupsEast);
 
@@ -275,7 +283,7 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	// Mission objective is structured as two compound objectives, either of which may be completed.  Each compound is a capture/debrief pair.
 
 	private _eastAppearances = ["LOP_US_Infantry_Officer", "LOP_US_Infantry_TL", "LOP_US_Infantry_SL"];
-	private _syndikatAppearances = ["LOP_PMC_Infantry_VIP", "LOP_PMC_Infantry_SL", "LOP_PMC_Infantry_TL", "LOP_UA_Officer", "LOP_UA_Infantry_SL", "LOP_UA_Infantry_TL"];
+	private _syndikatAppearances = ["I_officer_F", "I_C_Soldier_Para_8_F", "I_C_Soldier_Para_2_F", "I_C_Soldier_Bandit_6_F", "C_Man_Messenger_01_F"];
 
 	private _eastAppearance = selectRandom _eastAppearances;
 	private _syndikatAppearance = selectRandom _syndikatAppearances;
@@ -292,14 +300,14 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	private _debriefingArea = [0, getPos SpecOpsHQ] + triggerArea SpecOpsHQ;
 
 
-	private _specopsTest = { [player] call SERVER_IsSpecOpsMember };
+	private _specopsTest = { [player] call BOTH_IsSpecOpsMember };
 
 	// Capture east officer.  A compound objective to capture/debrief the csat member.
 	private _eastObjective = [["",""]] call OO_CREATE(ObjectiveCompound);
 	[_eastObjective] call OO_METHOD(_compoundObjective,ObjectiveCompound,AddObjective);
 	[_eastObjective] call OO_METHOD(_mission,Mission,AddObjective);
 
-	_category = [_eastParticipants, ["garrisoned-housed", "garrisoned-outdoor"], nil, _eastAppearance, east, nil, "Novorossiya Armed Forces REPRESENTATIVE"] call OO_CREATE(ProvideGarrisonUnit);
+	_category = [_eastParticipants, ["garrisoned-housed", "garrisoned-outdoor"], nil, _eastAppearance, east, nil, "CSAT REPRESENTATIVE"] call OO_CREATE(ProvideGarrisonUnit);
 	[_category] call OO_METHOD(_mission,Strongpoint,AddCategory);
 
 	private _unitProvider = _category;
@@ -321,7 +329,7 @@ OO_TRACE_DECL(SPM_MissionDisruptMeeting_Create) =
 	[_syndikatObjective] call OO_METHOD(_compoundObjective,ObjectiveCompound,AddObjective);
 	[_syndikatObjective] call OO_METHOD(_mission,Mission,AddObjective);
 
-	_category = [_syndikatParticipants,["garrisoned-housed", "garrisoned-outdoor"], nil, _syndikatAppearance, independent, nil, "PMC REPRESENTATIVE"] call OO_CREATE(ProvideGarrisonUnit);
+	_category = [_syndikatParticipants,["garrisoned-housed", "garrisoned-outdoor"], nil, _syndikatAppearance, independent, nil, "SYNDIKAT REPRESENTATIVE"] call OO_CREATE(ProvideGarrisonUnit);
 	[_category] call OO_METHOD(_mission,Strongpoint,AddCategory);
 
 	private _unitProvider = _category;

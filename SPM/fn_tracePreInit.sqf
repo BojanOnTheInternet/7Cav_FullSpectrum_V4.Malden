@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -17,12 +17,18 @@ TRACE_C_SetObjectValue =
 
 	if (isNil "_keyObject") exitWith {}; // 1.0.15 saw nils (which means bugs elsewhere), so just defending against them here
 
-	private _list = if (_valueType == "string") then { TRACE_ObjectStrings } else { TRACE_ObjectPositions };
-
+	private _list = switch (_valueType) do
+	{
+		case "string": { TRACE_ObjectStrings };
+		case "position": { TRACE_ObjectPositions };
+		default { [] };
+	};
+	
+	private _object = objNull;
 	private _index = -1;
 	{
-		private _object = _x select 0;
-		if (_object == _keyObject) exitWith { _index = _forEachIndex };
+		_object = _x select 0;
+		if (typeName _object == typeName _keyObject && { _object == _keyObject }) exitWith { _index = _forEachIndex };
 	} forEach _list;
 
 	if (_index == -1) then
@@ -59,16 +65,28 @@ TRACE_C_SetObjectValue =
 
 TRACE_DrawObjectValues =
 {
-	if (CLIENT_CuratorType != "GM" || { (getPos curatorCamera) select 0 == 0 }) exitWith {}; // Only for gamemaster curators when in Zeus
+	if (CLIENT_CuratorType != "MC" || { (getPos curatorCamera) select 0 == 0 }) exitWith {}; // Only for mission controller curators when in Zeus
 
 	private _position = [];
 	private _fullLine = "";
 
-	TRACE_ObjectStrings = TRACE_ObjectStrings select { alive (_x select 0) };
-
+	TRACE_ObjectStrings = TRACE_ObjectStrings select
 	{
-		_position = getPosVisual (_x select 0);
-		_position set [2, getPosATL (_x select 0) select 2];
+		switch (typeName (_x select 0)) do
+		{
+			case "GROUP": { { alive _x } count units (_x select 0) > 0 };
+			case "OBJECT": { alive (_x select 0) };
+			default { false }
+		};
+	};
+
+	private _object = nil;
+	{
+		_object = _x select 0;
+		if (typeName _object == "GROUP") then { _object = leader _object };
+
+		_position = getPosVisual _object;
+		_position set [2, getPosATL _object select 2];
 		_fullLine = ((_x select 1) apply { _x select 1 }) joinString ", ";
 		drawIcon3D ["", [1,1,1,1], _position, 0, 0, 0, _fullLine, 1, 0.04, "PuristaMedium"];
 	} forEach TRACE_ObjectStrings;
@@ -91,12 +109,12 @@ TRACE_SetObjectString =
 {
 	params ["_keyObject", "_keyName", "_keyValue"];
 
-	[[_keyObject, _keyName, if (isNil "_keyValue") then { nil } else { _keyValue }, "string"], "TRACE_C_SetObjectValue", "GM"] call SERVER_RemoteExecCurators;
+	[[_keyObject, _keyName, if (isNil "_keyValue") then { nil } else { _keyValue }, "string"], "TRACE_C_SetObjectValue", ["MC"]] call SERVER_RemoteExecCurators;
 };
 
 TRACE_SetObjectPosition =
 {
 	params ["_keyObject", "_keyName", "_keyValue"];
 
-	[[_keyObject, _keyName, if (isNil "_keyValue") then { nil } else { _keyValue }, "position"], "TRACE_C_SetObjectValue", "GM"] call SERVER_RemoteExecCurators;
+	[[_keyObject, _keyName, if (isNil "_keyValue") then { nil } else { _keyValue }, "position"], "TRACE_C_SetObjectValue", ["MC"]] call SERVER_RemoteExecCurators;
 };

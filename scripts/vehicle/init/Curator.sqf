@@ -2,7 +2,7 @@ if (not isServer) exitWith {};
 
 params ["_curator"];
 
-if (isNull SERVER_CuratorMaster) then
+if (isNil "SERVER_CuratorMaster" || { isNull SERVER_CuratorMaster }) then
 {
 	SERVER_CuratorMaster = _curator;
 };

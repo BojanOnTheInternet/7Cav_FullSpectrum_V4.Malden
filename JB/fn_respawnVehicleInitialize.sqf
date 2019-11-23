@@ -23,19 +23,22 @@ private _vehicleInit = param [1, DEFAULT_VEHICLEINIT, [{}]];
 
 diag_log format ["RespawnVehicleInitialize: %1", typeOf _vehicle];
 
-[[_vehicle]] call SERVER_CurateEditableObjects;
-
-_vehicle setVariable ["JB_RV_StartPosition", getPosASL _vehicle];
-_vehicle setVariable ["JB_RV_StartDirection", getDir _vehicle];
-_vehicle setVariable ["JB_RV_VehiclePylonMagazines", getPylonMagazines _vehicle];
-_vehicle setVariable ["JB_RV_VehicleTextures", getObjectTextures _vehicle];
+[_vehicle] call SERVER_InitializeObject;
 
 private _animationSources = ("getText (_x >> 'source') == 'user'" configClasses (configFile >> "CfgVehicles" >> typeOf _vehicle >> "AnimationSources")) apply { [configName _x, _vehicle animationPhase configName _x] };
-_vehicle setVariable ["JB_RV_AnimationSources", _animationSources];
+
+_state = [];
+_state set [JB_RV_STATE_POSITION, getPosASL _vehicle];
+_state set [JB_RV_STATE_DIRECTION, getDir _vehicle];
+_state set [JB_RV_STATE_PYLONMAGAZINES, getPylonMagazines _vehicle];
+_state set [JB_RV_STATE_TEXTURES, getObjectTextures _vehicle];
+_state set [JB_RV_STATE_ANIMATIONSOURCES, _animationSources];
+
+_vehicle setVariable ["JB_RV_State", _state];
 
 if (!isNil "_vehicleInit") then
 {
-	[_vehicle, "JB_RespawnVehicleInitialize", _vehicleInit] call JB_RV_SetInitializer;
+	[_vehicle, "JB_RV_Initializer", _vehicleInit] call JB_RV_SetInitializer;
 	[_vehicle, objNull] call _vehicleInit;
 };
 

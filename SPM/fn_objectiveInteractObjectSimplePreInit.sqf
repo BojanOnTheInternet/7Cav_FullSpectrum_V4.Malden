@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -53,7 +53,7 @@ OO_TRACE_DECL(SPM_ObjectiveInteractObjectSimple_Update) =
 				if (count _position > 0) then
 				{
 					private _objectType = OO_GET(_objective,ObjectiveInteractObjectSimple,ObjectType);
-					private _object = ([_objectType, _position, random 360, "can_collide"] call SPM_fnc_spawnVehicle);
+					private _object = ([_objectType, _position, random 360] call SPM_fnc_spawnVehicle);
 					[_objective, _object] call OO_GET(_objective,Category,InitializeObject);
 
 					private _onObjectCreate = OO_GET(_objective,ObjectiveInteractObjectSimple,OnObjectCreate);

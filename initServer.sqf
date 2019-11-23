@@ -1,13 +1,21 @@
 diag_log "initServer start";
 
+#include "\serverscripts\zeusserverscripts\secretKey.sqf"
+missionNamespace setVariable["LOYALTY_CIPHER", CIPHERSECRETKEY, true];
+
 #include "SPM\strongpoint.h"
-#include "\serverscripts\zeusserverscripts\zeus_assigner.sqf" // Zeus assigner
 
 addMissionEventHandler ["PlayerConnected", SERVER_PlayerConnected];
 addMissionEventHandler ["PlayerDisconnected", SERVER_PlayerDisconnected];
 
-// Disable server restart messages
-//_null = [] execVM "scripts\sessionTimeMessagesInit.sqf";
+_null = [] execVM "scripts\sessionTimeMessagesInit.sqf";
+
+// Disable RHS engine start up so vehicles move immediately when spawned
+RHS_ENGINE_STARTUP_OFF = 1;
+
+// Increase ACE max carry and drag weights
+ACE_maxWeightCarry = 750;
+ACE_maxWeightDrag = 1000;
 
 // Make sure armed civilians won't attack NATO
 civilian setFriend [west, 1];
@@ -45,34 +53,46 @@ private _location = 0;
 	_x setMarkerAlpha 0;
 } forEach (allMapMarkers select { _x find "LOCATION_" == 0 });
 
+// Delete any group that stays empty across two checks (10-20 seconds)
+[] spawn
+{
+	private _previouslyEmptyGroups = [];
+	private _currentlyEmptyGroups = [];
+
+	while { true } do
+	{
+		_currentlyEmptyGroups = [];
+		{ if (_x in _previouslyEmptyGroups) then { deleteGroup _x } else { _currentlyEmptyGroups pushBack _x } } forEach (allGroups select { count units _x == 0 });
+		_previouslyEmptyGroups = _currentlyEmptyGroups;
+
+		sleep 10;
+	};
+};
+
 [] call compile preprocessFile ("scripts\configure" + worldName + "Server.sqf"); // Island-specific modifications
 [] call compile preprocessFile "scripts\weatherInit.sqf"; // Variable weather
 
-Advance_RunState = ["stop", "run"] select (["Advance"] call Params_GetParamValue);
-_null = [] execVM "mission\Advance\missionControl.sqf";
+[] execVM "mission\Advance\missionControl.sqf";
 
-SpecialOperations_RunState = ["stop", "run"] select (["SpecialOperations"] call Params_GetParamValue);
-_null = [] execVM "mission\SpecialOperations\missionControl.sqf";
+SpecialOperations_RunState = ["stop", "run"] select (["SpecialOperations"] call JB_MP_GetParamValue);
+[] execVM "mission\SpecialOperations\missionControl.sqf";
+SpecialOperations_MaxPlayers = 15;
 
 // Delete missions when appropriate
-_null = [] execVM "mission\missionMonitor.sqf";
+[] execVM "mission\missionMonitor.sqf";
 
 // Stuff involving players entering enemy-held areas
 [] call SERVER_MonitorProximityRoundRequests;
 
 ["Initialize"] call BIS_fnc_dynamicGroups;
 
-[Radio_Radios] call Radio_fnc_customServerInit;
+[] execVM "ASL_AdvancedSlingLoading\functions\fn_advancedSlingLoadInit.sqf";
+[] execVM "AR_AdvancedRappelling\functions\fn_advancedRappellingInit.sqf";
+[] execVM "AT_AdvancedTowing\functions\fn_advancedTowingInit.sqf";
+[] execVM "AUR_AdvancedUrbanRappelling\functions\fn_advancedUrbanRappellingInit.sqf";
 
-SA_MAX_TOWED_CARGO = 1;
-_null = [] execVM "ASL_AdvancedSlingLoading\functions\fn_advancedSlingLoadInit.sqf";
-_null = [] execVM "AR_AdvancedRappelling\functions\fn_advancedRappellingInit.sqf";
-_null = [] execVM "AT_AdvancedTowing\functions\fn_advancedTowingInit.sqf";
-_null = [] execVM "AUR_AdvancedUrbanRappelling\functions\fn_advancedUrbanRappellingInit.sqf";
-
-_null = [] execVM "scripts\decals.sqf";
-
-_null = [] execVM "scripts\fortifyInit.sqf";
+[] execVM "scripts\decals.sqf";
+[] execVM "scripts\fortifyInit.sqf";
 
 enableEnvironment [false, true];
 

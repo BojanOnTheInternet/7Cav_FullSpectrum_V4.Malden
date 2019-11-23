@@ -4,7 +4,7 @@ JBPSC_Paradrop =
 	{
 		params ["_vehicle", "_cargo"];
 
-		scriptName "spawnJBPSC_Paradrop";
+		scriptName "JBPSC_Paradrop";
 
 		private _attachChute = false;
 

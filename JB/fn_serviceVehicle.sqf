@@ -47,7 +47,7 @@ JB_SV_LoadFuel =
 {
 	params ["_vehicle", "_fuelRate"];
 
-	private _fuelCapacity = _vehicle getVariable ["JBF_FuelCapacity", 0];
+	private _fuelCapacity = _vehicle getVariable ["JBF_SupplyCapacity", 0];
 
 	if (_fuelCapacity == 0) exitWith {};
 
@@ -55,7 +55,7 @@ JB_SV_LoadFuel =
 
 	private _vehiclePosition = getPos _vehicle;
 
-	while { alive _vehicle && { (_vehicle getVariable ["JBF_FuelRemaining", 0]) < _fuelCapacity } } do
+	while { alive _vehicle && { (_vehicle getVariable ["JBF_SupplyRemaining", 0]) < _fuelCapacity } } do
 	{
 		if (_vehiclePosition distance (getPos _vehicle) > 5) exitWith {};
 
@@ -148,7 +148,7 @@ JB_SV_Message = "Starting service";
 
 [] spawn
 {
-	scriptName "spawnJB_fnc_serviceVehicle";
+	scriptName "JB_fnc_serviceVehicle";
 
 	while { not isNil "JB_SV_Message" } do
 	{

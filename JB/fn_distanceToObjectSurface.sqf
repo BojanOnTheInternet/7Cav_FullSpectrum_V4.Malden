@@ -1,5 +1,13 @@
-params ["_position", "_object", "_range"];
+params [["_position", [], [[], objNull]], ["_object", objNull, [objNull]], ["_range", 50, [0]]];
 
+if (_position isEqualType objNull && { isNull _position }) exitWith {};
+if (_position isEqualType [] && { count _position != 3 }) exitWith {};
+
+if (isNull _object) exitWith {};
+
+if (_range <= 0) exitWith {};
+
+if (_position isEqualType objNull) then { _position = getPosATL _position };
 _position = AGLtoASL _position;
 
 private _target = _position vectorAdd ((_position vectorFromTo aimPos _object) vectorMultiply _range);

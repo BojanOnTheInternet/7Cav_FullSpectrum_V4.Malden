@@ -47,35 +47,18 @@ OO_TRACE_DECL(HALO_ReadyForJump) =
 {
 	params ["_player", "_vehicle"];
 
-	if (_player getVariable ["HALO_Cancel", false]) exitWith { false };
+	if (vehicle _player != _vehicle) exitWith { false };
+
 	if (not (lifeState _player in ["HEALTHY", "INJURED"])) exitWith { false };
+
 	if (not (alive _vehicle)) exitWith { false };
 
 	true
 };
 
-OO_TRACE_DECL(HALO_GroupStartName) =
+OO_TRACE_DECL(HALO_GroupName) =
 {
 	"HALO_Group " + str (group player);
-};
-
-OO_TRACE_DECL(HALO_GetOutHandler) =
-{
-	params ["_unit", "_position", "_vehicle", "_turret"];
-
-	[_vehicle] call HALO_Stop;
-};
-
-OO_TRACE_DECL(HALO_Stop) =
-{
-	params ["_vehicle"];
-
-	player setVariable ["HALO_Cancel", true];
-
-	if (({ group _x == group player } count crew _vehicle) == 0) then
-	{
-		_vehicle setVariable [[] call HALO_GroupStartName, nil, true]; // public
-	};
 };
 
 OO_TRACE_DECL(HALO_Start) =
@@ -88,10 +71,7 @@ OO_TRACE_DECL(HALO_Start) =
 	for "_i" from count _haloVehicles - 1 to 0 step -1 do
 	{
 		private _vehicles = _haloVehicles select _i select 0;
-		for "_j" from count _vehicles - 1 to 0 step -1 do
-		{
-			if (not alive (_vehicles select _j)) then { _vehicles deleteAt _j };
-		};
+		_vehicles = _vehicles select { alive _x };
 		if (count _vehicles == 0) then { _haloVehicles deleteAt _i };
 	};
 
@@ -106,131 +86,108 @@ OO_TRACE_DECL(HALO_Start) =
 	{
 		params ["_vehicle", "_jumpCode"];
 
-		scriptName "spawnHALO_Start";
+		scriptName "HALO_Start";
 
-		player setVariable ["HALO_Cancel", nil];
+		private _groupName = "";
+		private _newGroupName = "";
+		private _waitStart = -1;
+		private _currentDrop = "";
+		private _jumpTime = 1e30;
+		private _remainingDelay = 1e30;
+		private _nextMessageDelay = -1;
 
-		// The time that the player started waiting is either his own time of getting into the HALO vehicle
-		// or the time of the earliest squad member who got in.  This allows groups to jump together.
-
-		private _groupStartName = [] call HALO_GroupStartName;
-		private _groupStart = _vehicle getVariable [_groupStartName, -1];
-		private _waitStart = [] call HALO_CurrentTime;
-
-		if (_groupStart == -1) then
+		while { ([player, _vehicle] call HALO_ReadyForJump) && _remainingDelay >= 0 } do
 		{
-			_vehicle setVariable [_groupStartName, _waitStart, true]; // public
-		}
-		else
-		{
-			_waitStart = _groupStart;
-		};
-
-		private _targetData = [_vehicle] call _jumpCode;
-		private _targetDrop = _targetData select 0;
-		private _targetPosition = _targetData select 1;
-		private _targetDelay = _targetData select 2;
-
-		private _jumpTime = _waitStart + round _targetDelay;
-		private _remainingDelay = _jumpTime - ([] call HALO_CurrentTime);
-		_remainingDelay = _remainingDelay max 7; // Ensure that we at least get the countdown
-
-		if (_targetDrop != "" && _remainingDelay < 10) then
-		{
-			[_remainingDelay, _targetDrop] call HALO_ShowStatusMessage;
-		};
-
-		private _nextMessageDelay = _remainingDelay;
-
-		// If the player gets out of the vehicle and he's the last member of his group to get out, clear the group
-		// start time variable.
-		private _getOutHandler = player addEventHandler ["GetOutMan", HALO_GetOutHandler];
-
-		// So long as the player is alive and in an intact HALO vehicle, keep the process going
-		while { ([player, _vehicle] call HALO_ReadyForJump) } do
-		{
-			_targetData = [_vehicle] call _jumpCode;
-			_targetDrop = _targetData select 0;
-			private _currentDrop = _targetData select 0;
-
-			while { ([player, _vehicle] call HALO_ReadyForJump) && _remainingDelay > 0 && { _targetDrop == _currentDrop } && { _targetDrop != "" } } do
+			_newGroupName = call HALO_GroupName;
+			if (_newGroupName != _groupName) then
 			{
-				if (_remainingDelay < 6) then
+				_groupName = _newGroupName;
+
+				// If this is the first member of the group in the vehicle, set the group's global HALO start time on the vehicle
+				if ({ group _x == group player } count crew _vehicle == 1) then
 				{
-					[format ["<t align='center' size='2'>%1</t>", round _remainingDelay], -1, -1, 0.2, 0.2] call BIS_fnc_dynamicText;
-				}
-				else
+					_vehicle setVariable [_groupName, call HALO_CurrentTime, true]; // public
+				};
+				_waitStart = _vehicle getVariable [_groupName, call HALO_CurrentTime];
+			};
+
+			private _jumpParameters = [_vehicle] call _jumpCode;
+			if (count _jumpParameters == 0) then
+			{
+				if (not isNil "_currentDrop") then
 				{
-					if (_remainingDelay < _nextMessageDelay) then
+					["HALO from this vehicle is currently disabled", 5] call JB_fnc_showBlackScreenMessage;
+
+					_jumpTime = 1e30;
+					_currentDrop = nil;
+					_nextMessageDelay = 1e30;
+				};
+			}
+			else
+			{
+				_jumpParameters params ["_targetDrop", "_targetPosition", "_targetDelay"];
+				if (isNil "_currentDrop" || { _targetDrop != _currentDrop }) then
+				{
+					if (_targetDrop == "") then
 					{
-						[_remainingDelay, _targetDrop] call HALO_ShowStatusMessage;
+						["Waiting for new operation", 2] call JB_fnc_showBlackScreenMessage;
+						_jumpTime = 1e30;
+					}
+					else
+					{
+						_jumpTime = (_waitStart + round _targetDelay) max ((call HALO_CurrentTime) + 7);
+						[format ["HALO jump over %1", _targetDrop], 2] call JB_fnc_showBlackScreenMessage;
+					};
+
+					_currentDrop = _targetDrop;
+					_nextMessageDelay = 1e30;
+				};
+			};
+
+			if (not isNil "_currentDrop" && { _currentDrop != "" }) then
+			{
+				_remainingDelay = floor (_jumpTime - (call HALO_CurrentTime));
+
+				switch (true) do
+				{
+					case (_remainingDelay <= 0):
+					{
+						sleep 0.5; // Anticipation
+						["<t align='center' size='2'>GREEN LIGHT</t>", -1, -1, 1.0, 0.2] call BIS_fnc_dynamicText;
+
+						if (vehicle player == player) then
+						{
+							player setVelocity [0, 0, 40];
+							sleep 1;
+							player setVelocity [0, 0, 0];
+						};
+
+						_jumpParameters params ["_targetDrop", "_targetPosition", "_targetDelay"];
+
+						// Position is horizontally randomized +/- 5 meters
+						private _dropPosition = _targetPosition vectorAdd [-5 + random 10, -5 + random 10, 0];
+						private _dropDirection = (getPos _vehicle) getDir _targetPosition;
+
+						[player, false, _dropPosition, _dropDirection] call JB_fnc_halo;
+						waitUntil { vehicle player == player };
+					};
+
+					case (_remainingDelay < 6):
+					{
+						[_remainingDelay] spawn { [format ["<t align='center' size='2'>%1</t>", _this select 0], -1, -1, 1.0, 0.2] call BIS_fnc_dynamicText };
+					};
+
+					case (_remainingDelay < _nextMessageDelay):
+					{
+						[_remainingDelay, _currentDrop] call HALO_ShowStatusMessage;
 
 						_nextMessageDelay = if (_remainingDelay > 30) then { _remainingDelay - 10 } else { _remainingDelay - 5 };
 					};
-
-					sleep 1;
-				};
-
-				_remainingDelay = _remainingDelay - 1;
-
-				_targetData = [_vehicle] call _jumpCode;
-				_currentDrop = _targetData select 0;
-			};
-
-			if (not ([player, _vehicle] call HALO_ReadyForJump)) exitWith { };
-
-			if (_targetDrop != "" && _targetDrop == _currentDrop) exitWith // Timer expired and player should make HALO jump
-			{
-				// Clear the group wait start time so that anyone who gets into the HALO vehicle after
-				// the current jump has to wait the full delay.
-				_vehicle setVariable [_groupStartName, nil, true]; // public
-
-				["<t align='center' size='2'>GREEN LIGHT</t>", -1, -1, 0.2, 0.2] call BIS_fnc_dynamicText;
-
-				if (vehicle player == player) then
-				{
-					player setVelocity [0, 0, 40];
-					sleep 1;
-					player setVelocity [0, 0, 0];
-				};
-
-				// Position is horizontally randomized +/- 5 meters
-				private _dropPosition = (_targetData select 1) vectorAdd [-5 + random 10, -5 + random 10, 0];
-				private _dropDirection = (getPos _vehicle) getDir (_targetData select 1);
-
-				[player, false, _dropPosition, _dropDirection] call JB_fnc_halo;
-				waitUntil { vehicle player == player };
-			};
-
-			if (_currentDrop == "") then
-			{
-				["Waiting for new operation", 2] call JB_fnc_showBlackScreenMessage;
-
-				while { ([player, _vehicle] call HALO_ReadyForJump) && _currentDrop == "" } do
-				{
-					sleep 5;
-
-					_targetData = [_vehicle] call _jumpCode;
-					_currentDrop = _targetData select 0;
 				};
 			};
 
-			if ([player, _vehicle] call HALO_ReadyForJump) then
-			{
-				[format ["Combat operations have moved to %1.", _currentDrop], 2] call JB_fnc_showBlackScreenMessage;
-				sleep 5;
-
-				_targetDrop = _currentDrop;
-
-				_remainingDelay = (_targetData select 2) - (([] call HALO_CurrentTime) - _waitStart);
-				_remainingDelay = round(_remainingDelay) max 7; // Give him time to get out if he doesn't want new drop target
-			};
+			sleep 1;
 		};
-
-		player removeEventHandler ["GetOutMan", _getOutHandler];
-
-		// When the player exits the vehicle, don't leave a message sitting on the screen
-		titleText ["", "plain down", 0.1];
 	};
 };
 
@@ -252,48 +209,44 @@ OO_TRACE_DECL(HALO_SetupClient) =
 	player setVariable ["HALO_Vehicles", _haloVehicles];
 };
 
+OO_TRACE_DECL(HALO_EjectFromParachute) =
+{
+	params ["_display", "_actionName", "_actionKey", "_change", "_passthrough"];
+
+	private _animationState = animationState player;
+	if (animationState player == "para_pilot") then
+	{
+		private _parachute = vehicle player;
+		moveOut player;
+		[_parachute] spawn
+		{
+			sleep 3;
+			deleteVehicle (_this select 0);
+		};
+
+		if (player getVariable["JB_HALO_Reserve", false]) then
+		{
+			player addBackpack "B_Parachute";
+			player setVariable ["JB_HALO_Reserve", nil];
+		}
+		else
+		{
+			[player] call HALO_RestoreBackpack;
+		};
+	};
+
+	true
+};
+
 OO_TRACE_DECL(HALO_InstallPlayerReserveParachute) =
 {
 	player setVariable ["JB_HALO_Reserve", true];
-	_handler = (findDisplay 46) displayAddEventHandler ["KeyDown",
-		{
-			params ["_display", "_key", "_isShift", "_isCtrl", "_isAlt"];
-
-			private _override = false;
-
-			if (_key in actionKeys "GetOver") then
-			{
-				private _animationState = animationState player;
-				if (animationState player == "para_pilot") then
-				{
-					private _parachute = vehicle player;
-					moveOut player;
-					[_parachute] spawn
-					{
-						sleep 3;
-						deleteVehicle (_this select 0);
-					};
-
-					if (player getVariable["JB_HALO_Reserve", false]) then
-					{
-						player addBackpack "B_Parachute";
-						player setVariable ["JB_HALO_Reserve", nil];
-					}
-					else
-					{
-						[player] call HALO_RestoreBackpack;
-					};
-					_override = true;
-				};
-			};
-
-			_override;
-		}];
+	private _handler = [46, "Eject", HALO_EjectFromParachute] call JB_fnc_actionHandlerAdd;
 	player setVariable ["JB_HALO_ReserveHandler", _handler];
 };
 
 OO_TRACE_DECL(HALO_UninstallPlayerReserveParachute) =
 {
-	(findDisplay 46) displayRemoveEventHandler ["KeyDown", player getVariable "JB_HALO_ReserveHandler"];
+	[46, player getVariable "JB_HALO_ReserveHandler"] call JB_fnc_actionHandlerRemove;
 	player setVariable ["JB_HALO_ReserveHandler", nil];
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -19,19 +19,17 @@ OO_TRACE_DECL(OP_COMMAND__AdvanceStop) =
 
 	if (count _commandWords > 0) exitWith { ["Unexpected: '%1'", _commandWords select 0] call SPM_Util_MessageCaller; [OP_COMMAND_RESULT_MATCHED] };
 
-	switch (Advance_RunState) do
+	switch (["Advance"] call JB_MP_GetParamValueText) do
 	{
-		case "run":
+		case "Started":
 		{
-			["Stopping running advance"] call SPM_Util_MessageCaller; Advance_RunState = "stop";
-			["NotificationEndAdvance", ["This operational advance has been stopped by command."]] remoteExec ["BIS_fnc_showNotification", 0];
+			["Stopping running advance"] call SPM_Util_MessageCaller; ["Advance", "Stopped"] call JB_MP_S_SetParameter;
 		};
-		case "suspend":
+		case "Suspended":
 		{
-			["Stopping suspended advance"] call SPM_Util_MessageCaller; Advance_RunState = "stop";
-			["NotificationEndAdvance", ["This operational advance has been stopped by command."]] remoteExec ["BIS_fnc_showNotification", 0];
+			["Stopping suspended advance"] call SPM_Util_MessageCaller; ["Advance", "Stopped"] call JB_MP_S_SetParameter;
 		};
-		case "stop": { ["Advance is already stopped"] call SPM_Util_MessageCaller };
+		case "Stopped": { ["Advance is already stopped"] call SPM_Util_MessageCaller };
 	};
 
 	[OP_COMMAND_RESULT_MATCHED]
@@ -43,11 +41,11 @@ OO_TRACE_DECL(OP_COMMAND__AdvanceStart) =
 
 	if (count _commandWords > 0) exitWith { ["Unexpected: '%1'", _commandWords select 0] call SPM_Util_MessageCaller; [OP_COMMAND_RESULT_MATCHED] };
 
-	switch (Advance_RunState) do
+	switch (["Advance"] call JB_MP_GetParamValueText) do
 	{
-		case "run": { ["Advance is already running"] call SPM_Util_MessageCaller };
-		case "suspend": { ["Resuming advance"] call SPM_Util_MessageCaller; Advance_RunState = "run" };
-		case "stop": { ["Starting advance"] call SPM_Util_MessageCaller; Advance_RunState = "run" };
+		case "Started": { ["Advance is already running"] call SPM_Util_MessageCaller };
+		case "Suspended": { ["Resuming advance"] call SPM_Util_MessageCaller; ["Advance", "Started"] call JB_MP_S_SetParameter };
+		case "Stopped": { ["Starting advance"] call SPM_Util_MessageCaller; ["Advance", "Started"] call JB_MP_S_SetParameter };
 	};
 
 	[OP_COMMAND_RESULT_MATCHED]
@@ -59,15 +57,14 @@ OO_TRACE_DECL(OP_COMMAND__AdvanceSuspend) =
 
 	if (count _commandWords > 0) exitWith { ["Unexpected: '%1'", _commandWords select 0] call SPM_Util_MessageCaller; [OP_COMMAND_RESULT_MATCHED] };
 
-	switch (Advance_RunState) do
+	switch (["Advance"] call JB_MP_GetParamValueText) do
 	{
-		case "run":
+		case "Started":
 		{
-			["Suspending advance"] call SPM_Util_MessageCaller; Advance_RunState = "suspend";
-			["NotificationEndAdvance", ["This operational advance has been suspended by command."]] remoteExec ["BIS_fnc_showNotification", 0];
+			["Suspending advance"] call SPM_Util_MessageCaller; ["Advance", "Suspended"] call JB_MP_S_SetParameter;
 		};
-		case "suspend": { ["Advance is already suspended"] call SPM_Util_MessageCaller };
-		case "stop": { ["Advance is stopped"] call SPM_Util_MessageCaller };
+		case "Suspended": { ["Advance is already suspended"] call SPM_Util_MessageCaller };
+		case "Stopped": { ["Advance is stopped"] call SPM_Util_MessageCaller };
 	};
 
 	[OP_COMMAND_RESULT_MATCHED]

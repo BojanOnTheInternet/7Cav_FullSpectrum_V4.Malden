@@ -4,7 +4,8 @@
 #define REPACK_DISPLAY 3000
 #define PROGRESS_CONTROL 2000
 
-#define ROUNDS_REPACKED_PER_SECOND 2
+JBRM_ROUNDS_REPACKED_PER_SECOND = 2;
+JBRM_MAX_MAGAZINE_SIZE = 50;
 
 JBRM_RepackUnload =
 {
@@ -15,7 +16,7 @@ JBRM_CanRepackMagazines =
 {
 	if (vehicle player != player) exitWith { false };
 
-	if (not (lifeState player in ["INJURED", "HEALTHY"])) exitWith { false };
+	if (not (lifeState player in ["HEALTHY", "INJURED"])) exitWith { false };
 
 	true
 };
@@ -45,7 +46,7 @@ JBRM_ComputeRepack =
 		private _to = _magazines select _i;
 		private _roundsPerMagazine = _to select 5;
 
-		if (_to select 1 > 0 && _to select 1 < _roundsPerMagazine && _roundsPerMagazine >= 2 && _roundsPerMagazine <= 50) then
+		if (_to select 1 > 0 && _to select 1 < _roundsPerMagazine && _roundsPerMagazine >= 2 && _roundsPerMagazine <= JBRM_MAX_MAGAZINE_SIZE) then
 		{
 			private _lastOfSameType = _i;
 			for "_j" from (_i + 1) to (count _magazines - 1) do
@@ -76,7 +77,7 @@ JBRM_ComputeRepack =
 							_to set [1, (_to select 1) + 1];
 							_from set [1, (_from select 1) - 1];
 							_roundsMoved = _roundsMoved + 1;
-							sleep (1 / ROUNDS_REPACKED_PER_SECOND / ((1.0 - damage player) max 0.2));
+							sleep (1 / JBRM_ROUNDS_REPACKED_PER_SECOND / ((1.0 - damage player) max 0.2));
 							_progressControl progressSetPosition (_roundsMoved / _totalRoundsToRepack);
 
 							if (not isNull _progressControl && { JBRM_StopRepack || not ([] call JBRM_CanRepackMagazines) }) exitWith {}

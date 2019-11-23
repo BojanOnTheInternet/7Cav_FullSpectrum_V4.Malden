@@ -1,1 +1,0 @@
-_this remoteExec ["JBM_C_AmbulanceSetupClient", 0, true]; //JIP

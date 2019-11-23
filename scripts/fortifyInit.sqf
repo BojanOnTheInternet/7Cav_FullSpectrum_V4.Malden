@@ -15,35 +15,17 @@ _items = [
   ["Land_HBarrierWall4_F", 10],
   ["Land_HBarrierWall_corner_F", 10],
   ["Land_HBarrierTower_F", 25],
-  ["Land_BarGate_F", 50],
+  ["Land_BagFence_Long_F", 5],
   ["Land_BagBunker_Small_F", 25],
   ["Land_BagBunker_Large_F", 50],
-  ["Land_ConcreteHedgehog_01_F", 5].
-  ["Land_HelipadCircle_F", 50],
+  ["Land_CncBarrierMedium_F", 5],
+  ["Land_HelipadCircle_F", 25],
   ["Land_PortableLight_double_F", 1],
-  ["PortableHelipadLight_01_red_F", 1]
+  ["StorageBladder_01_fuel_forest_F", 175],
+  ["ClutterCutter_EP1", 0]
 ];
-[west, 450, _items] call acex_fortify_fnc_registerObjects;
+[west, 800, _items] call acex_fortify_fnc_registerObjects;
 
 // in scripts/vehicles/init/Base_FOB.sqf we set the vehicle location + radius condition
 
-// Here we add checks to really ensure only Apollo units are building,
-// and they aren't building in the green zone
-[{
-  params ["_unit", "_side", "_object"];
-  _apollo_units = ["rhsusf_army_ocp_jfo"];
-  _return = true;
-
-  // Check if Apollo
-  if(!(typeOf _unit in _apollo_units)) then {
-    _return = false;
-    ["You must be an Apollo unit to fortify.", 3] call JB_fnc_showBlackScreenMessage;
-  };
-
-  // Check if in base
-  if(_unit inArea headquarters) then {
-    _return = false;
-    ["You may not fortify on base.", 3] call JB_fnc_showBlackScreenMessage;
-  };
-  _return;
-}] call acex_fortify_fnc_addDeployHandler;
+// in Tac2/fn_fortifyPermissionInit.sqf we set permissions related to placement

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -726,13 +726,13 @@ OO_TRACE_DECL(SPM_MissionInterceptConvoy_Create) =
 	private _spawnpoint = [(_convoyRoute select _startIndex) vectorAdd [-1 + random 2.0, -1 + random 2.0, 0.25], _startDirection];
 	private _destination = _convoyRoute select _endIndex;
 
-	[_destination, 10, (_spawnpoint select 0) distance _destination] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
+	[_destination, 10, (_spawnpoint select 0) distance _destination, -1] call OO_METHOD_PARENT(_mission,Root,Create,Mission);
 
 	OO_SET(_mission,Strongpoint,Name,"Special Operation");
-	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeObject);
+	OO_SET(_mission,Strongpoint,InitializeObject,SERVER_InitializeCategoryObject);
 	OO_SET(_mission,Strongpoint,GetUpdateInterval,{2});
 
-	OO_SET(_mission,Mission,ParticipantFilter,SERVER_IsSpecOpsMember);
+	OO_SET(_mission,Mission,ParticipantFilter,BOTH_IsSpecOpsMember);
 
 	OO_SET(_mission,MissionInterceptConvoy,_StartOfMission,_convoyStartTime);
 	OO_SET(_mission,MissionInterceptConvoy,ConvoyRoute,_convoyRoute);
@@ -750,6 +750,7 @@ OO_TRACE_DECL(SPM_MissionInterceptConvoy_Create) =
 	private _categories = [];
 
 	_category = [] call OO_CREATE(TransportCategory);
+	OO_SET(_category,TransportCategory,GroundTransports,SPM_Transport_CallupsEastMarid);
 	_categories pushBack _category;
 
 	OO_SET(_mission,MissionInterceptConvoy,_Transport,_category);

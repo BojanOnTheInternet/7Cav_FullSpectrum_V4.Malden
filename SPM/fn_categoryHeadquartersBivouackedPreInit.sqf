@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -63,7 +63,7 @@ OO_TRACE_DECL(SPM_HeadquartersBivouacked_CreateHeadquarters) =
 	private _garrison = OO_GETREF(_objective,HeadquartersCategory,Garrison);
 
 	// One tent for every 16 men (2 squads) in the associated garrison.
-	private _numberTents = round (OO_GET(_garrison,InfantryGarrisonCategory,InitialReserves) / 16); //TODO: This is cheating.  InitialReserves is a rating value, not a count. But east infantry is rated at 1 point per soldier so we can get away with it for now
+	private _numberTents = round (OO_GET(_garrison,InfantryGarrisonCategory,InitialReserves) / 16); //BUG: This is cheating.  InitialReserves is a rating value, not a count. But east infantry is rated at 1 point per soldier so we can get away with it for now
 
 	private _tentRadius = 9;
 
@@ -99,7 +99,7 @@ OO_TRACE_DECL(SPM_HeadquartersBivouacked_CreateHeadquarters) =
 	OO_SET(_objective,HeadquartersBivouackedCategory,_BlockingObjects,_blockingObjects);
 
 	{
-		private _direction = [_x, random 360] call SPM_Util_EnvironmentAlignedDirection;
+		private _direction = [_x, random 360, 40] call SPM_Util_EnvironmentAlignedDirection;
 
 		private _tent = ["Land_MedicalTent_01_white_generic_open_F", _x, _direction] call SPM_fnc_spawnVehicle;
 		_tent setObjectTextureGlobal [0, selectRandom SPM_HeadquartersBivouacked_TentTextures];

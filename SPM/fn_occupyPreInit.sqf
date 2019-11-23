@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017, John Buehler
+Copyright (c) 2017-2019, John Buehler
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish and/or distribute copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -12,23 +12,36 @@ if (not isServer && hasInterface) exitWith {};
 
 #include "strongpoint.h"
 
-// Buildings occupy data: [[group-east,group-west,group-independent,group-civilian], [[soldier, position, index], [soldier, position, index], ...]]
-// Group occupy data: [building-occupying] 
+//TODO: Restructure the building occupy data so that the groups (the first array) are associated with a generic key (e.g. infantry garrison category) instead of a side index.  That allows multiple garrisons of the same side to overlap use of a single building.
 
-#define UNCHAIN_ON_HEAR_WEAPON_PROBABILITY 0.5
-#define WEAPON_AUDIBLE_RANGE 15
-#define WEAPON_AUDIBLE_RANGE_SUPPRESSED 4
+// Building occupy data: [[group-east,group-west,group-independent,group-civilian], [[soldier, position, index], [soldier, position, index], ...]]
+// Group occupy data: [building-occupying]
+
+// AI have a certain chance of going active per shot heard, depending on these numbers.  Shots between MIN_DISTANCE and MAX_DISTANCE are considered (SUPPRESSED if suppressed weapon).  The distance is mapped to
+// a corresponding PROBABILITY which is then raised to a given POWER.  A POWER of 1 produces a linear interpolation between MIN and MAX probabilities, a POWER of 2 produces a squared interpolation, etc.
+
+//TODO: Currently variables so they can be tuned interactively.  Should be #defines
+UNCHAIN_MIN_DISTANCE = 2;
+UNCHAIN_MIN_PROBABILITY = 1.0;
+UNCHAIN_MAX_DISTANCE = 40;
+UNCHAIN_MAX_PROBABILITY = 0.1;
+UNCHAIN_POWER = 2.0;
+
+UNCHAIN_MAX_DISTANCE_SUPPRESSED = 8;
 
 OO_TRACE_DECL(SPM_Occupy_SideToNumber) =
 {
 	[east, west, independent, civilian] find (_this select 0)
 };
 
+// The number of building positions and the number of people in the building
 OO_TRACE_DECL(SPM_Occupy_OccupationCounts) =
 {
 	params ["_building"];
 
-	[count (_building buildingPos -1), count ([_building, nil] call SPM_Occupy_GetOccupiers)]
+	private _occupyData = _building getVariable "SPM_Occupy_Data";
+
+	[if (isNil "_occupyData") then { count (_building buildingPos -1) } else { count (_occupyData select 1) }, count ([_building, nil] call SPM_Occupy_GetOccupiers)]
 };
 
 OO_TRACE_DECL(SPM_Occupy_GetOccupiers) =
@@ -41,7 +54,7 @@ OO_TRACE_DECL(SPM_Occupy_GetOccupiers) =
 
 	private _occupiers = [];
 	{
-		if (alive (_x select 0) && { isNil "_side" || { side group (_x select 0) == _side } }) then { _occupiers pushBack [(_x select 0), _forEachIndex] };
+		if (alive (_x select 0) && { isNil "_side" || { side group (_x select 0) == _side } }) then { _occupiers pushBack [_x select 0, _forEachIndex] };
 	} forEach (_occupyData select 1);
 
 	_occupiers
@@ -54,6 +67,15 @@ OO_TRACE_DECL(SPM_Occupy_BuildingIsOccupied) =
 	(count ([_building, [_side, nil] select (isNil "_side")] call SPM_Occupy_GetOccupiers)) > 0
 };
 
+OO_TRACE_DECL(SPM_Occupy_SetBuildingData) =
+{
+	params ["_building", "_positions"];
+
+	private _index = -1;
+	_occupyData = [[grpNull, grpNull, grpNull, grpNull], _positions apply { _index = _index + 1; [objNull, _x, _index] }];
+	_building setVariable ["SPM_Occupy_Data", _occupyData];
+};
+
 OO_TRACE_DECL(SPM_Occupy_GetBuildingData) =
 {
 	params ["_building"];
@@ -61,9 +83,8 @@ OO_TRACE_DECL(SPM_Occupy_GetBuildingData) =
 	private _occupyData = _building getVariable "SPM_Occupy_Data";
 	if (isNil "_occupyData") then
 	{
-		private _index = -1;
-		_occupyData = [[grpNull, grpNull, grpNull, grpNull], (_building buildingPos -1) apply { _index = _index + 1; [objNull, _x, _index] }];
-		_building setVariable ["SPM_Occupy_Data", _occupyData];
+		[_building, _building buildingPos -1] call SPM_Occupy_SetBuildingData;
+		_occupyData = _building getVariable "SPM_Occupy_Data";
 	};
 
 	_occupyData
@@ -84,7 +105,7 @@ OO_TRACE_DECL(SPM_Occupy_ReplaceOccupier) =
 	params ["_unit", "_replacement"];
 
 	private _unitOccupyData = _unit getVariable "SPM_Occupy_Data";
-	if (isNil "_unitOccupyData") exitWith { false };
+	if (isNil "_unitOccupyData") exitWith { diag_log "SPM_Occupy_ReplaceOccupier: unit has no occupy data"; false };
 
 	private _building = _unitOccupyData select 0;
 	private _buildingOccupyData = _building getVariable "SPM_Occupy_Data";
@@ -98,8 +119,8 @@ OO_TRACE_DECL(SPM_Occupy_ReplaceOccupier) =
 	_unit setVariable ["SPM_Occupy_Data", nil];
 
 	[_unit] join grpNull;
-	[_replacement] call SPM_Occupy_ChainUnit;
 	[_replacement] call SPM_Occupy_JoinBuildingGroup;
+	[_replacement] call SPM_Occupy_ChainUnit;
 
 	true
 };
@@ -181,47 +202,52 @@ OO_TRACE_DECL(SPM_Occupy_UnchainUnit) =
 	_unit setVariable ["SPM_Occupy_FiredNearHandler", nil];
 };
 
-SPM_Suppressors = [];
+OO_TRACE_DECL(SPM_Occupy_UncommandedExit) =
+{
+	params ["_unit"];
 
+	private _building = (_unit getVariable "SPM_Occupy_Data") select 0;
+
+	[_unit] call SPM_Occupy_UnchainUnit;
+	[_unit] call SPM_Occupy_LeaveBuildingGroup;
+	[_unit] call SPM_Occupy_FreeBuildingEntry;
+
+	if ([_unit, "SPM_Occupy_UncommandedExit"] call JB_fnc_eventExists) then { [_unit, "SPM_Occupy_UncommandedExit", [_building]] call JB_fnc_eventFire };
+};
+
+SPM_Occupy_ChainUnit_FiredNearHandler =
+{
+	params ["_unit", "", "_distance", "", "_weapon", "", "", "_gunner"];
+
+	if (_distance > UNCHAIN_MAX_DISTANCE) exitWith {};
+
+	if (side _gunner == side _unit) exitWith {};
+
+	if (_weapon == "Throw") exitWith {};
+
+	private _detectDistance = UNCHAIN_MAX_DISTANCE;
+	if (currentWeapon _gunner == _weapon && { _gunner weaponAccessories currentweapon _gunner select 0 != "" }) then { _detectDistance = UNCHAIN_MAX_DISTANCE_SUPPRESSED };
+
+	if (_distance > _detectDistance) exitWith {};
+
+	if (random 1 > linearConversion [UNCHAIN_MIN_DISTANCE, _detectDistance, _distance, UNCHAIN_MIN_PROBABILITY, UNCHAIN_MAX_PROBABILITY, true] ^ UNCHAIN_POWER) exitWith {};
+
+	[_unit] call SPM_Occupy_UncommandedExit
+};
+
+//NOTE: Don't do this before calling JoinBuildingGroup because it's possible for the unit to consider itself 'hit'
+// during this process, causing the unit to try to leave a building it hasn't joined.
 OO_TRACE_DECL(SPM_Occupy_ChainUnit) =
 {
 	params ["_unit"];
 
 	_unit disableAI "path";
 
-	private _hitHandler = _unit addEventHandler ["Hit",
-		{
-			[_this select 0] call SPM_Occupy_UnchainUnit;
-			[_this select 0] call SPM_Occupy_LeaveBuildingGroup;
-			[_this select 0] call SPM_Occupy_FreeBuildingEntry;
-		}];
-
+	private _hitHandler = _unit addEventHandler ["Hit", SPM_Occupy_UncommandedExit];
 	_unit setVariable ["SPM_Occupy_HitHandler", _hitHandler];
 
-	if (random 1 < UNCHAIN_ON_HEAR_WEAPON_PROBABILITY) then
-	{
-		private _firedNearHandler = _unit addEventHandler ["FiredNear",
-			{
-				params ["_unit", "_vehicle", "_distance", "_muzzle", "_weapon", "_mode", "_ammo", "_gunner"];
-
-				if (side _gunner == side _unit) exitWith {};
-
-				private _detectDistance = WEAPON_AUDIBLE_RANGE;
-				if (currentWeapon _gunner == _weapon) then
-				{
-					private _suppressed = _gunner weaponAccessories currentweapon _gunner select 0 != "";
-					if (_suppressed) then { _detectDistance = WEAPON_AUDIBLE_RANGE_SUPPRESSED };
-				};
-
-				if (_distance < _detectDistance) then
-				{
-					[_unit] call SPM_Occupy_UnchainUnit;
-					[_unit] call SPM_Occupy_LeaveBuildingGroup;
-					[_unit] call SPM_Occupy_FreeBuildingEntry;
-				};
-			}];
-		_unit setVariable ["SPM_Occupy_FiredNearHandler", _firedNearHandler];
-	};
+	private _firedNearHandler = _unit addEventHandler ["FiredNear", SPM_Occupy_ChainUnit_FiredNearHandler];
+	_unit setVariable ["SPM_Occupy_FiredNearHandler", _firedNearHandler];
 };
 
 OO_TRACE_DECL(SPM_Occupy_JoinBuildingGroup) =
@@ -229,6 +255,8 @@ OO_TRACE_DECL(SPM_Occupy_JoinBuildingGroup) =
 	params ["_unit"];
 
 	private _occupyData = _unit getVariable "SPM_Occupy_Data";
+	if (isNil "_occupyData") exitWith { diag_log "SPM_Occupy_JoinBuildingGroup: unit has no occupy data" };
+
 	private _building = _occupyData select 0;
 	private _buildingData = [_building] call SPM_Occupy_GetBuildingData;
 
@@ -238,6 +266,7 @@ OO_TRACE_DECL(SPM_Occupy_JoinBuildingGroup) =
 	if (isNull (_groups select _sideIndex)) then
 	{
 		private _group = createGroup (side _unit);
+
 		_group setBehaviour (behaviour _unit);
 		_group setCombatMode (combatMode _unit);
 		_group setSpeedMode (speedMode _unit);
@@ -253,6 +282,8 @@ OO_TRACE_DECL(SPM_Occupy_LeaveBuildingGroup) =
 	params ["_unit"];
 
 	private _occupyData = _unit getVariable "SPM_Occupy_Data";
+	if (isNil "_occupyData") exitWith { diag_log "SPM_Occupy_LeaveBuildingGroup: Unit has no occupy data" };
+
 	private _building = _occupyData select 0;
 	private _buildingData = [_building] call SPM_Occupy_GetBuildingData;
 
@@ -278,7 +309,7 @@ OO_TRACE_DECL(SPM_Occupy_CompleteOccupation) =
 	params ["_unit"];
 
 	private _occupyData = _unit getVariable "SPM_Occupy_Data";
-	if (isNil "_occupyData") exitWith {};
+	if (isNil "_occupyData") exitWith { diag_log "SPM_Occupy_CompleteOccupation: unit has no occupy data" };
 
 	if (not alive _unit) exitWith { [_unit] call SPM_Occupy_FreeBuildingEntry };
 
@@ -286,8 +317,8 @@ OO_TRACE_DECL(SPM_Occupy_CompleteOccupation) =
 
 //	_unit setUnitPos "auto";
 
-	[_unit] call SPM_Occupy_ChainUnit;
 	[_unit] call SPM_Occupy_JoinBuildingGroup;
+	[_unit] call SPM_Occupy_ChainUnit;
 
 	//BUG: ARMA seems to send units to the building's origin instead of the requested building position.  So when each
 	// unit arrives, we make sure they're where they need to be.
@@ -297,6 +328,18 @@ OO_TRACE_DECL(SPM_Occupy_CompleteOccupation) =
 	private _index = _buildingEntries findIf { _x select 0 == _unit };
 	private _destination = _buildingEntries select _index select 1;
 	if (_unit distance (getPos _building) < 1.0) then { _unit setPos _destination };
+
+	// This is to ensure that an object that is used to serve as an occupy point is visible once the first unit
+	// is garrisoned there.  Infantry garrisons use a campfire which the garrison code hides when created.
+	if (isObjectHidden _building) then
+	{
+		_building hideObjectGlobal false;
+		if (call SERVER_IsNightOperation) then { _building inflame true };
+	};
+
+	private _watchDirection = random 360;
+	private _watchDistance = 100;
+	_unit doWatch (getPos _unit vectorAdd [sin _watchDirection * _watchDistance, cos _watchDirection * _watchDistance, 0]);
 };
 
 OO_TRACE_DECL(SPM_Occupy_IsOccupyingUnit) =
@@ -347,6 +390,7 @@ OO_TRACE_DECL(SPM_Occupy_ApproachBuilding_Unit) =
 	if (count _buildingEntry == 0) exitWith { false };
 
 	private _soloGroup = createGroup side _group;
+
 	_soloGroup setBehaviour (behaviour _unit);
 	_soloGroup setCombatMode (combatMode _unit);
 	_soloGroup setSpeedMode (speedMode _unit);
@@ -402,6 +446,8 @@ OO_TRACE_DECL(SPM_Occupy_GetBuildingExits) =
 		_exits pushBack _exit;
 	};
 
+	if (count _exits == 0) then { _exits = [getPos _building] };
+
 	_exits
 };
 
@@ -421,7 +467,7 @@ OO_TRACE_DECL(SPM_Occupy_EnterBuilding) =
 			{
 				params ["_group", "_building"];
 
-				scriptName "spawnSPM_Occupy_EnterBuilding";
+				scriptName "SPM_Occupy_EnterBuilding";
 
 				{
 					[_x, _building] call SPM_Occupy_ApproachBuilding_Unit;
@@ -456,7 +502,6 @@ OO_TRACE_DECL(SPM_Occupy_EnterBuilding) =
 				if (count _buildingEntry == 0) exitWith {};
 
 				[_unit, _buildingEntry select 1] call SPM_Util_SetPosition;
-				_unit setVectorDir (getPos _building vectorFromTo getPos _unit);
 
 				[_unit] call SPM_Occupy_CompleteOccupation;
 			} forEach +(units _group);

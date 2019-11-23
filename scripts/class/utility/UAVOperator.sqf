@@ -1,8 +1,8 @@
-player addAction ["Reboot drone", { [cursorTarget] call QS_fnc_actionRebootDrone; cursorTarget setCaptive true }, [], 0, false, true, "", "[cursorTarget, player] call QS_fnc_conditionRebootDrone", 3];
+player addAction ["Reboot drone", { [cursorObject] call QS_fnc_actionRebootDrone; cursorObject setCaptive true }, [], 0, false, true, "", "getCursorObjectParams select 2 <= 2 && { [cursorObject, player] call QS_fnc_conditionRebootDrone }"];
 
 [] spawn
 {
-	scriptName "spawnMonitorNewUAVTerminal";
+	scriptName "MonitorNewUAVTerminal";
 
 	private _knownDarters = [];
 
@@ -22,7 +22,7 @@ player addAction ["Reboot drone", { [cursorTarget] call QS_fnc_actionRebootDrone
 			{
 				_knownDarters pushBack _x;
 
-				[[_x]] remoteExec ["SERVER_CurateEditableObjects", 2];
+				[_x] remoteExec ["SERVER_InitializeObject", 2];
 
 				{
 					private _member = _x;

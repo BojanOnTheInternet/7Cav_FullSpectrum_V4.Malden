@@ -992,7 +992,7 @@ ASL_Can_Pickup_Ropes = {
 ASL_SUPPORTED_VEHICLES =
 [
 	["UAV_03_base_F", false], // Falcon UAV
-	["Heli_Transport_03_base_F", false], // Huron
+	["Heli_Transport_03_base_F", true], // Vanilla Chinook
 	["Heli_Light_01_unarmed_base_F", false], // Hummingbird
 	["Heli_Light_01_base_F", false], // Pawnee
 	["Heli_Light_02_unarmed_base_F", true], // Orca (unarmed)
@@ -1017,15 +1017,26 @@ ASL_Is_Supported_Vehicle = {
 
 ASL_SLING_RULES =
 [
-	["All","CANNOT_SLING","Helicopter"],
-	["All","CANNOT_SLING","Slingload_01_Base_F"], // Huron containers
-	["All","CANNOT_SLING","VTOL_01_base_F"], // Blackfish
-	["All","CAN_SLING","B_T_APC_Tracked_01_CRV_F"], // EOD Bobcat
-	["All","CANNOT_SLING","B_APC_Tracked_01_CRV_F"], // Bobcat
-	["All","CANNOT_SLING","MBT_01_arty_base_F"], // Artillery
-	["All","CANNOT_SLING","B_APC_Tracked_01_rcws_F"], // Artillery ammo
-	["All","CANNOT_SLING","Truck_01_base_F"], // HEMTTs
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","rhsusf_M108*"],
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","rhsusf_M107*"],
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","rhsusf_M12*"],
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","rhsusf_M97*"],
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","rhsusf_M109*"],	
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","RHS_M2A3*"],
+	["B_Heli_Transport_03_unarmed_F", "CAN_SLING","B_MRAP*"],
+	
+	["RHS_CH_47*", "CAN_SLING","rhsusf_M108*"],
+	["RHS_CH_47*", "CAN_SLING","rhsusf_M107*"],
+	["RHS_CH_47*", "CAN_SLING","rhsusf_M12*"],
+	["RHS_CH_47*", "CAN_SLING","rhsusf_M97*"],
+	["RHS_CH_47*", "CAN_SLING","rhsusf_M109*"],	
+	["RHS_CH_47*", "CAN_SLING","RHS_M2A3*"],
+	["RHS_CH_47*", "CAN_SLING","B_MRAP*"],
+	
 	["All","CANNOT_SLING","Man"],
+	["All","CANNOT_SLING","Plane"],
+	["All","CANNOT_SLING","Helicopter"],
+	["All","CANNOT_SLING","Tank"],
 	["All","CAN_SLING","All"]
 ];
 

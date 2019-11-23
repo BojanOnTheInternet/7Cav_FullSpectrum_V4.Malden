@@ -8,7 +8,7 @@ player addEventHandler ["InventoryOpened",
 		if (isPlayer _owner && _owner != _unit) then
 		{
 			[player] remoteExec ["GR_InventoryOpened", _owner];
-			[[format ["%1 has opened your backpack", name player], "plain down", 0.3]] call remoteExec ["titleText", _owner];
+			[[format ["%1 has opened your backpack", name player], "plain down", 0.3]] remoteExec ["titleText", _owner];
 		};
 	}];
 

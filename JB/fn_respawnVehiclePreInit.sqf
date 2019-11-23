@@ -1,11 +1,17 @@
 // If a player is moving faster than this speed (m/s) then they are not considered to be near a vehicle and it can be considered abandoned
 #define ABANDON_SPEED 6.0
 
+JB_RV_STATE_POSITION = 0;
+JB_RV_STATE_DIRECTION = 1;
+JB_RV_STATE_PYLONMAGAZINES = 2;
+JB_RV_STATE_TEXTURES = 3;
+JB_RV_STATE_ANIMATIONSOURCES = 4;
+
 JB_RV_SetInitializer =
 {
 	params ["_vehicle", "_initName", "_initCode"];
 
-	private _vehicleInit = _vehicle getVariable "JB_RV_VehicleInit";
+	private _vehicleInit = _vehicle getVariable "JB_RV_Initializers";
 	private _vehicleInitCount = 0;
 
 	if (!isNil "_vehicleInit") then
@@ -33,7 +39,7 @@ JB_RV_SetInitializer =
 		_vehicleInit = _vehicleInit + [[_initName, _initCode]];
 	};
 
-	_vehicle setVariable ["JB_RV_VehicleInit", _vehicleInit];
+	_vehicle setVariable ["JB_RV_Initializers", _vehicleInit];
 };
 
 /*
@@ -52,31 +58,17 @@ JB_RV_GetRespawnParameters =
 {
 	private _vehicle = param [0, objNull, [objNull]];
 
-	if (!([_vehicle] call JB_RV_HasRespawnParameters)) exitWith { [_vehicle] };
+	private _originalState = _vehicle getVariable "JB_RV_State";
+	if (isNil "_originalState") exitWith { [_vehicle] };
 
 	private _type = typeOf _vehicle;
-	private _startPosition = _vehicle getVariable "JB_RV_StartPosition";
-	private _startDirection = _vehicle getVariable "JB_RV_StartDirection";
-	private _vehicleInit = _vehicle getVariable ["JB_RV_VehicleInit", []];
-
 	private _vehicleName = vehicleVarName _vehicle;
 
+	private _initializers = _vehicle getVariable ["JB_RV_Initializers", []];
 	private _whenKilled = _vehicle getVariable ["JB_RV_WhenKilled", []];
 	private _whenAbandoned = _vehicle getVariable ["JB_RV_WhenAbandoned", []];
 
-	private _curators = [];
-	{
-		if (_vehicle in curatorEditableObjects _x) then
-		{
-			_curators pushBack _x;
-		}
-	} foreach allCurators;
-
-	private _vehiclePylonMagazines = _vehicle getVariable "JB_RV_VehiclePylonMagazines";
-	private _vehicleTextures = _vehicle getVariable "JB_RV_VehicleTextures";
-	private _animationSources = _vehicle getVariable "JB_RV_AnimationSources";
-
-	[_vehicle, _type, _startPosition, _startDirection, _vehicleInit, _vehicleName, _whenKilled, _whenAbandoned, _curators, _vehiclePylonMagazines, _vehicleTextures, _animationSources]
+	[_vehicle, _type, _vehicleName, _originalState, _initializers, _whenKilled, _whenAbandoned]
 };
 
 /*
@@ -84,7 +76,7 @@ JB_RV_GetRespawnParameters =
 */
 JB_RV_HasRespawnParameters =
 {
-	count ((_this select 0) getVariable ["JB_RV_StartPosition", []]) > 0
+	not isNil { (_this select 0) getVariable "JB_RV_State" }
 };
 
 /*
@@ -94,14 +86,10 @@ JB_RV_RemoveRespawnParameters =
 {
 	params ["_vehicle"];
 
-	_vehicle setVariable ["JB_RV_StartPosition", nil];
-	_vehicle setVariable ["JB_RV_StartDirection", nil];
-	_vehicle setVariable ["JB_RV_VehicleInit", nil];
+	_vehicle setVariable ["JB_RV_State", nil];
+	_vehicle setVariable ["JB_RV_Initializers", nil];
 	_vehicle setVariable ["JB_RV_WhenKilled", nil];
 	_vehicle setVariable ["JB_RV_WhenAbandoned", nil];
-	_vehicle setVariable ["JB_RV_VehiclePylonMagazines", nil];
-	_vehicle setVariable ["JB_RV_VehicleTextures", nil];
-	_vehicle setVariable ["JB_RV_AnimationSources", nil];
 };
 
 /*
@@ -119,7 +107,7 @@ newVehicle = [parameters] call JB_fnc_respawnVehicle
 
 JB_RV_RespawnVehicle =
 {
-	params ["_vehicle", "_type", "_startPosition", "_startDirection", "_vehicleInit", "_vehicleName", "_whenKilled", "_whenAbandoned", "_curators", "_vehiclePylonMagazines", "_vehicleTextures", "_animationSources"];
+	params ["_vehicle", "_type", "_vehicleName", "_originalState", "_initializers", "_whenKilled", "_whenAbandoned"];
 
 	// Hide the object, ensuring that it won't intersect a new one.  Next, recreate the vehicle
 	// at some random location away from the map, rotate it and move it to the final
@@ -129,26 +117,22 @@ JB_RV_RespawnVehicle =
 
 	private _newVehicle = createVehicle [_type, [_startPosition select 0, _startPosition select 1, 10000], [], 0, "can_collide"];
 
-	_newVehicle setVariable ["JB_RV_StartPosition", _startPosition];
-	_newVehicle setVariable ["JB_RV_StartDirection", _startDirection];
-	_newVehicle setVariable ["JB_RV_VehiclePylonMagazines", _vehiclePylonMagazines];
-	_newVehicle setVariable ["JB_RV_VehicleTextures", _vehicleTextures];
-	_newVehicle setVariable ["JB_RV_AnimationSources", _animationSources];
+	_newVehicle setVariable ["JB_RV_State", _originalState];
 
 	private _pylonPaths = ("true" configClasses (configFile >> "CfgVehicles" >> _type >> "Components" >> "TransportPylonsComponent" >> "Pylons")) apply { [configName _x, getArray (_x >> "turret")] };
 	{ _newVehicle removeWeaponGlobal getText (configFile >> "CfgMagazines" >> _x >> "pylonWeapon") } forEach getPylonMagazines _newVehicle;
-	{ _newVehicle setPylonLoadOut [_pylonPaths select _forEachIndex select 0, _x, true, _pylonPaths select _forEachIndex select 1] } forEach _vehiclePylonMagazines;
+	{ _newVehicle setPylonLoadOut [_pylonPaths select _forEachIndex select 0, _x, true, _pylonPaths select _forEachIndex select 1] } forEach (_originalState select JB_RV_STATE_PYLONMAGAZINES);
 
-	{ _newVehicle setObjectTexture [_forEachIndex, _x] } forEach _vehicleTextures;
+	{ _newVehicle setObjectTextureGlobal [_forEachIndex, _x] } forEach (_originalState select JB_RV_STATE_TEXTURES);
 
-	{ _newVehicle animate _x } forEach _animationSources;
+	{ _newVehicle animate _x } forEach (_originalState select JB_RV_STATE_ANIMATIONSOURCES);
 
-	if (!isNil "_vehicleInit") then
+	if (!isNil "_initializers") then
 	{
-		_newVehicle setVariable ["JB_RV_VehicleInit", _vehicleInit];
+		_newVehicle setVariable ["JB_RV_Initializers", _initializers];
 		{
 			[_newVehicle, _vehicle] call (_x select 1);
-		} foreach _vehicleInit;
+		} foreach _initializers;
 	};
 
 	if (count _whenKilled > 0) then
@@ -161,8 +145,8 @@ JB_RV_RespawnVehicle =
 		_newVehicle setVariable ["JB_RV_WhenAbandoned", _whenAbandoned];
 	};
 
-	// Curate
-	[[_newVehicle]] call SERVER_CurateEditableObjects;
+	// External initialization
+	[_newVehicle] call SERVER_InitializeObject;
 
 	// Delete the old vehicle
 
@@ -184,14 +168,14 @@ JB_RV_VehicleDeleted =
 
 	if (not isNil "_whenKilled") then
 	{
-		private _vehicleParameters = [_vehicle] call JB_RV_GetRespawnParameters;
+		private _parameters = [_vehicle] call JB_RV_GetRespawnParameters;
 		
-		[_whenKilled, _vehicleParameters] spawn
+		[_whenKilled, _parameters] spawn
 		{
-			params ["_whenKilled", "_vehicleParameters"];
+			params ["_whenKilled", "_parameters"];
 
 			sleep (_whenKilled select 0);
-			private _vehicle = _vehicleParameters call JB_RV_RespawnVehicle;
+			private _vehicle = _parameters call JB_RV_RespawnVehicle;
 
 			[_vehicle] spawn JB_RV_Monitor;
 		};
@@ -202,11 +186,13 @@ JB_RV_Monitor =
 {
 	params ["_vehicle"];
 
-	scriptName format ["spawnJB_RV_Monitor %1", typeOf _vehicle];
+	scriptName format ["JB_RV_Monitor %1", typeOf _vehicle];
+
+	private _originalState = _vehicle getVariable "JB_RV_State";
 
 	private _lastAbandoned = 0;
 	private _isAbandoned = false;
-	private _startPosition = _vehicle getVariable "JB_RV_StartPosition";
+	private _startPosition = _originalState select JB_RV_STATE_POSITION;
 	private _marker = format ["JB_RV_%1-%2", floor (_startPosition select 0), floor (_startPosition select 1)];
 
 	private _deleteHandlerIndex = _vehicle addEventHandler ["Deleted", JB_RV_VehicleDeleted];
@@ -222,7 +208,7 @@ JB_RV_Monitor =
 
 			private _currentlyAbandoned = false;
 
-			if (_vehicle distance _startPosition >= _movedDistanceCondition) then
+			if (getPosASL _vehicle distance _startPosition >= _movedDistanceCondition) then
 			{
 				if ({ alive _x } count crew _vehicle == 0) then
 				{
@@ -231,7 +217,7 @@ JB_RV_Monitor =
 					// Considered abandoned if no one is nearby and moving below a certain speed (i.e. driving by above that speed does not mark the vehicle as no longer abandoned)
 					_currentlyAbandoned = true;
 					{
-						if ((_x distance _vehicle) <= _abandonDistanceCondition && vectorMagnitude (_vehicleVelocity vectorDiff (velocity _x)) < ABANDON_SPEED) exitWith { _currentlyAbandoned = false };
+						if ((getPosASL _x distance getPosASL _vehicle) <= _abandonDistanceCondition && vectorMagnitude (_vehicleVelocity vectorDiff (velocity _x)) < ABANDON_SPEED) exitWith { _currentlyAbandoned = false };
 					} forEach (allPlayers select { not (_x isKindOf "HeadlessClient_F") });
 				};
 			};
@@ -340,10 +326,10 @@ JB_RV_Monitor =
 
 	if (_shouldRespawn) then
 	{
-		private _vehicleParameters = [_vehicle] call JB_RV_GetRespawnParameters;
+		private _parameters = [_vehicle] call JB_RV_GetRespawnParameters;
 
 		sleep _respawnDelay;
-		_vehicle = _vehicleParameters call JB_RV_RespawnVehicle;
+		_vehicle = _parameters call JB_RV_RespawnVehicle;
 
 		[_vehicle] spawn JB_RV_Monitor;
 	};
